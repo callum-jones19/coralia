@@ -26,7 +26,7 @@ export default function MusicGrid () {
 
   return (
     <div
-      className="grid gap-4 bg-slate-50 p-3 auto-rows-min sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 overflow-auto"
+      className="w-full grid gap-4 bg-slate-50 p-3 auto-rows-min sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 overflow-auto"
     >
       {tmp.map((v, i) => {
         return (
