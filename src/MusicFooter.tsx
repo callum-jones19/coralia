@@ -1,6 +1,11 @@
 import { ChangeEvent, useMemo, useRef, useState } from "react";
 
-export default function MusicFooter() {
+export interface MusicFooterProps {
+  currSongName: string;
+  currSongArtist: string;
+}
+
+export default function MusicFooter( { currSongArtist, currSongName }: MusicFooterProps) {
   const audioPlayer = useRef<HTMLAudioElement>(null);
 
   const [songDuration, setSongDuration] = useState<number>(0);
@@ -13,34 +18,34 @@ export default function MusicFooter() {
   const seekbarInterval = useRef<number | null>(null);
 
   const songPosMins = useMemo(() => {
-    const mins = Math.floor(songPos / 60);
+    const mins = Math.floor(songPos / 60).toString().padStart(2, '0');
     return mins;
   }, [songPos]);
 
   const songPosSecs = useMemo(() => {
-    const secs = Math.floor(songPos % 60);
+    const secs = Math.floor(songPos % 60).toString().padStart(2, '0');
     return secs;
   }, [songPos]);
 
   const intermediateSeekMins = useMemo(() => {
     if (intermediateSeek === null) return -1;
 
-    return Math.floor(intermediateSeek / 60);
+    return Math.floor(intermediateSeek / 60).toString().padStart(2, '0');
   }, [intermediateSeek])
 
   const intermediateSeekSecs = useMemo(() => {
     if (intermediateSeek === null) return -1;
 
-    return Math.floor(intermediateSeek % 60);
+    return Math.floor(intermediateSeek % 60).toString().padStart(2, '0');
   }, [intermediateSeek])
 
   const durationMins = useMemo(() => {
-    const mins = Math.floor(songDuration / 60);
+    const mins = Math.floor(songDuration / 60).toString().padStart(2, '0');
     return mins;
   }, [songDuration]);
 
   const durationSecs = useMemo(() => {
-    const secs = Math.floor(songDuration % 60);
+    const secs = Math.floor(songDuration % 60).toString().padStart(2, '0');
     return secs;
   }, [songDuration]);
 
@@ -84,11 +89,21 @@ export default function MusicFooter() {
   }
 
   return (
-    <div className="bg-gray-700 basis-36">
+    <div className="bg-gray-700 basis-36 flex-shrink-0">
       <div className="flex flex-col justify-center h-full gap-3">
         <div className="flex flex-row mr-10 ml-10 justify-between">
-          <div id="play-controls">
-            <button className="bg-white mr-3 p-2 font-bold">&lt;</button>
+          <div id="play-controls" className="flex flex-row items-center">
+            <button
+              className="bg-white mr-3 p-2 font-bold"
+              onClick={() => {
+                if (audioPlayer.current === null) return;
+
+                setSongPos(0);
+                audioPlayer.current.currentTime = 0;
+              }}
+            >
+              &lt;
+            </button>
             <button
               className="bg-white p-2 pr-4 pl-4 font-bold"
               onClick={togglePlaying}
@@ -96,7 +111,21 @@ export default function MusicFooter() {
               {!isPlaying && <p>⏵︎</p>}
               {isPlaying && <p>⏸︎</p>}
             </button>
-            <button className="bg-white ml-3 p-2 font-bold">&gt;</button>
+            <button
+              className="bg-white ml-3 p-2 font-bold"
+              onClick={() => {
+                if (audioPlayer.current === null) return;
+
+                setSongPos(songDuration);
+                audioPlayer.current.currentTime = songDuration;
+              }}
+            >
+              &gt;
+            </button>
+          </div>
+          <div id="music-info" className="flex flex-col text-white text-center">
+            <p className="font-bold">{currSongArtist}</p>
+            <p className="font-light">{currSongName}</p>
           </div>
           <div id="volume" className="flex flex-row gap-2">
             <p className="self-center">🔊</p>
