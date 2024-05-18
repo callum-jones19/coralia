@@ -1,4 +1,4 @@
-import { ChangeEvent, SyntheticEvent, useMemo } from "react";
+import { ChangeEvent, SyntheticEvent, useMemo, useState } from "react";
 
 export interface MusicFooterProps {
   currSongName: string;
@@ -13,18 +13,9 @@ export interface MusicFooterProps {
 }
 
 export default function MusicFooter({ songDuration, currSongArtist, currSongName, toggleAudioPlaying, setSongPos, isPlaying, volume, setVolume, songPos }: MusicFooterProps) {
-  /*
-  const audioPlayer = useRef<HTMLAudioElement>(null);
-
-  const [songDuration, setSongDuration] = useState<number>(0);
-  const [songPos, setSongPos] = useState<number>(0);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [volume, setVolume] = useState<number>(0);
-
-  const [intermediateSeek, setIntermediateSeek] = useState<number | null>(null);
-
-  const seekbarInterval = useRef<number | null>(null);
-  */
+  const [seekPos, setSeekPos] = useState<number>(0);
+  // FIXME
+  const [isSeeking, setIsSeeking] = useState<boolean>(false);
 
   const songPosMins = useMemo(() => {
     const mins = Math.floor(songPos / 60).toString().padStart(2, '0');
@@ -35,6 +26,16 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
     const secs = Math.floor(songPos % 60).toString().padStart(2, '0');
     return secs;
   }, [songPos]);
+
+  const seekPosMins = useMemo(() => {
+    const mins = Math.floor(seekPos / 60).toString().padStart(2, '0');
+    return mins;
+  }, [seekPos]);
+
+  const seekPosSecs = useMemo(() => {
+    const secs = Math.floor(seekPos % 60).toString().padStart(2, '0');
+    return secs;
+  }, [seekPos]);
 
   const durationMins = useMemo(() => {
     const mins = Math.floor(songDuration / 60).toString().padStart(2, '0');
@@ -98,13 +99,27 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
           </div>
         </div>
         <div className="flex flex-row mr-10 ml-10">
-          <p className="text-white">{songPosMins}:{songPosSecs}</p>
+          {!isSeeking && <p className="text-white">{songPosMins}:{songPosSecs}</p>}
+          {isSeeking && <p className="text-white">{seekPosMins}:{seekPosSecs}</p>}
           <input
+            id="seekbar-range"
             className="w-full ml-5 mr-5 bg-transparent"
             type="range"
             readOnly
-            value={songPos}
+            value={(seekPos && isSeeking) ? seekPos : songPos}
             max={songDuration}
+            onMouseDown={() => setIsSeeking(true)}
+            onChange={(e) => {
+              const tmp = parseFloat(e.target.value);
+              setSeekPos(tmp);
+            }}
+            onMouseUp={() => {
+              if (seekPos !== null) {
+                setSongPos(seekPos);
+              }
+              setIsSeeking(false);
+              setSeekPos(0);
+            }}
           />
           <p className="text-white">{durationMins}:{durationSecs}</p>
         </div>

@@ -16,14 +16,18 @@ export default function App() {
     updateVolume,
     volume,
     handleDurationChange,
-    handleLoadedData
+    handleLoadedData,
+    startPlaying,
+    stopPlaying,
   } = useAudio(audioRef);
 
   return (
     <>
       <audio
         ref={audioRef}
-        src="/music/bully.mp3"
+        src="/music/heaven.mp3"
+        onPlay={startPlaying}
+        onPause={stopPlaying}
         onDurationChange={handleDurationChange}
         onLoadedData={handleLoadedData}
       />

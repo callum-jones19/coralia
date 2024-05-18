@@ -20,6 +20,30 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     soundRef.current.volume = INIT_VOL;
   };
 
+  const startPlaying = () => {
+    if (!soundRef.current) return;
+
+    soundRef.current.play();
+    setIsPlaying(true);
+    if (intervalRef.current === null) {
+      intervalRef.current = window.setInterval(() => {
+        if (!soundRef.current) return;
+        setSongPos(soundRef.current.currentTime);
+      }, 100);
+    }
+  }
+
+  const stopPlaying = () => {
+    if (!soundRef.current) return;
+
+    soundRef.current.pause();
+    setIsPlaying(false);
+    if (intervalRef.current !== null) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }
+
   const toggleAudioPlaying = () => {
     if (!soundRef.current) return;
     if (soundRef.current.paused) {
@@ -52,6 +76,7 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     if (!soundRef.current) return;
 
     soundRef.current.currentTime = newProgress;
+    setSongPos(newProgress);
   }
 
   const changeAudioSrc = (newSrc: string) => {
@@ -72,6 +97,8 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     songPos,
     volume,
     handleDurationChange,
-    handleLoadedData
+    handleLoadedData,
+    startPlaying,
+    stopPlaying,
   };
 }
