@@ -25,7 +25,7 @@ export default function App() {
     <>
       <audio
         ref={audioRef}
-        src="/music/heaven.mp3"
+        src="/music/black_dress.mp3"
         onPlay={startPlaying}
         onPause={stopPlaying}
         onDurationChange={handleDurationChange}
