@@ -1,11 +1,19 @@
-import { ChangeEvent, useMemo, useRef, useState } from "react";
+import { ChangeEvent, SyntheticEvent } from "react";
 
 export interface MusicFooterProps {
   currSongName: string;
   currSongArtist: string;
+  toggleAudioPlaying: () => void;
+  setSongPos: (newPos: number) => void;
+  songPos: number;
+  isPlaying: boolean;
+  songDuration: number;
+  volume: number;
+  setVolume: (newVol: number) => void;
 }
 
-export default function MusicFooter( { currSongArtist, currSongName }: MusicFooterProps) {
+export default function MusicFooter({ songDuration, currSongArtist, currSongName, toggleAudioPlaying, setSongPos, isPlaying, volume, setVolume, songPos }: MusicFooterProps) {
+  /*
   const audioPlayer = useRef<HTMLAudioElement>(null);
 
   const [songDuration, setSongDuration] = useState<number>(0);
@@ -49,76 +57,38 @@ export default function MusicFooter( { currSongArtist, currSongName }: MusicFoot
     return secs;
   }, [songDuration]);
 
+  */
+
   /**
    * When the audio player is connected
-   */
-  const initAudioSync = () => {
-    if (audioPlayer.current === null || audioPlayer === undefined) return;
-
-    console.log(audioPlayer);
-
-    setIsPlaying(!audioPlayer.current.paused);
-    console.log(audioPlayer.current.duration)
-    setSongDuration(audioPlayer.current.duration);
-    setSongPos(audioPlayer.current.currentTime);
-    setVolume(audioPlayer.current.volume);
-  };
-
-
-  const togglePlaying = () => {
-    if (audioPlayer.current === null) return;
-    console.log('test');
-
-    if (isPlaying) {
-      audioPlayer.current.pause();
-
-      if (seekbarInterval.current !== null) {
-        clearInterval(seekbarInterval.current);
-      }
-    } else {
-      audioPlayer.current.play();
-      console.log(1);
-
-      seekbarInterval.current = setInterval(() => {
-        if (audioPlayer.current === null) return;
-
-        setSongPos(audioPlayer.current.currentTime);
-      }, 100);
-    }
-    setIsPlaying(!isPlaying);
-  }
+  */
 
   return (
     <div className="bg-gray-700 basis-36 flex-shrink-0">
       <div className="flex flex-col justify-center h-full gap-3">
+        <audio onDurationChange={(e: SyntheticEvent<HTMLAudioElement, Event>) => {
+          console.log(e);
+        }} />
         <div className="flex flex-row mr-10 ml-10 justify-between">
           <div id="play-controls" className="flex flex-row items-center">
             <button
               className="bg-white mr-3 p-2 font-bold"
-              onClick={() => {
-                if (audioPlayer.current === null) return;
-
-                setSongPos(0);
-                audioPlayer.current.currentTime = 0;
-              }}
+              onClick={() => setSongPos(0)}
             >
               &lt;
             </button>
             <button
               className="bg-white p-2 pr-4 pl-4 font-bold"
-              onClick={togglePlaying}
+              onClick={() => {
+                toggleAudioPlaying();
+              }}
             >
               {!isPlaying && <p>⏵︎</p>}
               {isPlaying && <p>⏸︎</p>}
             </button>
             <button
               className="bg-white ml-3 p-2 font-bold"
-              onClick={() => {
-                if (audioPlayer.current === null) return;
-
-                setSongPos(songDuration);
-                audioPlayer.current.currentTime = songDuration;
-              }}
+              onClick={() => setSongPos(songDuration)}
             >
               &gt;
             </button>
@@ -137,50 +107,27 @@ export default function MusicFooter( { currSongArtist, currSongName }: MusicFoot
               step={0.01}
               max={1}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                if (audioPlayer.current === null) return;
-
                 const newVol = parseFloat(e.target.value);
-                audioPlayer.current.volume = newVol;
                 setVolume(newVol);
               }}
             />
           </div>
         </div>
         <div className="flex flex-row mr-10 ml-10">
-          <audio
-            src="/music/protocol.mp3"
-            ref={audioPlayer}
-            onLoadedMetadata={initAudioSync}
-            onPause={() => setIsPlaying(false)}
-            onPlay={() => setIsPlaying(true)}
-          />
-          {intermediateSeek === null &&
-          <p className="text-white">{songPosMins}:{songPosSecs}</p>
+          {/* {intermediateSeek === null &&
+            <p className="text-white">{songPosMins}:{songPosSecs}</p>
           }
           {intermediateSeek !== null &&
-          <p className="text-white">{intermediateSeekMins}:{intermediateSeekSecs}</p>
-          }
+            <p className="text-white">{intermediateSeekMins}:{intermediateSeekSecs}</p>
+          } */}
           <input
             className="w-full ml-5 mr-5 bg-transparent"
             type="range"
             readOnly
-            value={intermediateSeek === null ? songPos : intermediateSeek}
+            value={songPos}
             max={songDuration}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              console.log(e.target.value);
-              const newSeekSeconds = parseFloat(e.target.value);
-              setIntermediateSeek(newSeekSeconds);
-            }}
-            onMouseUp={() => {
-              console.log('t')
-              if (intermediateSeek === null || audioPlayer.current === null) return;
-
-              setSongPos(intermediateSeek);
-              audioPlayer.current.currentTime = intermediateSeek;
-              setIntermediateSeek(null);
-            }}
           />
-          <p className="text-white">{durationMins}:{durationSecs}</p>
+          <p className="text-white">{songDuration}</p>
         </div>
       </div>
     </div>
