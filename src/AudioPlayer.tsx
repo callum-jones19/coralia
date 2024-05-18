@@ -1,7 +1,9 @@
-import { MutableRefObject, SyntheticEvent, useState } from "react";
+import { MutableRefObject, SyntheticEvent, useRef, useState } from "react";
 
 export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) => {
   const INIT_VOL = 0.1;
+
+  const intervalRef = useRef<number | null>(null);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [songPos, setSongPos] = useState<number>(0);
@@ -23,9 +25,19 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     if (soundRef.current.paused) {
       soundRef.current.play();
       setIsPlaying(true);
+
+      intervalRef.current = window.setInterval(() => {
+        if (!soundRef.current) return;
+        setSongPos(soundRef.current.currentTime);
+      }, 100);
     } else {
       soundRef.current.pause();
       setIsPlaying(false);
+
+      if (intervalRef.current !== null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     }
   }
 

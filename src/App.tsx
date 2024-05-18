@@ -1,14 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomeScreen from "./HomeScreen";
 import { useAudio } from "./AudioPlayer";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-
-  }, [audioRef]);
 
   const {
     toggleAudioPlaying,
@@ -27,7 +23,7 @@ export default function App() {
     <>
       <audio
         ref={audioRef}
-        src="/music/protocol.mp3"
+        src="/music/bully.mp3"
         onDurationChange={handleDurationChange}
         onLoadedData={handleLoadedData}
       />
