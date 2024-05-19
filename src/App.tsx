@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import HomeScreen from "./components/HomeScreen";
+import HomeScreen from "./screens/HomeScreen";
 import { useAudio } from "./hooks/AudioPlayer";
 import { useRef, useState } from "react";
+import SettingsScreen from "./screens/SettingsScreen";
 
 export default function App() {
   const audioUrls = [
@@ -9,6 +10,7 @@ export default function App() {
     "/music/bully.mp3",
     "/music/heaven.mp3",
     "/music/protocol.mp3",
+    "/music/syrup.mp3",
   ];
   const [currSongIndex, setCurrSongIndex] = useState<number>(0);
 
@@ -62,6 +64,12 @@ export default function App() {
                 songPos={songPos}
                 volume={volume}
               />
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <SettingsScreen />
             }
           />
         </Routes>

@@ -1,6 +1,6 @@
-import MusicFooter from "./MusicFooter";
-import MusicGrid from "./MusicGrid";
-import SideBar from "./SideBar";
+import MusicFooter from "../components/MusicFooter";
+import MusicGrid from "../components/MusicGrid";
+import SideBar from "../components/SideBar";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
