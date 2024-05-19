@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import { useAudio } from "./hooks/AudioPlayer";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SettingsScreen from "./screens/SettingsScreen";
 
 export default function App() {
@@ -31,10 +31,15 @@ export default function App() {
     stopPlaying,
   } = useAudio(audioRef);
 
+  useEffect(() => {
+    console.log(audioRef);
+  }, [audioRef]);
+
   return (
     <>
       <audio
         ref={audioRef}
+        controls
         src="/music/black_dress.mp3"
         onPlay={startPlaying}
         onEnded={() => {

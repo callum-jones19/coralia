@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api"
 
-invoke('cmd', { args: 'tmp' })
+export const testApiCall = () => {
+  invoke('cmd', { args: 'tmp' })
   .then((res) => {
     console.log(res);
   });
+};

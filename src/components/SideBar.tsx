@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { testApiCall } from "../api/musicData";
 
 export default function SideBar () {
   return (
@@ -7,7 +8,12 @@ export default function SideBar () {
     >
       <div className="flex flex-col gap-3 justify-between h-full pt-3 pb-3">
         <div className="flex flex-col gap-3">
-          <button className="bg-slate-50 ml-2 p-1 rounded-md rounded-br-none rounded-tr-none">Albums</button>
+          <button
+            className="bg-slate-50 ml-2 p-1 rounded-md rounded-br-none rounded-tr-none"
+            onClick={() => {
+              testApiCall();
+            }}
+          >Albums</button>
           <button disabled className="bg-gray-300 ml-2 mr-2 p-1 rounded-md">Songs</button>
           <button disabled className="bg-gray-300 ml-2 mr-2 p-1 rounded-md">Artists</button>
         </div>
