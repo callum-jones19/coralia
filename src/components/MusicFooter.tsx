@@ -12,6 +12,9 @@ export interface MusicFooterProps {
   setVolume: (newVol: number) => void;
 }
 
+// TODO send down the isReady variable, so we can make things like the song
+// duration variable change only when the new data has been loaded in from
+// the song
 export default function MusicFooter({ songDuration, currSongArtist, currSongName, toggleAudioPlaying, setSongPos, isPlaying, volume, setVolume, songPos }: MusicFooterProps) {
   const [seekPos, setSeekPos] = useState<number>(0);
   // FIXME
@@ -67,7 +70,7 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
 
 
   return (
-    <div className="bg-gray-900 basis-36 flex-shrink-0">
+    <div className="bg-gradient-to-t from-slate-950 to-slate-800 basis-36 flex-shrink-0">
       <div className="flex flex-col justify-center h-full gap-3">
         <audio onDurationChange={(e: SyntheticEvent<HTMLAudioElement, Event>) => {
           console.log(e);
@@ -133,7 +136,7 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
             type="range"
             readOnly
             value={(seekPos && isSeeking) ? seekPos : songPos}
-            max={songDuration}
+            max={Number.isNaN(songDuration) ? 0 : songDuration}
             onMouseDown={() => setIsSeeking(true)}
             onChange={(e) => {
               const tmp = parseFloat(e.target.value);
