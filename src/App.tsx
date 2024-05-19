@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import HomeScreen from "./HomeScreen";
-import { useAudio } from "./AudioPlayer";
+import HomeScreen from "./components/HomeScreen";
+import { useAudio } from "./hooks/AudioPlayer";
 import { useRef } from "react";
 
 export default function App() {
