@@ -58,7 +58,13 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
           <div id="play-controls" className="flex flex-row items-center">
             <button
               className="bg-white mr-3 p-2 font-bold"
-              onClick={() => setSongPos(0)}
+              onClick={() => {
+                if (songPos < 2) {
+                  console.log('go back a song in the queue');
+                } else {
+                  setSongPos(0);
+                }
+              }}
             >
               &lt;
             </button>

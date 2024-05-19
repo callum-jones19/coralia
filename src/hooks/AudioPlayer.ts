@@ -84,6 +84,7 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
 
     soundRef.current.src = newSrc;
     soundRef.current.load()
+    setSongPos(0);
     setSongDuration(soundRef.current.duration);
   }
 

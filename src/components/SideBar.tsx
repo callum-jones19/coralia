@@ -5,8 +5,8 @@ export default function SideBar () {
     >
       <div className="flex flex-col mt-3 gap-3">
         <button className="bg-white ml-2 mr-2 p-1">Albums</button>
-        <button className="bg-white ml-2 mr-2 p-1">Songs</button>
-        <button className="bg-white ml-2 mr-2 p-1">Artists</button>
+        <button disabled className="bg-gray-300 ml-2 mr-2 p-1">Songs</button>
+        <button disabled className="bg-gray-300 ml-2 mr-2 p-1">Artists</button>
       </div>
     </div>
   );

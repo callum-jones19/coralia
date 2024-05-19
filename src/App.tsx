@@ -1,14 +1,22 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomeScreen from "./components/HomeScreen";
 import { useAudio } from "./hooks/AudioPlayer";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function App() {
+  const audioUrls = [
+    "/music/black_dress.mp3",
+    "/music/bully.mp3",
+    "/music/heaven.mp3",
+    "/music/protocol.mp3",
+  ];
+  const [currSongIndex, setCurrSongIndex] = useState<number>(0);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const {
     toggleAudioPlaying,
-    // changeAudioSrc,
+    changeAudioSrc,
     isPlaying,
     songDuration,
     songPos,
@@ -27,6 +35,15 @@ export default function App() {
         ref={audioRef}
         src="/music/black_dress.mp3"
         onPlay={startPlaying}
+        onEnded={() => {
+          let nextIndex = currSongIndex + 1;
+          if (nextIndex >= audioUrls.length) {
+            nextIndex = 0;
+          }
+          setCurrSongIndex(nextIndex);
+          changeAudioSrc(audioUrls[nextIndex]);
+          startPlaying();
+        }}
         onPause={stopPlaying}
         onDurationChange={handleDurationChange}
         onLoadedData={handleLoadedData}
