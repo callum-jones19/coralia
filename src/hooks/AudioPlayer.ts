@@ -1,4 +1,4 @@
-import { MutableRefObject, SyntheticEvent, useRef, useState } from "react";
+import { MutableRefObject, SyntheticEvent, useCallback, useRef, useState } from "react";
 
 export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) => {
   const INIT_VOL = 0.1;
@@ -44,7 +44,9 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     }
   }
 
-  const toggleAudioPlaying = () => {
+  // TODO consider why this needs to be a useCallback to avoid a looping
+  // useEffect call in the MusicFooter file
+  const toggleAudioPlaying = useCallback(() => {
     if (!soundRef.current) return;
     if (soundRef.current.paused) {
       soundRef.current.play();
@@ -63,7 +65,7 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
         intervalRef.current = null;
       }
     }
-  }
+  }, [soundRef]);
 
   const updateVolume = (newVol: number) => {
     if (!soundRef.current) return;
