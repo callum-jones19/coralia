@@ -1,6 +1,10 @@
 import MusicGridAlbum from "./MusicGridAlbum";
 
-export default function MusicGrid () {
+export interface MusicGridProps {
+  changeAudioSrc: (newSrc: string) => void;
+}
+
+export default function MusicGrid ({ changeAudioSrc }: MusicGridProps) {
   const tmp =  [
     ["https://coverartarchive.org/release/9d56a188-72d7-4e66-9619-d10043a1d6e4/36166506502-1200.jpg", "Wallsocket", "underscores"],
     ["https://coverartarchive.org/release/04bed45d-d93f-4865-a92f-c5b9368c85e7/36838630641-1200.jpg", "Surfer Rosa", "Pixies"],
@@ -43,6 +47,7 @@ export default function MusicGrid () {
             artSrc={v[0]}
             title={v[1]}
             artist={v[2]}
+            changeAudioSrc={changeAudioSrc}
           />
         )
       })}

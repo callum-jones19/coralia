@@ -70,15 +70,15 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
 
 
   return (
-    <div className="bg-gradient-to-t from-slate-950 to-slate-800 basis-36 flex-shrink-0">
-      <div className="flex flex-col justify-center h-full gap-3">
+    <div className="bg-gray-900 basis-16 flex-shrink-0 pt-3 pb-3">
+      <div className="flex flex-col justify-center h-full gap-2">
         <audio onDurationChange={(e: SyntheticEvent<HTMLAudioElement, Event>) => {
           console.log(e);
         }} />
         <div className="flex flex-row mr-10 ml-10 justify-between">
           <div id="play-controls" className="flex flex-row items-center">
             <button
-              className="bg-white mr-3 p-2 font-bold rounded-full aspect-square h-full"
+              className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
               onClick={() => {
                 if (songPos < 2) {
                   console.log('go back a song in the queue');
@@ -90,7 +90,7 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
               &lt;
             </button>
             <button
-              className="bg-white p-2 pr-4 pl-4 font-bold rounded-full aspect-square h-full"
+              className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
               onClick={() => {
                 toggleAudioPlaying();
               }}
@@ -99,7 +99,7 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
               {isPlaying && <p>⏸︎</p>}
             </button>
             <button
-              className="bg-white ml-3 p-2 font-bold rounded-full aspect-square h-full"
+              className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
               onClick={() => setSongPos(songDuration)}
             >
               &gt;
