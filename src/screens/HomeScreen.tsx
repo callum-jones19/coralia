@@ -1,6 +1,7 @@
 import MusicFooter from "../components/MusicFooter";
 import MusicGrid from "../components/MusicGrid";
 import SideBar from "../components/SideBar";
+import SongList from "../components/SongList";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -17,9 +18,12 @@ export interface HomeScreenProps {
 export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos, setVolume, songDuration, songPos, volume, changeAudioSrc }: HomeScreenProps) {
   return (
     <div className="h-full flex flex-col">
-      <div className="flex flex-grow h-1 flex-shrink">
+      <div className="flex flex-row flex-grow h-1 flex-shrink">
         <SideBar />
-        <MusicGrid changeAudioSrc={changeAudioSrc} />
+        {/* <MusicGrid changeAudioSrc={changeAudioSrc} /> */}
+        <div className="basis-full flex-grow-0 min-w-0">
+          <SongList />
+        </div>
       </div>
       <MusicFooter
         currSongArtist="Hotline TNT"
