@@ -16,8 +16,7 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
 
   const handleLoadedData = () => {
     if (!soundRef.current) return;
-    setVolume(INIT_VOL);
-    soundRef.current.volume = INIT_VOL;
+    soundRef.current.volume = volume;
   };
 
   const startPlaying = () => {
@@ -88,6 +87,12 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     soundRef.current.load()
     setSongPos(0);
     setSongDuration(soundRef.current.duration);
+
+    if (isPlaying) {
+      soundRef.current.play();
+    } else {
+      soundRef.current.pause();
+    }
   }
 
   return {
