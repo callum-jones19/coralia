@@ -18,6 +18,10 @@
       },
       "path": {
         "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": ["**"]
       }
     },
     "bundle": {
