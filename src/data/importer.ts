@@ -11,13 +11,23 @@ export const scanFolder = (rootDir: string) => {
     recursive: true,
   };
   const dirPromise = readDir(rootDir, readOptions);
+  dirPromise
+    .then(data => {
+      console.log(data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }
 
 export const playSongFromURI = (onUriLoad: (uri: string) => void) => {
   const appDataDirPath = homeDir();
-          const filePath = appDataDirPath.then(dir => join(dir, 'Music/albums/Justice/Hyperdrama/03 Justice & RIMON - Afterimage.mp3'));
-          filePath.then(fileSrc => {
-            const newSrc = convertFileSrc(fileSrc);
-            onUriLoad(newSrc);
-          });
+  const filePath = appDataDirPath.then(dir => join(dir, 'Music/albums/Justice/Hyperdrama/03 Justice & RIMON - Afterimage.mp3'));
+  filePath.then(fileSrc => {
+    const newSrc = convertFileSrc(fileSrc);
+    onUriLoad(newSrc);
+  })
+    .catch(err => {
+      console.log(err);
+    });
 }

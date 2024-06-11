@@ -70,7 +70,7 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
 
 
   return (
-    <div className="bg-gray-900 basis-16 flex-shrink-0 pt-3 pb-3">
+    <div className="bg-gray-950 basis-16 flex-shrink-0 pt-3 pb-3">
       <div className="flex flex-col justify-center h-full gap-2">
         <audio onDurationChange={(e: SyntheticEvent<HTMLAudioElement, Event>) => {
           console.log(e);
