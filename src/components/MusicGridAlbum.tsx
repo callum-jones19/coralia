@@ -1,5 +1,4 @@
-import { homeDir, join } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { playSongFromURI } from "../data/importer";
 
 export interface MusicGridAlbumProps {
   artSrc: string;
@@ -13,14 +12,7 @@ export default function MusicGridAlbum ({ artSrc, title, artist, changeAudioSrc 
     <>
       <div
         className="p-2 w-full shadow-md bg-white rounded-md aspect-square"
-        onClick={() => {
-          const appDataDirPath = homeDir();
-          const filePath = appDataDirPath.then(dir => join(dir, 'Music/albums/CHVRCHES/Every Open Eye/05 Clearest Blue.mp3'));
-          filePath.then(fileSrc => {
-            const newSrc = convertFileSrc(fileSrc);
-            changeAudioSrc(newSrc);
-          });
-        }}
+        onClick={() => playSongFromURI(changeAudioSrc)}
       >
         <img
           src={artSrc}

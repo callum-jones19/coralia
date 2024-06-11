@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { testApiCall } from "../api/musicData";
+import { scanFolder } from "../data/importer";
 
 export default function SideBar () {
   return (
@@ -11,7 +12,7 @@ export default function SideBar () {
           <button
             className="bg-slate-50 ml-2 p-1 rounded-md rounded-br-none rounded-tr-none"
             onClick={() => {
-              testApiCall();
+              scanFolder('Music');
             }}
           >Albums</button>
           <button disabled className="bg-gray-300 ml-2 mr-2 p-1 rounded-md">Songs</button>
