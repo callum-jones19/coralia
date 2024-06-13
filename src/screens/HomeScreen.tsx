@@ -1,3 +1,4 @@
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 import MusicFooter from "../components/MusicFooter";
 import MusicGrid from "../components/MusicGrid";
 import SideBar from "../components/SideBar";
@@ -32,14 +33,10 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
           <button
             className="bg-blue-800 p-4 absolute bottom-20 right-8 rounded-lg text-blue-50 font-bold shadow-md shadow-green-950"
             onClick={() => {
-              playSongFromAbsPath('C:/Users/Callum/Music/MusicBee/Artist Pictures/Thumb/Alice Phoebe Lou.jpg')
-                .then(data => {
-                  if (!data) return;
+              const newSrc = convertFileSrc('C:/Users/Callum/Music/albums/Arcade Fire/Funeral/09 Rebellion (Lies).mp3');
 
-                  console.log(data);
-                  changeAudioSrc(data);
-                })
-                .catch(data => console.error(data));
+              console.log(newSrc);
+              changeAudioSrc(newSrc);
             }}
           >
             Load Test Song

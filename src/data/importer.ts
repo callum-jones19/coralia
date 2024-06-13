@@ -49,33 +49,8 @@ export const scanFolder = (rootDir: string) => {
     });
 }
 
-export const playSongFromURI = (onUriLoad: (uri: string) => void) => {
-  const appDataDirPath = homeDir();
-  const filePath = appDataDirPath.then(dir => join(dir, 'Music/albums/Justice/Hyperdrama/03 Justice & RIMON - Afterimage.mp3'));
-  filePath.then(fileSrc => {
-    const newSrc = convertFileSrc(fileSrc);
-    onUriLoad(newSrc);
-  })
-    .catch(err => {
-      console.log(err);
-    });
-}
+export const playSongFromURI = (absPath: string, onUriLoad: (uri: string) => void) => {
+  // const appDataDirPath = homeDir();
+  // const filePath = appDataDirPath.then(dir => join(dir, 'Music/albums/Justice/Hyperdrama/03 Justice & RIMON - Afterimage.mp3'));
 
-export const playSongFromAbsPath = (songPath: string) => {
-  const res = fetch(convertFileSrc(songPath))
-    .then(res => {
-      const tmp = res.blob()
-        .then(blob => {
-          const url = URL.createObjectURL(blob);
-          return url;
-        })
-        .catch(err => {
-          console.log(err)
-          return undefined;
-        });
-
-      return tmp;
-    });
-
-    return res;
 }
