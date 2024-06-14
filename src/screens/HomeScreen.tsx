@@ -3,6 +3,7 @@ import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { scanFolder } from "../data/importer";
+import { invoke } from "@tauri-apps/api";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -32,7 +33,12 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
           <button
             className="bg-blue-800 p-4 absolute bottom-20 right-8 rounded-lg text-blue-50 font-bold shadow-md shadow-green-950"
             onClick={() => {
-              const newSrc = convertFileSrc('C:/Users/Callum/Music/albums/Arcade Fire/Funeral/09 Rebellion (Lies).mp3');
+              const musicPath = 'C:/Users/Callum/Music/albums/Arcade Fire/Funeral/09 Rebellion (Lies).mp3';
+              const newSrc = convertFileSrc(musicPath);
+
+              invoke('read_music_metadata', { filepath: musicPath })
+                .then(response => console.log(response))
+                .catch(err => console.log(err));
 
               console.log(newSrc);
               changeAudioSrc(newSrc);
