@@ -1,9 +1,8 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import MusicFooter from "../components/MusicFooter";
-import MusicGrid from "../components/MusicGrid";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
-import { playSongFromAbsPath, scanFolder } from "../data/importer";
+import { scanFolder } from "../data/importer";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
