@@ -8,6 +8,8 @@ export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const {
+    updateMetadata,
+    musicTags,
     toggleAudioPlaying,
     changeAudioSrc,
     isPlaying,
@@ -45,6 +47,8 @@ export default function App() {
                 songDuration={songDuration}
                 songPos={songPos}
                 volume={volume}
+                musicTags={musicTags}
+                updateMetadata={updateMetadata}
               />
             }
           />

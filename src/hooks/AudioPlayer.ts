@@ -1,5 +1,12 @@
 import { MutableRefObject, SyntheticEvent, useCallback, useRef, useState } from "react";
 
+export interface MusicTags {
+  title: string;
+  artist: string;
+  album: string;
+  genre: string;
+}
+
 export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) => {
   const INIT_VOL = 0.1;
 
@@ -9,6 +16,11 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
   const [songPos, setSongPos] = useState<number>(0);
   const [songDuration, setSongDuration] = useState<number>(0);
   const [volume, setVolume] = useState<number>(INIT_VOL);
+  const [musicTags, setMusicTags] = useState<MusicTags | null>(null);
+
+  const updateMetadata = (newMusicTags: MusicTags) => {
+    setMusicTags(newMusicTags);
+  };
 
   const handleDurationChange = (e: SyntheticEvent<HTMLAudioElement>) => {
     setSongDuration(e.currentTarget.duration);
@@ -96,6 +108,8 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
   }
 
   return {
+    updateMetadata,
+    musicTags,
     toggleAudioPlaying,
     updateVolume,
     updateProgress,
