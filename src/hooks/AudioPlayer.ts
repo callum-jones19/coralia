@@ -7,6 +7,11 @@ export interface MusicTags {
   genre: string;
 }
 
+export interface SongData {
+  tags: MusicTags;
+  filePath: string;
+}
+
 export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) => {
   const INIT_VOL = 0.1;
 

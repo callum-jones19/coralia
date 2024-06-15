@@ -49,6 +49,7 @@ export default function App() {
                 volume={volume}
                 musicTags={musicTags}
                 updateMetadata={updateMetadata}
+                startPlaying={startPlaying}
               />
             }
           />

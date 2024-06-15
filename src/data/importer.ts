@@ -1,6 +1,4 @@
 import { BaseDirectory, FileEntry, FsDirOptions, readDir } from "@tauri-apps/api/fs"
-import { homeDir, join } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 /**
  * Recursively scan from a root file entry, and return a list of paths to every
@@ -36,21 +34,20 @@ export const scanFolder = (rootDir: string) => {
 
   const dirPromise = readDir(rootDir, readOptions);
 
-  dirPromise
+  const scannedFilePaths = dirPromise
     .then(data => {
-      console.log(data);
+      let compiledFiles: string[] = [];
       data.forEach(childDir => {
         const subFiles = filesInDirTree(childDir);
-        console.log(subFiles);
-      })
+        compiledFiles = compiledFiles.concat(subFiles);
+      });
+      return compiledFiles;
     })
     .catch(err => {
       console.log(err);
+      const emptyStringList: string[] = [];
+      return emptyStringList;
     });
-}
 
-export const playSongFromURI = (absPath: string, onUriLoad: (uri: string) => void) => {
-  // const appDataDirPath = homeDir();
-  // const filePath = appDataDirPath.then(dir => join(dir, 'Music/albums/Justice/Hyperdrama/03 Justice & RIMON - Afterimage.mp3'));
-
+  return scannedFilePaths;
 }

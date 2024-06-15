@@ -4,7 +4,7 @@ import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { scanFolder } from "../data/importer";
 import { invoke } from "@tauri-apps/api";
-import { MusicTags } from "../hooks/AudioPlayer";
+import { MusicTags, SongData } from "../hooks/AudioPlayer";
 import { useState } from "react";
 
 // FIXME consolidate music data into a single
@@ -19,10 +19,12 @@ export interface HomeScreenProps {
   setVolume: (newVol: number) => void;
   updateMetadata: (newMetadata: MusicTags) => void;
   musicTags: MusicTags | null;
+  startPlaying: () => void;
 }
 
-export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos, setVolume, songDuration, songPos, volume, changeAudioSrc, musicTags, updateMetadata }: HomeScreenProps) {
+export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos, setVolume, songDuration, songPos, volume, changeAudioSrc, musicTags, updateMetadata, startPlaying }: HomeScreenProps) {
   const [currentSongPath, setCurrentSongPath] = useState<string | null>(null);
+  const [songList, setSongList] = useState<SongData[]>([]);
 
   return (
     <div className="h-full flex flex-col">
@@ -32,37 +34,36 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
         <div className="basis-full flex-grow-0 min-w-0 relative">
           <button
             className="bg-blue-800 p-4 absolute bottom-4 right-8 rounded-lg text-blue-50 font-bold shadow-md shadow-green-950"
-            onClick={() => scanFolder('Music')}
+            onClick={() => {
+              // Empty the scanned song list if it is not empty
+              setSongList(() => []);
+
+              const filePathsPromise = scanFolder('Music');
+              filePathsPromise.then(filePaths => {
+                filePaths.forEach(filePath => {
+                  console.log(filePath);
+                  invoke('read_music_metadata', { filepath: filePath })
+                    .then(response => {
+                      if (!response) return;
+                      const musicData: SongData = {
+                        filePath: filePath,
+                        tags: response as MusicTags,
+                      }
+                      setSongList(oldSongList => [...oldSongList, musicData]);
+                    })
+                    .catch(err => console.log(err))
+                })
+              }).catch(err => console.log(err));
+            }}
           >
             Scan
           </button>
-          <button
-            disabled={!currentSongPath}
-            className="bg-blue-800 p-4 absolute bottom-20 right-8 rounded-lg text-blue-50 font-bold shadow-md shadow-green-950"
-            onClick={() => {
-              if (!currentSongPath) return;
-              // const musicPath = 'C:/Users/Callum/Music/albums/Arcade Fire/Funeral/09 Rebellion (Lies).mp3';
-              const newSrc = convertFileSrc(currentSongPath);
-
-              invoke('read_music_metadata', { filepath: currentSongPath })
-                .then(response => {
-                  console.log('test');
-                  console.log(response);
-                  if (response == null) return;
-
-                  const readMusicTags= response as MusicTags;
-                  updateMetadata(readMusicTags);
-                })
-                .catch(err => console.log(err));
-
-              console.log(newSrc);
-              changeAudioSrc(newSrc);
-            }}
-          >
-            Load Test Song
-          </button>
-          <input type="text" onChange={e => setCurrentSongPath(e.target.value)} className="p-3 absolute bottom-40 right-8 w-40 shadow-lg outline-1 outline-double" />
-          <SongList />
+          <SongList songList={songList} onSongClick={s => {
+            updateMetadata(s.tags);
+            const newSrc = convertFileSrc(s.filePath);
+            changeAudioSrc(newSrc);
+            startPlaying();
+          }} />
         </div>
       </div>
       <MusicFooter
