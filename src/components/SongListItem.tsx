@@ -18,7 +18,7 @@ export default function SongListItem ({ albumName, artistName, songName, onClick
     >
       {/* <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={songName}>{songName}</p> */}
       <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink flex flex-row items-center">
-        <button className="mr-2 bg-gray-300 p-2 rounded-full" onClick={onClick}>Play</button>
+        <button className="mr-2 bg-gray-300 p-2 pt-1 pb-1 rounded-md" onClick={onClick}>Play</button>
         <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={songName}>{songName}</p>
       </div>
       <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={albumName}>{albumName}</p>

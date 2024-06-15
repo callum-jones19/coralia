@@ -13,7 +13,7 @@ export interface SongData {
 }
 
 export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) => {
-  const INIT_VOL = 0.1;
+  const INIT_VOL = 0.3;
 
   const intervalRef = useRef<number | null>(null);
 
