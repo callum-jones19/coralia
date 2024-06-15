@@ -39,14 +39,18 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
   const startPlaying = () => {
     if (!soundRef.current) return;
 
-    soundRef.current.play();
-    setIsPlaying(true);
-    if (intervalRef.current === null) {
-      intervalRef.current = window.setInterval(() => {
-        if (!soundRef.current) return;
-        setSongPos(soundRef.current.currentTime);
-      }, 100);
-    }
+    soundRef.current.play()
+      .then(() => {
+        setIsPlaying(true);
+        if (intervalRef.current === null) {
+          intervalRef.current = window.setInterval(() => {
+            if (!soundRef.current) return;
+            setSongPos(soundRef.current.currentTime);
+          }, 100);
+        }
+      })
+      .catch(err => console.log(err));
+
   }
 
   const stopPlaying = () => {
@@ -60,18 +64,19 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     }
   }
 
-  // TODO consider why this needs to be a useCallback to avoid a looping
-  // useEffect call in the MusicFooter file
   const toggleAudioPlaying = useCallback(() => {
     if (!soundRef.current) return;
     if (soundRef.current.paused) {
-      soundRef.current.play();
-      setIsPlaying(true);
+      soundRef.current.play()
+        .then(() => {
+          setIsPlaying(true);
 
-      intervalRef.current = window.setInterval(() => {
-        if (!soundRef.current) return;
-        setSongPos(soundRef.current.currentTime);
-      }, 100);
+          intervalRef.current = window.setInterval(() => {
+            if (!soundRef.current) return;
+            setSongPos(soundRef.current.currentTime);
+          }, 100);
+        })
+        .catch(err => console.log(err));
     } else {
       soundRef.current.pause();
       setIsPlaying(false);
@@ -106,9 +111,9 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
     setSongDuration(soundRef.current.duration);
 
     if (isPlaying) {
-      soundRef.current.play();
+      startPlaying();
     } else {
-      soundRef.current.pause();
+      stopPlaying();
     }
   }
 
