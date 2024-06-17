@@ -41,17 +41,22 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
               filePathsPromise.then(filePaths => {
                 filePaths.forEach(filePath => {
                   console.log(filePath);
-                  invoke('read_music_metadata', { filepath: filePath })
+
+                  invoke<MusicTags>('read_music_metadata', { filepath: filePath })
                     .then(response => {
-                      if (!response) return;
                       const musicData: Song = {
                         filePath: filePath,
-                        tags: response as MusicTags,
+                        tags: response,
                       }
                       setSongList(oldSongList => [...oldSongList, musicData]);
                     })
-                    .catch(err => console.log(err))
-                })
+                    .catch(err => {
+                      console.log('Encountered error while executing read_music_metadata. More info:')
+                      console.log(err);
+                    });
+
+
+                });
               }).catch(err => console.log(err));
             }}
           >

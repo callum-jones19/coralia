@@ -5,12 +5,9 @@ use std::path::Path;
 
 use lofty::prelude::*;
 use lofty::probe::Probe;
-use lofty::picture::*;
 use serde::Serialize;
 
 fn main() {
-    read_music_metadata("C:/Users/Callum/Music/albums/Arcade Fire/Funeral/09 Rebellion (Lies).mp3");
-
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![read_music_metadata])
         .run(tauri::generate_context!())
@@ -18,7 +15,7 @@ fn main() {
 }
 
 #[derive(Serialize)]
-struct MusicMetadata {
+struct MusicTags {
     title: String,
     artist: String,
     album: String,
@@ -27,43 +24,26 @@ struct MusicMetadata {
 }
 
 #[tauri::command]
-fn read_music_metadata(filepath: &str) -> Option<MusicMetadata> {
+fn read_music_metadata(filepath: &str) -> Result<MusicTags, String> {
     let path = Path::new(filepath);
 
-    if !path.is_file() {
-        return None;
-    }
-
-    // let tagged_file = Probe::open(path)
-    //     .expect("ERROR: Bad path provided")
-    //     .read()
-    //     .expect("ERROR: Failed to read file!");
     let tagged_file = match Probe::open(path) {
         Ok(t) => match t.read() {
             Ok(f) => f,
-            Err(_) => return None,
+            Err(e) => return Err(format!("ERROR {:?}: Unregistered file type was encountered while reading file {}", e.kind(), path.display())),
         },
-        Err(_) => return None,
+        Err(e) => return Err(format!("ERROR {:?}: Given path {} does not exist", e.kind(), path.display())),
     };
 
     let tag = match tagged_file.primary_tag() {
         Some(primary_tag) => primary_tag,
         None => match tagged_file.first_tag() {
             Some(t) => t,
-            None => return None,
+            None => return Err("ERROR: Failed to grab any tags off the provided file".into()),
         },
     };
 
-    println!("--- TAG INFORMATION ---");
-    println!("Title: {}", tag.title().as_deref().unwrap_or("None"));
-    println!("artist: {}", tag.artist().as_deref().unwrap_or("None"));
-    println!("album: {}", tag.album().as_deref().unwrap_or("None"));
-    println!("genre: {}", tag.genre().as_deref().unwrap_or("None"));
-    if tag.pictures().len() > 0 {
-        println!("picture: {:?}", tag.pictures()[0]);
-    }
-
-    Some(MusicMetadata {
+    Ok(MusicTags {
         title: tag.title().as_deref().unwrap_or("None").to_string(),
         album: tag.album().as_deref().unwrap_or("None").to_string(),
         artist: tag.artist().as_deref().unwrap_or("None").to_string(),

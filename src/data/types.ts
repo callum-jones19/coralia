@@ -3,6 +3,7 @@ export interface MusicTags {
   artist: string;
   album: string;
   genre: string;
+  encoded_cover_art: string;
 }
 
 export interface Song {
