@@ -8,8 +8,6 @@ export interface SongListProps {
 }
 
 export default function SongList ({ songList, onSongClick }: SongListProps) {
-  // console.log(songList)
-
   return (
     <div className="flex flex-col h-full w-full basis-full overflow-auto">
       <div

@@ -25,13 +25,10 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
    */
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      console.log(e);
       if (e.key === ' ') {
         toggleAudioPlaying();
       }
     }
-
-    console.log('test');
     window.addEventListener('keydown', handleKeyPress);
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
@@ -72,17 +69,12 @@ export default function MusicFooter({ songDuration, currSongArtist, currSongName
   return (
     <div className="bg-gray-950 basis-16 flex-shrink-0 pt-3 pb-3">
       <div className="flex flex-col justify-center h-full gap-2">
-        <audio onDurationChange={(e: SyntheticEvent<HTMLAudioElement, Event>) => {
-          console.log(e);
-        }} />
         <div className="flex flex-row mr-10 ml-10 justify-between">
           <div id="play-controls" className="flex flex-row items-center">
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
               onClick={() => {
-                if (songPos < 2) {
-                  console.log('go back a song in the queue');
-                } else {
+                if (songPos >= 2) {
                   setSongPos(0);
                 }
               }}

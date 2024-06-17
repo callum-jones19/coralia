@@ -38,8 +38,10 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
           }, 100);
         }
       })
-      .catch(err => console.log(err));
-
+      .catch(err => {
+        console.log('Failed to play current media. More info:')
+        console.log(err);
+      })
   }
 
   const stopPlaying = () => {
@@ -65,7 +67,10 @@ export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) =>
             setSongPos(soundRef.current.currentTime);
           }, 100);
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          console.log('Failed to play currently loaded audio media. More info:')
+          console.log(err);
+        })
     } else {
       soundRef.current.pause();
       setIsPlaying(false);

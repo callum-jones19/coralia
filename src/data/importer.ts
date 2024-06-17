@@ -1,7 +1,6 @@
 import { BaseDirectory, FileEntry, FsDirOptions, readDir } from "@tauri-apps/api/fs"
 
 
-
 /**
  * Recursively scan from a root file entry, and return a list of paths to every
  * sub-file contained within it that has no children of its own
@@ -20,7 +19,6 @@ const filesInDirTree = (rootFile: FileEntry): string[] => {
     const tmp = filesInDirTree(childFile);
     res = res.concat(tmp);
   });
-  // console.log(res);
   return res;
 }
 
@@ -46,6 +44,7 @@ export const scanFolder = (rootDir: string) => {
       return compiledFiles;
     })
     .catch(err => {
+      console.log('Failed to read given directory. More info:');
       console.log(err);
       const emptyStringList: string[] = [];
       return emptyStringList;
