@@ -1,4 +1,6 @@
+import { invoke } from "@tauri-apps/api";
 import { BaseDirectory, FileEntry, FsDirOptions, readDir } from "@tauri-apps/api/fs"
+import { MusicTags, Song } from "./types";
 
 
 /**
@@ -32,23 +34,44 @@ export const scanFolder = (rootDir: string) => {
     recursive: true,
   };
 
-  const dirPromise = readDir(rootDir, readOptions);
+  return readDir(rootDir, readOptions)
+    .then(childDirs => childDirs.reduce(
+      (accumulator, currVal) => accumulator.concat(filesInDirTree(currVal)),
+      [] as string[]
+    ))
+    .catch(() => [] as string[]);
+}
 
-  const scannedFilePaths = dirPromise
-    .then(data => {
-      let compiledFiles: string[] = [];
-      data.forEach(childDir => {
-        const subFiles = filesInDirTree(childDir);
-        compiledFiles = compiledFiles.concat(subFiles);
-      });
-      return compiledFiles;
-    })
-    .catch(err => {
-      console.log('Failed to read given directory. More info:');
+export const readTagsOnFile = (filePath: string) => {
+  return invoke<MusicTags>('read_music_metadata', { filepath: filePath })
+    .then(response => {
+      const musicData: Song = {
+        filePath: filePath,
+        tags: response,
+      };
+
+      return musicData;
+    }).catch(err => {
+      console.log("Error occurred while reading metadata of file. More info:");
       console.log(err);
-      const emptyStringList: string[] = [];
-      return emptyStringList;
-    });
+      return null;
+    })
+}
 
-  return scannedFilePaths;
+export const readTagsOnFiles = (filePaths: string[]) => {
+  const scannedSongPromises = filePaths
+    .reduce(
+      (accumulator, currVal) => accumulator.concat(readTagsOnFile(currVal)),
+      [] as Promise<Song | null>[]
+    );
+
+  return scannedSongPromises;
+}
+
+export const scanLibrary = () => {
+  return scanFolder("Music")
+    .then(filePaths => readTagsOnFiles(filePaths))
+    .then(data => Promise.all(data))
+    .then(data => Promise.resolve(data.filter(t => t !== null) as Song[]))
+    .catch(err => Promise.reject(err));
 }

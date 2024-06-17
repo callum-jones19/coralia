@@ -2,8 +2,7 @@ import { convertFileSrc } from "@tauri-apps/api/tauri";
 import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
-import { scanFolder } from "../data/importer";
-import { invoke } from "@tauri-apps/api";
+import { parseMusicLibrary, readTagsOnFiles, scanFolder, scanLibrary, scanMusicLibrary } from "../data/importer";
 import { useState } from "react";
 import { MusicTags, Song } from "../data/types";
 
@@ -37,27 +36,7 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
               // Empty the scanned song list if it is not empty
               setSongList(() => []);
 
-              const filePathsPromise = scanFolder('Music');
-              filePathsPromise.then(filePaths => {
-                filePaths.forEach(filePath => {
-                  console.log(filePath);
-
-                  invoke<MusicTags>('read_music_metadata', { filepath: filePath })
-                    .then(response => {
-                      const musicData: Song = {
-                        filePath: filePath,
-                        tags: response,
-                      }
-                      setSongList(oldSongList => [...oldSongList, musicData]);
-                    })
-                    .catch(err => {
-                      console.log('Encountered error while executing read_music_metadata. More info:')
-                      console.log(err);
-                    });
-
-
-                });
-              }).catch(err => console.log(err));
+              scanLibrary().then(data => setSongList(() => data)).catch(err => console.log(err));
             }}
           >
             Scan
