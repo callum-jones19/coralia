@@ -4,8 +4,8 @@ import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { scanFolder } from "../data/importer";
 import { invoke } from "@tauri-apps/api";
-import { MusicTags, SongData } from "../hooks/AudioPlayer";
 import { useState } from "react";
+import { MusicTags, Song } from "../data/types";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -23,8 +23,7 @@ export interface HomeScreenProps {
 }
 
 export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos, setVolume, songDuration, songPos, volume, changeAudioSrc, musicTags, updateMetadata, startPlaying }: HomeScreenProps) {
-  const [currentSongPath, setCurrentSongPath] = useState<string | null>(null);
-  const [songList, setSongList] = useState<SongData[]>([]);
+  const [songList, setSongList] = useState<Song[]>([]);
 
   return (
     <div className="h-full flex flex-col">
@@ -45,7 +44,7 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
                   invoke('read_music_metadata', { filepath: filePath })
                     .then(response => {
                       if (!response) return;
-                      const musicData: SongData = {
+                      const musicData: Song = {
                         filePath: filePath,
                         tags: response as MusicTags,
                       }

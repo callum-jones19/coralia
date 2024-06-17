@@ -1,16 +1,5 @@
 import { MutableRefObject, SyntheticEvent, useCallback, useRef, useState } from "react";
-
-export interface MusicTags {
-  title: string;
-  artist: string;
-  album: string;
-  genre: string;
-}
-
-export interface SongData {
-  tags: MusicTags;
-  filePath: string;
-}
+import { MusicTags } from "../data/types";
 
 export const useAudio = (soundRef: MutableRefObject<HTMLAudioElement | null>) => {
   const INIT_VOL = 0.3;

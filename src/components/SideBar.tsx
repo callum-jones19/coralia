@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { scanFolder } from "../data/importer";
 
 export default function SideBar () {
   return (
@@ -10,7 +9,6 @@ export default function SideBar () {
         <div className="flex flex-col gap-3">
           <button
             className="bg-slate-50 ml-2 mr-2 p-1 rounded-sm"
-            onClick={() => scanFolder('Music')}
           >Songs</button>
           <button disabled className="bg-gray-500 ml-2 mr-2 p-1 rounded-sm">Albums</button>
           <button disabled className="bg-gray-500 ml-2 mr-2 p-1 rounded-sm">Artists</button>

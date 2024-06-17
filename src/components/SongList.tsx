@@ -1,10 +1,10 @@
-import { SongData } from "../hooks/AudioPlayer";
+import { Song } from "../data/types";
 import SongListItem from "./SongListItem";
 
 
 export interface SongListProps {
-  songList: SongData[];
-  onSongClick: (song: SongData) => void;
+  songList: Song[];
+  onSongClick: (song: Song) => void;
 }
 
 export default function SongList ({ songList, onSongClick }: SongListProps) {

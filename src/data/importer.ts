@@ -1,5 +1,7 @@
 import { BaseDirectory, FileEntry, FsDirOptions, readDir } from "@tauri-apps/api/fs"
 
+
+
 /**
  * Recursively scan from a root file entry, and return a list of paths to every
  * sub-file contained within it that has no children of its own
