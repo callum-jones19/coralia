@@ -35,7 +35,7 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn read_music_metadata(filepath: &str) -> Result<MusicTags, String> {
     let path = Path::new(filepath);
 
@@ -66,7 +66,7 @@ fn read_music_metadata(filepath: &str) -> Result<MusicTags, String> {
 
 ///
 /// Recursively list every file inside this path and every sub-directory
-#[tauri::command]
+#[tauri::command(async)]
 fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
     let path = String::from(root_dir) + "/**/*";
 
@@ -92,7 +92,7 @@ fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
     return res;
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn scan_folder (root_dir: &str) -> Vec<Song> {
     let tagged_songs: Vec<Song> = get_files_in_folder_recursive(root_dir)
         .iter()

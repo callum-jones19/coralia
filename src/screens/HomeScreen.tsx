@@ -35,7 +35,9 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
             onClick={() => {
               // Empty the scanned song list if it is not empty
               setSongList(() => []);
-              import_song_library();
+              import_song_library()
+                .then(songs => setSongList(() => songs))
+                .catch(err => console.log(err));
             }}
           >
             Scan
