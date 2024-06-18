@@ -2,9 +2,9 @@ import { convertFileSrc } from "@tauri-apps/api/tauri";
 import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
-import { parseMusicLibrary, readTagsOnFiles, scanFolder, scanLibrary, scanMusicLibrary } from "../data/importer";
 import { useState } from "react";
 import { MusicTags, Song } from "../data/types";
+import { import_song_library } from "../data/importer";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -35,8 +35,7 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
             onClick={() => {
               // Empty the scanned song list if it is not empty
               setSongList(() => []);
-
-              scanLibrary().then(data => setSongList(() => data)).catch(err => console.log(err));
+              import_song_library();
             }}
           >
             Scan

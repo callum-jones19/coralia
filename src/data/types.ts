@@ -7,6 +7,6 @@ export interface MusicTags {
 }
 
 export interface Song {
-  tags: MusicTags;
   filePath: string;
+  tags: MusicTags;
 }
