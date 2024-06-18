@@ -81,7 +81,7 @@ fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
         match entry {
             Ok(path_buf) => {
                 if path_buf.is_file() {
-                    let tmp = String::from(path_buf.to_string_lossy());
+                    let tmp = String::from(path_buf.to_str().unwrap());
                     res.push(tmp);
                 }
             },

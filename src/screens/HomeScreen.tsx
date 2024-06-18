@@ -3,7 +3,7 @@ import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { useState } from "react";
-import { MusicTags, Song } from "../data/types";
+import { MusicTags, Song, tauriSongToInternalSong } from "../data/types";
 import { import_song_library } from "../data/importer";
 
 // FIXME consolidate music data into a single
@@ -36,15 +36,22 @@ export default function HomeScreen ({ toggleAudioPlaying, isPlaying, setSongPos,
               // Empty the scanned song list if it is not empty
               setSongList(() => []);
               import_song_library()
-                .then(songs => setSongList(() => songs))
+                .then(tauriSongs => {
+                  // Convert the tauri response into an internal representation
+                  const songs = tauriSongs.map(tauriSong => tauriSongToInternalSong(tauriSong));
+                  setSongList(() => songs);
+                })
                 .catch(err => console.log(err));
             }}
           >
             Scan
           </button>
           <SongList songList={songList} onSongClick={s => {
+            console.log(s);
             updateMetadata(s.tags);
+            console.log(s.filePath);
             const newSrc = convertFileSrc(s.filePath);
+            console.log(newSrc);
             changeAudioSrc(newSrc);
             startPlaying();
           }} />
