@@ -20,7 +20,7 @@ export interface TauriMusicTags {
   artist: string;
   album: string;
   genre: string;
-  encoded_cover_art: string;
+  cached_artwork_uri: string;
 }
 
 export interface TauriSongResponse {
@@ -38,7 +38,7 @@ export const tauriSongToInternalSong = (tauriSong: TauriSongResponse): Song => {
     tags: {
       album: tauriSong.tags.album,
       artist: tauriSong.tags.artist,
-      encodedCoverArt: tauriSong.tags.encoded_cover_art,
+      encodedCoverArt: tauriSong.tags.cached_artwork_uri,
       genre: tauriSong.tags.genre,
       title: tauriSong.tags.title,
     },
@@ -56,3 +56,18 @@ export const tauriCollectionToCollection = (
     songs: scanned_songs,
   } as Collection;
 };
+
+export const songsToTauriSongs = (songs: Song[]): TauriSongResponse[] => {
+  return songs.map(song => {
+    return {
+      file_path: song.filePath,
+      tags: {
+        album: song.tags.album,
+        artist: song.tags.artist,
+        title: song.tags.title,
+        genre: song.tags.genre,
+        cached_artwork_uri: song.tags.encodedCoverArt
+      }
+    } as TauriSongResponse;
+  })
+}

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MusicTags {
     pub title: String,
     pub artist: String,
@@ -9,7 +9,7 @@ pub struct MusicTags {
     pub cached_artwork_uri: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Song {
     pub file_path: String,
     pub tags: MusicTags,

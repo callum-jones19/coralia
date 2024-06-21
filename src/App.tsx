@@ -4,7 +4,7 @@ import { useAudio } from "./hooks/AudioPlayer";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { load_or_generate_collection } from "./data/importer";
-import { Collection } from "./data/types";
+import { Collection, Song } from "./data/types";
 
 export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -26,6 +26,7 @@ export default function App() {
   } = useAudio(audioRef);
 
   const [collection, setCollection] = useState<Collection | null>(null);
+  const [filteredSongs, setFilteredSongs] = useState<Song[] | null>(null);
 
   useEffect(() => {
     load_or_generate_collection()
@@ -61,7 +62,9 @@ export default function App() {
                 startPlaying={startPlaying}
                 musicTags={currSong ? currSong.tags : null}
                 currentSong={currSong}
-                songs={collection ? collection.songs : []}
+                displayedSongs={filteredSongs ? filteredSongs : (collection ? collection.songs : [])}
+                allSongs={collection ? collection.songs : []}
+                onFilterSongs={filteredSongs => setFilteredSongs(filteredSongs)}
               />
             }
           />
