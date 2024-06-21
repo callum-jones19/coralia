@@ -1,14 +1,13 @@
-import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { load_or_generate_collection } from "../data/importer";
-import { Collection, MusicTags } from "../data/types";
+import { Collection, MusicTags, Song } from "../data/types";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
-  changeAudioSrc: (newSrc: string) => void;
+  changeAudioSrc: (song: Song) => void;
   toggleAudioPlaying: () => void;
   setSongPos: (newPos: number) => void;
   songPos: number;
@@ -16,9 +15,10 @@ export interface HomeScreenProps {
   songDuration: number;
   volume: number;
   setVolume: (newVol: number) => void;
-  updateMetadata: (newMetadata: MusicTags) => void;
   musicTags: MusicTags | null;
   startPlaying: () => void;
+  currentSong: Song | null;
+  songs: Song[];
 }
 
 export default function HomeScreen(
@@ -32,19 +32,11 @@ export default function HomeScreen(
     volume,
     changeAudioSrc,
     musicTags,
-    updateMetadata,
     startPlaying,
+    currentSong,
+    songs,
   }: HomeScreenProps,
 ) {
-  const [collection, setCollection] = useState<Collection | null>(null);
-
-  useEffect(() => {
-    load_or_generate_collection()
-      .then(loaded_collection => {
-        setCollection(() => loaded_collection);
-      })
-      .catch(err => console.log(err));
-  }, []);
 
   return (
     <div className="h-full flex flex-col">
@@ -53,16 +45,16 @@ export default function HomeScreen(
         {/* <MusicGrid changeAudioSrc={changeAudioSrc} /> */}
         <div className="basis-full flex-grow-0 min-w-0 relative">
           <SongList
-            songList={collection ? collection.songs : []}
+            songList={songs}
             onSongClick={s => {
-              console.log(s);
-              updateMetadata(s.tags);
-              console.log(s.filePath);
-              const newSrc = convertFileSrc(s.filePath);
-              console.log(newSrc);
-              changeAudioSrc(newSrc);
-              startPlaying();
+              if (s === currentSong) {
+                toggleAudioPlaying();
+              } else {
+                changeAudioSrc(s);
+                startPlaying();
+              }
             }}
+            currPlayingSong={currentSong}
           />
         </div>
       </div>

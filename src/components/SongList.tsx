@@ -4,9 +4,10 @@ import SongListItem from "./SongListItem";
 export interface SongListProps {
   songList: Song[];
   onSongClick: (song: Song) => void;
+  currPlayingSong: Song | null;
 }
 
-export default function SongList({ songList, onSongClick }: SongListProps) {
+export default function SongList({ songList, onSongClick, currPlayingSong }: SongListProps) {
   return (
     <div className="flex flex-col h-full w-full basis-full overflow-auto">
       <div
@@ -22,14 +23,17 @@ export default function SongList({ songList, onSongClick }: SongListProps) {
           Album Name
         </p>
       </div>
-      {songList.map((song, index) => (
-        <SongListItem
-          key={index}
-          songName={song.tags.title}
-          albumName={song.tags.album}
-          artistName={song.tags.artist}
-          onClick={() => onSongClick(song)}
-        />
+      {songList.map(song => (
+        <>
+          <SongListItem
+            key={song.filePath}
+            songName={song.tags.title}
+            albumName={song.tags.album}
+            artistName={song.tags.artist}
+            onClick={() => onSongClick(song)}
+            isPlaying={currPlayingSong ? currPlayingSong.filePath === song.filePath : false}
+          />
+        </>
       ))}
     </div>
   );

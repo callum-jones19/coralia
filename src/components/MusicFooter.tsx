@@ -109,8 +109,8 @@ export default function MusicFooter(
             </button>
           </div>
           <div id="music-info" className="flex flex-col text-white text-center">
-            <p className="font-bold">{currSongArtist}</p>
-            <p className="font-light">{currSongName}</p>
+            <p className="font-bold">{currSongName}</p>
+            <p className="font-light">{currSongArtist}</p>
           </div>
           <div id="volume" className="flex flex-row gap-2">
             <svg

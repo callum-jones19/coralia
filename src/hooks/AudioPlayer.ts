@@ -5,7 +5,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { MusicTags } from "../data/types";
+import { Song } from "../data/types";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,
@@ -18,11 +19,7 @@ export const useAudio = (
   const [songPos, setSongPos] = useState<number>(0);
   const [songDuration, setSongDuration] = useState<number>(0);
   const [volume, setVolume] = useState<number>(INIT_VOL);
-  const [musicTags, setMusicTags] = useState<MusicTags | null>(null);
-
-  const updateMetadata = (newMusicTags: MusicTags) => {
-    setMusicTags(newMusicTags);
-  };
+  const [currSong, setCurrSong] = useState<Song | null>(null);
 
   const handleDurationChange = (e: SyntheticEvent<HTMLAudioElement>) => {
     setSongDuration(e.currentTarget.duration);
@@ -106,13 +103,16 @@ export const useAudio = (
     setSongPos(newProgress);
   };
 
-  const changeAudioSrc = (newSrc: string) => {
+  const changeAudioSrc = (song: Song) => {
     if (!soundRef.current) return;
 
-    soundRef.current.src = newSrc;
+    console.log(song);
+
+    soundRef.current.src = convertFileSrc(song.filePath);
     soundRef.current.load();
     setSongPos(0);
     setSongDuration(soundRef.current.duration);
+    setCurrSong(song);
 
     if (isPlaying) {
       startPlaying();
@@ -122,8 +122,7 @@ export const useAudio = (
   };
 
   return {
-    updateMetadata,
-    musicTags,
+    currSong,
     toggleAudioPlaying,
     updateVolume,
     updateProgress,

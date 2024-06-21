@@ -5,18 +5,19 @@ export interface SongListItemProps {
   artistName: string;
   songName: string;
   onClick: () => void;
+  isPlaying: boolean;
 }
 
 export default function SongListItem(
-  { albumName, artistName, songName, onClick }: SongListItemProps,
+  { albumName, artistName, songName, onClick, isPlaying }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
   return (
     <div
       className={isHovering
-        ? "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 bg-gray-100 items-center"
-        : "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 items-center"}
+        ? (isPlaying ? "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 bg-green-500 items-center" : "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 bg-gray-100 items-center")
+        : (isPlaying ? "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 bg-green-400 items-center" : "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 items-center")}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >

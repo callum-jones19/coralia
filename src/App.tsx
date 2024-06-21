@@ -1,15 +1,15 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useAudio } from "./hooks/AudioPlayer";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import { load_or_generate_collection } from "./data/importer";
+import { Collection } from "./data/types";
 
 export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const {
-    updateMetadata,
-    musicTags,
     toggleAudioPlaying,
     changeAudioSrc,
     isPlaying,
@@ -22,7 +22,18 @@ export default function App() {
     handleLoadedData,
     startPlaying,
     stopPlaying,
+    currSong,
   } = useAudio(audioRef);
+
+  const [collection, setCollection] = useState<Collection | null>(null);
+
+  useEffect(() => {
+    load_or_generate_collection()
+      .then(loaded_collection => {
+        setCollection(() => loaded_collection);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   return (
     <>
@@ -47,9 +58,10 @@ export default function App() {
                 songDuration={songDuration}
                 songPos={songPos}
                 volume={volume}
-                musicTags={musicTags}
-                updateMetadata={updateMetadata}
                 startPlaying={startPlaying}
+                musicTags={currSong ? currSong.tags : null}
+                currentSong={currSong}
+                songs={collection ? collection.songs : []}
               />
             }
           />
