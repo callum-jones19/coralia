@@ -17,11 +17,11 @@ export default function SongList({ songList, onSongClick, currPlayingSong }: Son
           Song Name
         </p>
         <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
-          Artist Name
-        </p>
-        <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
           Album Name
-        </p>
+          </p>
+        <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
+          Artist Name
+          </p>
       </div>
       {songList.map(song => (
         <>

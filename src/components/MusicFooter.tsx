@@ -32,21 +32,6 @@ export default function MusicFooter(
   // FIXME
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
 
-  /**
-   * Setup global keybinds for the bar
-   */
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === " ") {
-        toggleAudioPlaying();
-      }
-    };
-    window.addEventListener("keydown", handleKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [toggleAudioPlaying]);
-
   const songPosMins = useMemo(() => {
     const mins = Math.floor(songPos / 60).toString().padStart(2, "0");
     return mins;
