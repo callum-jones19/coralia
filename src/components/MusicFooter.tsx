@@ -1,6 +1,5 @@
 import {
   ChangeEvent,
-  SyntheticEvent,
   useEffect,
   useMemo,
   useState,

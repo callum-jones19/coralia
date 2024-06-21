@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
-import { Song, TauriSongResponse } from "./types";
+import { TauriSongResponse } from "./types";
 
 export const import_song_library = async () => {
   readDir("Music", { dir: BaseDirectory.Home, recursive: true })
