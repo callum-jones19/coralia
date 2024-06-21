@@ -1,32 +1,16 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::path::Path;
+mod music;
+
+use std::{fs::File, path::Path};
 
 use glob::glob;
 use lofty::prelude::*;
 use lofty::probe::Probe;
-use serde::Serialize;
-
-
-#[derive(Serialize, Debug)]
-struct MusicTags {
-    title: String,
-    artist: String,
-    album: String,
-    genre: String,
-    encoded_cover_art: String,
-}
-
-#[derive(Serialize, Debug)]
-struct Song {
-    file_path: String,
-    tags: MusicTags
-}
+use music::{Collection, MusicTags, Song};
 
 fn main() {
-    let tmp = scan_folder("C:/Users/Callum/Music/albums");
-
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![read_music_metadata])
         .invoke_handler(tauri::generate_handler![get_files_in_folder_recursive])
@@ -60,7 +44,7 @@ fn read_music_metadata(filepath: &str) -> Result<MusicTags, String> {
         album: tag.album().as_deref().unwrap_or("None").to_string(),
         artist: tag.artist().as_deref().unwrap_or("None").to_string(),
         genre: tag.genre().as_deref().unwrap_or("None").to_string(),
-        encoded_cover_art: String::from("tmp"),
+        cached_artwork_uri: String::from("tmp"),
     })
 }
 
@@ -88,7 +72,6 @@ fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
             Err(err) => return vec![],
         }
     };
-
     return res;
 }
 
@@ -103,3 +86,13 @@ fn scan_folder (root_dir: &str) -> Vec<Song> {
 
     tagged_songs
 }
+
+#[tauri::command(async)]
+fn load_or_create_collection(root_dir: &str) -> Collection {
+    let tagged_songs = scan_folder(root_dir);
+    let collection = Collection::new(tagged_songs);
+
+    serde_json::to_writer(writer, collection);
+    todo!()
+}
+
