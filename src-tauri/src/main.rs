@@ -20,6 +20,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![read_music_metadata,
             get_files_in_folder_recursive,
             scan_folder,
+            create_collection,
+            read_collection,
             load_or_create_collection]
         )
         .run(tauri::generate_context!())
@@ -109,6 +111,8 @@ fn scan_folder(root_dir: &str) -> Vec<Song> {
     tagged_songs
 }
 
+
+#[tauri::command(async)]
 fn create_collection(collection_path: &str, music_path_root: &str) -> Collection {
     let tagged_songs = scan_folder(music_path_root);
     let collection = Collection::new(tagged_songs);
@@ -121,6 +125,7 @@ fn create_collection(collection_path: &str, music_path_root: &str) -> Collection
     collection
 }
 
+#[tauri::command(async)]
 fn read_collection(collection_path: &str) -> Collection {
     let collection_file =
         File::open(collection_path).expect("Failed to open given collection path");
@@ -141,8 +146,10 @@ fn load_or_create_collection(root_dir: &str) -> Collection {
 
     let collection_path_str = p.as_os_str().to_str().unwrap();
     let collection = if path_exists {
+        println!("Loading existing collection file");
         read_collection(collection_path_str)
     } else {
+        println!("Scanning folders and generating new collection");
         create_collection(collection_path_str, root_dir)
     };
 

@@ -1,10 +1,10 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
-import { import_song_library } from "../data/importer";
-import { MusicTags, Song, tauriSongToInternalSong } from "../data/types";
+import { load_or_generate_collection } from "../data/importer";
+import { Collection, MusicTags } from "../data/types";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -36,7 +36,15 @@ export default function HomeScreen(
     startPlaying,
   }: HomeScreenProps,
 ) {
-  const [songList, setSongList] = useState<Song[]>([]);
+  const [collection, setCollection] = useState<Collection | null>(null);
+
+  useEffect(() => {
+    load_or_generate_collection()
+      .then(loaded_collection => {
+        setCollection(() => loaded_collection);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   return (
     <div className="h-full flex flex-col">
@@ -46,24 +54,21 @@ export default function HomeScreen(
         <div className="basis-full flex-grow-0 min-w-0 relative">
           <button
             className="bg-blue-800 p-4 absolute bottom-4 right-8 rounded-lg text-blue-50 font-bold shadow-md shadow-green-950"
-            onClick={() => {
-              // Empty the scanned song list if it is not empty
-              setSongList(() => []);
-              import_song_library()
-                .then(tauriSongs => {
-                  // Convert the tauri response into an internal representation
-                  const songs = tauriSongs.map(tauriSong =>
-                    tauriSongToInternalSong(tauriSong)
-                  );
-                  setSongList(() => songs);
-                })
-                .catch(err => console.log(err));
-            }}
+            // onClick={() => {
+            //   // Empty the scanned song list if it is not empty
+            //   setCollection(() => null);
+
+            //   load_or_generate_collection()
+            //     .then(loaded_collection => {
+            //       setCollection(() => loaded_collection);
+            //     })
+            //     .catch(err => console.log(err));
+            // }}
           >
             Scan
           </button>
           <SongList
-            songList={songList}
+            songList={collection ? collection.songs : []}
             onSongClick={s => {
               console.log(s);
               updateMetadata(s.tags);
