@@ -92,7 +92,6 @@ fn load_or_create_collection(root_dir: &str) -> Collection {
     let tagged_songs = scan_folder(root_dir);
     let collection = Collection::new(tagged_songs);
 
-    serde_json::to_writer(writer, collection);
-    todo!()
+    todo!();
 }
 

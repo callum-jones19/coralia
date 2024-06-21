@@ -33,6 +33,6 @@ export const tauriSongToInternalSong = (tauriSong: TauriSongResponse): Song => {
       encodedCoverArt: tauriSong.tags.encoded_cover_art,
       genre: tauriSong.tags.genre,
       title: tauriSong.tags.title,
-    }
+    },
   } as Song;
-}
+};
