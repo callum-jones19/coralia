@@ -12,17 +12,16 @@ pub struct MusicTags {
 #[derive(Serialize, Debug)]
 pub struct Song {
     pub file_path: String,
-    pub tags: MusicTags
+    pub tags: MusicTags,
 }
 
 #[derive(Serialize, Debug)]
 pub struct Collection {
-  pub songs: Vec<Song>
+    pub songs: Vec<Song>,
 }
 
 impl Collection {
-  pub fn new(songs: Vec<Song>) -> Self {
-    Collection { songs }
-  }
+    pub fn new(songs: Vec<Song>) -> Self {
+        Collection { songs }
+    }
 }
-

@@ -26,9 +26,21 @@ fn read_music_metadata(filepath: &str) -> Result<MusicTags, String> {
     let tagged_file = match Probe::open(path) {
         Ok(t) => match t.read() {
             Ok(f) => f,
-            Err(e) => return Err(format!("ERROR {:?}: Unregistered file type was encountered while reading file {}", e.kind(), path.display())),
+            Err(e) => {
+                return Err(format!(
+                    "ERROR {:?}: Unregistered file type was encountered while reading file {}",
+                    e.kind(),
+                    path.display()
+                ))
+            }
         },
-        Err(e) => return Err(format!("ERROR {:?}: Given path {} does not exist", e.kind(), path.display())),
+        Err(e) => {
+            return Err(format!(
+                "ERROR {:?}: Given path {} does not exist",
+                e.kind(),
+                path.display()
+            ))
+        }
     };
 
     let tag = match tagged_file.primary_tag() {
@@ -68,20 +80,23 @@ fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
                     let tmp = String::from(path_buf.to_str().unwrap());
                     res.push(tmp);
                 }
-            },
+            }
             Err(err) => return vec![],
         }
-    };
+    }
     return res;
 }
 
 #[tauri::command(async)]
-fn scan_folder (root_dir: &str) -> Vec<Song> {
+fn scan_folder(root_dir: &str) -> Vec<Song> {
     let tagged_songs: Vec<Song> = get_files_in_folder_recursive(root_dir)
         .iter()
         .map(|file_path| (read_music_metadata(file_path), file_path))
         .filter(|tags_and_path| tags_and_path.0.is_ok())
-        .map(|tags_and_path| Song {file_path: tags_and_path.1.to_owned(), tags: tags_and_path.0.unwrap() })
+        .map(|tags_and_path| Song {
+            file_path: tags_and_path.1.to_owned(),
+            tags: tags_and_path.0.unwrap(),
+        })
         .collect();
 
     tagged_songs
@@ -94,4 +109,3 @@ fn load_or_create_collection(root_dir: &str) -> Collection {
 
     todo!();
 }
-
