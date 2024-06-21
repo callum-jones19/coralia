@@ -3,18 +3,25 @@
 
 mod music;
 
-use std::{fs::File, path::Path};
+use std::{
+    fs::File,
+    io::{BufReader, BufWriter, Write},
+    path::Path,
+};
 
 use glob::glob;
 use lofty::prelude::*;
 use lofty::probe::Probe;
 use music::{Collection, MusicTags, Song};
+use serde_json::Error;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![read_music_metadata])
-        .invoke_handler(tauri::generate_handler![get_files_in_folder_recursive])
-        .invoke_handler(tauri::generate_handler![scan_folder])
+        .invoke_handler(tauri::generate_handler![read_music_metadata,
+            get_files_in_folder_recursive,
+            scan_folder,
+            load_or_create_collection]
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -102,10 +109,42 @@ fn scan_folder(root_dir: &str) -> Vec<Song> {
     tagged_songs
 }
 
-#[tauri::command(async)]
-fn load_or_create_collection(root_dir: &str) -> Collection {
-    let tagged_songs = scan_folder(root_dir);
+fn create_collection(collection_path: &str, music_path_root: &str) -> Collection {
+    let tagged_songs = scan_folder(music_path_root);
     let collection = Collection::new(tagged_songs);
 
-    todo!();
+    println!("{}", collection_path);
+    let collection_file = File::create(collection_path).expect("Couldn't create file");
+    let mut writer = BufWriter::new(collection_file);
+    serde_json::to_writer(&mut writer, &collection).expect("Could not write collection to file");
+
+    collection
+}
+
+fn read_collection(collection_path: &str) -> Collection {
+    let collection_file =
+        File::open(collection_path).expect("Failed to open given collection path");
+    let reader = BufReader::new(collection_file);
+
+    let collection_res: Result<Collection, Error> = serde_json::from_reader(reader);
+
+    collection_res.expect("Failed to deserialize the given collection")
+}
+
+#[tauri::command(async)]
+fn load_or_create_collection(root_dir: &str) -> Collection {
+    let p = Path::new("collection.json");
+    let path_exists = match p.try_exists() {
+        Ok(does_exist) => does_exist,
+        Err(err) => panic!("ERROR: {}", err),
+    };
+
+    let collection_path_str = p.as_os_str().to_str().unwrap();
+    let collection = if path_exists {
+        read_collection(collection_path_str)
+    } else {
+        create_collection(collection_path_str, root_dir)
+    };
+
+    collection
 }

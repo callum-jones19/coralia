@@ -11,6 +11,10 @@ export interface Song {
   tags: MusicTags;
 }
 
+export interface Collection {
+  songs: Song[];
+}
+
 export interface TauriMusicTags {
   title: string;
   artist: string;
@@ -22,6 +26,10 @@ export interface TauriMusicTags {
 export interface TauriSongResponse {
   file_path: string;
   tags: TauriMusicTags;
+}
+
+export interface TauriCollectionResponse {
+  songs: TauriSongResponse[];
 }
 
 export const tauriSongToInternalSong = (tauriSong: TauriSongResponse): Song => {
