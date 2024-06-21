@@ -25,3 +25,7 @@ impl Collection {
         Collection { songs }
     }
 }
+
+pub struct Queue {
+    pub songs: Vec<Song>,
+}

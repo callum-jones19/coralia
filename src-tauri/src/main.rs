@@ -5,7 +5,7 @@ mod music;
 
 use std::{
     fs::File,
-    io::{BufReader, BufWriter, Write},
+    io::{BufReader, BufWriter},
     path::Path,
 };
 
@@ -17,13 +17,14 @@ use serde_json::Error;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![read_music_metadata,
+        .invoke_handler(tauri::generate_handler![
+            read_music_metadata,
             get_files_in_folder_recursive,
             scan_folder,
             create_collection,
             read_collection,
-            load_or_create_collection]
-        )
+            load_or_create_collection
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -77,7 +78,7 @@ fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
 
     let pattern = match glob(&path) {
         Ok(paths) => paths,
-        Err(err) => return vec![],
+        Err(_) => return vec![],
     };
 
     let mut res: Vec<String> = Vec::new();
@@ -90,7 +91,7 @@ fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
                     res.push(tmp);
                 }
             }
-            Err(err) => return vec![],
+            Err(_) => return vec![],
         }
     }
     return res;
@@ -110,7 +111,6 @@ fn scan_folder(root_dir: &str) -> Vec<Song> {
 
     tagged_songs
 }
-
 
 #[tauri::command(async)]
 fn create_collection(collection_path: &str, music_path_root: &str) -> Collection {

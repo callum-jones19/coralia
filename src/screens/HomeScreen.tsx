@@ -52,21 +52,6 @@ export default function HomeScreen(
         <SideBar />
         {/* <MusicGrid changeAudioSrc={changeAudioSrc} /> */}
         <div className="basis-full flex-grow-0 min-w-0 relative">
-          <button
-            className="bg-blue-800 p-4 absolute bottom-4 right-8 rounded-lg text-blue-50 font-bold shadow-md shadow-green-950"
-            // onClick={() => {
-            //   // Empty the scanned song list if it is not empty
-            //   setCollection(() => null);
-
-            //   load_or_generate_collection()
-            //     .then(loaded_collection => {
-            //       setCollection(() => loaded_collection);
-            //     })
-            //     .catch(err => console.log(err));
-            // }}
-          >
-            Scan
-          </button>
           <SongList
             songList={collection ? collection.songs : []}
             onSongClick={s => {

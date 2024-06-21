@@ -45,12 +45,14 @@ export const tauriSongToInternalSong = (tauriSong: TauriSongResponse): Song => {
   } as Song;
 };
 
-export const tauriCollectionToCollection = (tauriCollection: TauriCollectionResponse): Collection => {
+export const tauriCollectionToCollection = (
+  tauriCollection: TauriCollectionResponse,
+): Collection => {
   const scanned_songs = tauriCollection.songs.map(tauriSong =>
     tauriSongToInternalSong(tauriSong)
   );
 
   return {
-    songs: scanned_songs
+    songs: scanned_songs,
   } as Collection;
-}
+};
