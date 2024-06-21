@@ -1,38 +1,36 @@
+import { Song } from "../data/types";
 import SongListItem from "./SongListItem";
 
-export interface SongData {
-  id: number;
-  albumName: string;
-  artistName: string;
-  songName: string;
+export interface SongListProps {
+  songList: Song[];
+  onSongClick: (song: Song) => void;
 }
 
-export default function SongList () {
-  const songs: SongData[] = [
-    {id: 1, albumName: 'Wallsocket fuashdklj', artistName: 'RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf', songName: 'Cops and RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf'},
-    {id: 2, albumName: 'Surfer Rosa', artistName: "Pixies", songName: 'Where Is My Mind?'},
-    {id: 3, albumName: 'Last year Was Weird, Vol. 3', artistName: "Tkay Maidza", songName: 'My Flowers'},
-    {id: 4, albumName: 'Wallsocket fuashdklj', artistName: 'RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf', songName: 'Cops and RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf'},
-    {id: 5, albumName: 'Surfer Rosa', artistName: "Pixies", songName: 'Where Is My Mind?'},
-    {id: 6, albumName: 'Last year Was Weird, Vol. 3', artistName: "Tkay Maidza", songName: 'My Flowers'},
-    {id: 7, albumName: 'Wallsocket fuashdklj', artistName: 'RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf', songName: 'Cops and RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf'},
-    {id: 8, albumName: 'Surfer Rosa', artistName: "Pixies", songName: 'Where Is My Mind?'},
-    {id: 9, albumName: 'Last year Was Weird, Vol. 3', artistName: "Tkay Maidza", songName: 'My Flowers'},
-    {id: 10, albumName: 'Wallsocket fuashdklj', artistName: 'RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf', songName: 'Cops and RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf'},
-    {id: 11, albumName: 'Surfer Rosa', artistName: "Pixies", songName: 'Where Is My Mind?'},
-    {id: 12, albumName: 'Last year Was Weird, Vol. 3', artistName: "Tkay Maidza", songName: 'My Flowers'},
-    {id: 13, albumName: 'Wallsocket fuashdklj', artistName: 'RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf', songName: 'Cops and RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf'},
-    {id: 14, albumName: 'Surfer Rosa', artistName: "Pixies", songName: 'Where Is My Mind?'},
-    {id: 15, albumName: 'Last year Was Weird, Vol. 3', artistName: "Tkay Maidza", songName: 'My Flowers'},
-    {id: 16, albumName: 'Wallsocket fuashdklj', artistName: 'RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf', songName: 'Cops and RobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgfRobdfgf'},
-    {id: 17, albumName: 'Surfer Rosa', artistName: "Pixies", songName: 'Where Is My Mind?'},
-    {id: 18, albumName: 'Last year Was Weird, Vol. 3', artistName: "Tkay Maidza", songName: 'My Flowers'},
-  ]
-
+export default function SongList({ songList, onSongClick }: SongListProps) {
   return (
     <div className="flex flex-col h-full w-full basis-full overflow-auto">
-      <SongListItem songName="Song Name" albumName="Album Name" artistName="Artist Name" />
-      {songs.map(song => <SongListItem key={song.id} songName={song.songName} albumName={song.albumName} artistName={song.artistName} />)}
+      <div
+        className={"flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2"}
+      >
+        <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
+          Song Name
+        </p>
+        <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
+          Artist Name
+        </p>
+        <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
+          Album Name
+        </p>
+      </div>
+      {songList.map((song, index) => (
+        <SongListItem
+          key={index}
+          songName={song.tags.title}
+          albumName={song.tags.album}
+          artistName={song.tags.artist}
+          onClick={() => onSongClick(song)}
+        />
+      ))}
     </div>
-  )
+  );
 }

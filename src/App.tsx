@@ -1,13 +1,15 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import HomeScreen from "./screens/HomeScreen";
-import { useAudio } from "./hooks/AudioPlayer";
 import { useRef } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useAudio } from "./hooks/AudioPlayer";
+import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 
 export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const {
+    updateMetadata,
+    musicTags,
     toggleAudioPlaying,
     changeAudioSrc,
     isPlaying,
@@ -45,18 +47,18 @@ export default function App() {
                 songDuration={songDuration}
                 songPos={songPos}
                 volume={volume}
+                musicTags={musicTags}
+                updateMetadata={updateMetadata}
+                startPlaying={startPlaying}
               />
             }
           />
           <Route
             path="/settings"
-            element={
-              <SettingsScreen />
-            }
+            element={<SettingsScreen />}
           />
         </Routes>
       </BrowserRouter>
     </>
-  )
+  );
 }
-

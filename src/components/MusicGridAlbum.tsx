@@ -1,5 +1,3 @@
-import { playSongFromURI } from "../data/importer";
-
 export interface MusicGridAlbumProps {
   artSrc: string;
   title: string;
@@ -7,16 +5,15 @@ export interface MusicGridAlbumProps {
   changeAudioSrc: (newSrc: string) => void;
 }
 
-export default function MusicGridAlbum ({ artSrc, title, artist, changeAudioSrc }: MusicGridAlbumProps) {
+export default function MusicGridAlbum(
+  { artSrc, title, artist }: MusicGridAlbumProps,
+) {
   return (
     <>
-      <div
-        className="p-2 w-full shadow-md bg-white rounded-md aspect-square"
-        onClick={() => playSongFromURI(changeAudioSrc)}
-      >
+      <div className="p-2 w-full shadow-md bg-white rounded-md aspect-square">
         <img
           src={artSrc}
-          alt='album-cover-image'
+          alt="album-cover-image"
           className="mb-3 rounded-md w-full"
         />
         <h4 className="font-bold text-l text-center">{title}</h4>

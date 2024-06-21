@@ -1,33 +1,15 @@
-import { BaseDirectory, FsDirOptions, readDir } from "@tauri-apps/api/fs"
-import { homeDir, join } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api";
+import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
+import { TauriCollectionResponse, tauriCollectionToCollection } from "./types";
 
-/**
- * Scan a folder recursively for any music files within it.
- */
-export const scanFolder = (rootDir: string) => {
-  const readOptions: FsDirOptions = {
-    dir: BaseDirectory.Home,
-    recursive: true,
-  };
-  const dirPromise = readDir(rootDir, readOptions);
-  dirPromise
-    .then(data => {
-      console.log(data);
-    })
-    .catch(err => {
-      console.log(err);
-    });
-}
+export const load_or_generate_collection = async () => {
+  readDir("Music", { dir: BaseDirectory.Home, recursive: true })
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
 
-export const playSongFromURI = (onUriLoad: (uri: string) => void) => {
-  const appDataDirPath = homeDir();
-  const filePath = appDataDirPath.then(dir => join(dir, 'Music/albums/Justice/Hyperdrama/03 Justice & RIMON - Afterimage.mp3'));
-  filePath.then(fileSrc => {
-    const newSrc = convertFileSrc(fileSrc);
-    onUriLoad(newSrc);
+  return invoke<TauriCollectionResponse>("load_or_create_collection", {
+    rootDir: "C:/Users/Callum/Music/albums",
   })
-    .catch(err => {
-      console.log(err);
-    });
-}
+    .then(collection => tauriCollectionToCollection(collection))
+    .catch(err => Promise.reject(err));
+};
