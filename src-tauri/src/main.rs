@@ -24,7 +24,8 @@ fn main() {
             create_collection,
             read_collection,
             load_or_create_collection,
-            filter_songs_by_title
+            filter_songs_by_title,
+            filter_songs_by_album
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -161,6 +162,15 @@ fn load_or_create_collection(root_dir: &str) -> Collection {
 fn filter_songs_by_title(collection: Collection, title_filter: String) -> Vec<Song> {
     let filtered_songs: Vec<Song> = collection.songs.into_iter()
         .filter(|song| song.tags.title.to_lowercase().contains(&title_filter.to_lowercase()))
+        .collect();
+
+    filtered_songs
+}
+
+#[tauri::command(async)]
+fn filter_songs_by_album(collection: Collection, album_title: String) -> Vec<Song> {
+    let filtered_songs: Vec<Song> = collection.songs.into_iter()
+        .filter(|song| song.tags.album == album_title)
         .collect();
 
     filtered_songs
