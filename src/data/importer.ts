@@ -1,19 +1,16 @@
 import { invoke } from "@tauri-apps/api";
-import { TauriCollectionResponse, TauriSongResponse, tauriCollectionToCollection, tauriSongToInternalSong } from "./types";
+import { TauriSongResponse, tauriSongToInternalSong } from "./types";
 
-export const load_or_generate_collection = async () => {
-  return invoke<TauriCollectionResponse>("load_or_create_collection", {
-    rootDir: "C:/Users/Callum/Music/albums",
+export const filter_songs_by_title = async (title_filter: string) => {
+  return invoke<TauriSongResponse[]>("filter_songs_by_title", {
+    titleFilter: title_filter,
   })
-    .then(collection => tauriCollectionToCollection(collection))
+    .then(songs => songs.map(song => tauriSongToInternalSong(song)))
     .catch(err => Promise.reject(err));
 };
 
-export const filter_songs_by_title = async (title_filter: string, collection: TauriCollectionResponse) => {
-  return invoke<TauriSongResponse[]>("filter_songs_by_title", {
-    collection,
-    titleFilter: title_filter
-  })
+export const get_all_songs = async () => {
+  return invoke<TauriSongResponse[]>("get_all_songs", {})
     .then(songs => songs.map(song => tauriSongToInternalSong(song)))
     .catch(err => Promise.reject(err));
 };

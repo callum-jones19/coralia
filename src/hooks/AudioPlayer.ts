@@ -1,3 +1,4 @@
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 import {
   MutableRefObject,
   SyntheticEvent,
@@ -6,7 +7,6 @@ import {
   useState,
 } from "react";
 import { Song } from "../data/types";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,

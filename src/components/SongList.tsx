@@ -7,7 +7,9 @@ export interface SongListProps {
   currPlayingSong: Song | null;
 }
 
-export default function SongList({ songList, onSongClick, currPlayingSong }: SongListProps) {
+export default function SongList(
+  { songList, onSongClick, currPlayingSong }: SongListProps,
+) {
   return (
     <div className="flex flex-col h-full w-full basis-full overflow-auto">
       <div
@@ -18,10 +20,10 @@ export default function SongList({ songList, onSongClick, currPlayingSong }: Son
         </p>
         <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
           Album Name
-          </p>
+        </p>
         <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
           Artist Name
-          </p>
+        </p>
       </div>
       {songList.map(song => (
         <>
@@ -31,7 +33,9 @@ export default function SongList({ songList, onSongClick, currPlayingSong }: Son
             albumName={song.tags.album}
             artistName={song.tags.artist}
             onClick={() => onSongClick(song)}
-            isPlaying={currPlayingSong ? currPlayingSong.filePath === song.filePath : false}
+            isPlaying={currPlayingSong
+              ? currPlayingSong.filePath === song.filePath
+              : false}
           />
         </>
       ))}

@@ -66,8 +66,8 @@ export const songsToTauriSongs = (songs: Song[]): TauriSongResponse[] => {
         artist: song.tags.artist,
         title: song.tags.title,
         genre: song.tags.genre,
-        cached_artwork_uri: song.tags.encodedCoverArt
-      }
+        cached_artwork_uri: song.tags.encodedCoverArt,
+      },
     } as TauriSongResponse;
-  })
-}
+  });
+};
