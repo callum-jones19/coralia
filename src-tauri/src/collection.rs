@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -30,6 +32,7 @@ impl SongFolder {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Collection {
     song_folders: Vec<SongFolder>,
+    active_queue: VecDeque<Song>,
 }
 
 impl Collection {
@@ -39,7 +42,24 @@ impl Collection {
             .map(|root_dir| SongFolder::new(root_dir))
             .collect();
 
-        Collection { song_folders }
+        Collection { song_folders, active_queue: VecDeque::new() }
+    }
+
+    pub fn add_to_queue(&mut self, song_file_path: String) {
+        let target_song: Song = self.get_all_songs()
+            .into_iter()
+            .find(|song| song.file_path == song_file_path)
+            .unwrap();
+        self.active_queue.push_back(target_song);
+    }
+
+    pub fn get_queue(&self) -> Vec<Song> {
+        let res: Vec<Song> = self.active_queue.clone().into();
+        res
+    }
+
+    pub fn queue_pop(&self) -> Option<Song> {
+        self.active_queue.clone().pop_front()
     }
 
     pub fn filter_songs_by_name_ignore_case(&self, song_name: String) -> Vec<Song> {

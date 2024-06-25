@@ -17,7 +17,10 @@ fn main() {
         .manage(app)
         .invoke_handler(tauri::generate_handler![
             filter_songs_by_title,
-            get_all_songs
+            get_all_songs,
+            get_queue,
+            add_to_queue,
+            queue_pop
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -31,4 +34,20 @@ fn filter_songs_by_title(title_filter: String, state: State<App>) -> Vec<Song> {
 #[tauri::command(async)]
 fn get_all_songs(state: State<App>) -> Vec<Song> {
     state.get_all_songs()
+}
+
+#[tauri::command(async)]
+fn get_queue(state: State<App>) -> Vec<Song> {
+    state.get_queue()
+}
+
+#[tauri::command(async)]
+fn add_to_queue(state: State<App>, song_to_add_path: String) -> Vec<Song> {
+    state.collection.lock().unwrap().add_to_queue(song_to_add_path);
+    state.collection.lock().unwrap().get_queue()
+}
+
+#[tauri::command(async)]
+fn queue_pop(state: State<App>) -> Option<Song> {
+    state.collection.lock().unwrap().queue_pop()
 }

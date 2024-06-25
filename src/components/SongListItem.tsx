@@ -1,15 +1,19 @@
 import { useState } from "react";
+import { add_to_queue } from "../data/importer";
+import { Song } from "../data/types";
 
 export interface SongListItemProps {
   albumName: string;
   artistName: string;
   songName: string;
+  songFilePath: string;
   onClick: () => void;
   isPlaying: boolean;
+  onUpdateQueue: (newQueue: Song[]) => void;
 }
 
 export default function SongListItem(
-  { albumName, artistName, songName, onClick, isPlaying }: SongListItemProps,
+  { albumName, artistName, songName, songFilePath, onClick, isPlaying, onUpdateQueue }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
@@ -24,6 +28,13 @@ export default function SongListItem(
           : "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 items-center")}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onDoubleClick={() => {
+        add_to_queue(songFilePath)
+          .then(queue => {
+            onUpdateQueue(queue)
+          })
+          .catch(err => console.log(err));
+      }}
     >
       {/* <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={songName}>{songName}</p> */}
       <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink flex flex-row items-center">

@@ -14,3 +14,17 @@ export const get_all_songs = async () => {
     .then(songs => songs.map(song => tauriSongToInternalSong(song)))
     .catch(err => Promise.reject(err));
 };
+
+export const get_queue = async () => {
+  return invoke<TauriSongResponse[]>("get_queue", {})
+    .then(songs => songs.map(song => tauriSongToInternalSong(song)))
+    .catch(err => Promise.reject(err))
+};
+
+export const add_to_queue = async (song_to_add_path: string) => {
+  return invoke<TauriSongResponse[]>("add_to_queue", {
+    songToAddPath: song_to_add_path
+  })
+    .then(newQueue => newQueue.map(song => tauriSongToInternalSong(song)))
+    .catch(err => Promise.reject(err));
+}

@@ -4,11 +4,12 @@ import SongListItem from "./SongListItem";
 export interface SongListProps {
   songList: Song[];
   onSongClick: (song: Song) => void;
+  onUpdateQueue: (queue: Song[]) => void;
   currPlayingSong: Song | null;
 }
 
 export default function SongList(
-  { songList, onSongClick, currPlayingSong }: SongListProps,
+  { songList, onSongClick, currPlayingSong, onUpdateQueue }: SongListProps,
 ) {
   return (
     <div className="flex flex-col h-full w-full basis-full overflow-auto">
@@ -26,18 +27,18 @@ export default function SongList(
         </p>
       </div>
       {songList.map(song => (
-        <>
-          <SongListItem
-            key={song.filePath}
-            songName={song.tags.title}
-            albumName={song.tags.album}
-            artistName={song.tags.artist}
-            onClick={() => onSongClick(song)}
-            isPlaying={currPlayingSong
-              ? currPlayingSong.filePath === song.filePath
-              : false}
-          />
-        </>
+        <SongListItem
+          key={song.filePath}
+          songName={song.tags.title}
+          albumName={song.tags.album}
+          artistName={song.tags.artist}
+          songFilePath={song.filePath}
+          onClick={() => onSongClick(song)}
+          isPlaying={currPlayingSong
+            ? currPlayingSong.filePath === song.filePath
+            : false}
+          onUpdateQueue={onUpdateQueue}
+        />
       ))}
     </div>
   );
