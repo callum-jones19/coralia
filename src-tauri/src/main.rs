@@ -11,7 +11,7 @@ mod data;
 mod song;
 
 fn main() {
-    let app = App::new(vec![String::from("C:/Users/Callum/Music")]);
+    let app = App::new(vec![String::from("/home/callumjones/Music")]);
 
     tauri::Builder::default()
         .manage(app)

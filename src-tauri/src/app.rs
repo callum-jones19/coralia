@@ -19,7 +19,7 @@ impl App {
     }
 
     pub fn get_all_songs(&self) -> Vec<Song> {
-      self.collection.lock().unwrap().get_all_songs()
+      self.collection.lock().unwrap().get_all_songs().clone()
     }
 
     pub fn get_queue(&self) -> Vec<Song> {

@@ -63,4 +63,10 @@ impl Song {
             tags,
         }
     }
+
+    pub fn from_file(song_file_path: String) -> Result<Self, String> {
+        let song_tags = MusicTags::read_from_file(&song_file_path)?;
+
+        return Ok(Self::new(song_file_path, song_tags));
+    }
 }
