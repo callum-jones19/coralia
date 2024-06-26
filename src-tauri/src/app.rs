@@ -25,12 +25,4 @@ impl App {
     pub fn get_queue(&self) -> Vec<Song> {
         self.collection.lock().unwrap().get_queue()
     }
-
-    pub fn add_to_queue(&mut self, song_to_add: String) {
-        self.collection.lock().unwrap().add_to_queue(song_to_add)
-    }
-
-    pub fn queue_pop(&self) -> Option<Song> {
-        self.collection.lock().unwrap().queue_pop()
-    }
 }

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
-import { filter_songs_by_title, get_all_songs, get_queue } from "../data/importer";
+import { filter_songs_by_title } from "../data/importer";
 import { MusicTags, Song } from "../data/types";
 
 // FIXME consolidate music data into a single
@@ -18,6 +18,9 @@ export interface HomeScreenProps {
   musicTags: MusicTags | null;
   startPlaying: () => void;
   currentSong: Song | null;
+  queue: Song[];
+  onQueueAdd: (songToAddPath: string) => void;
+  songs: Song[];
 }
 
 export default function HomeScreen(
@@ -33,22 +36,13 @@ export default function HomeScreen(
     musicTags,
     startPlaying,
     currentSong,
+    queue,
+    onQueueAdd,
+    songs
   }: HomeScreenProps,
 ) {
 
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [queue, setQueue] = useState<Song[]>([]);
-
-  useEffect(() => {
-    get_all_songs()
-      .then(songs => setSongs(songs))
-      .catch(err => console.log(`Error on initial load of songs in HomeScreen: ${err}`))
-
-    get_queue()
-      .then(queue => setQueue(queue))
-      .catch(err => console.log(err))
-
-  }, []);
+  const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
 
   return (
     <div className="h-full flex flex-col">
@@ -57,7 +51,7 @@ export default function HomeScreen(
         {/* <MusicGrid changeAudioSrc={changeAudioSrc} /> */}
         <div className="basis-full flex-grow-0 min-w-0 relative">
           <SongList
-            songList={songs}
+            songList={filteredSongs.length === 0 ? songs : filteredSongs}
             onSongClick={s => {
               if (s === currentSong) {
                 toggleAudioPlaying();
@@ -67,20 +61,16 @@ export default function HomeScreen(
               }
             }}
             currPlayingSong={currentSong}
-            onUpdateQueue={queue => setQueue(queue)}
+            onUpdateQueue={onQueueAdd}
           />
           <input
             className="p-4 absolute bottom-4 right-8 rounded-lg shadow-md"
             placeholder="song title filter"
             onChange={e => {
-              if (e.target.value === '') {
-                get_all_songs()
-                  .then(songs => setSongs(songs))
+              if (e.target.value !== '') {
+                filter_songs_by_title(e.target.value)
+                  .then(filtered_songs => setFilteredSongs(filtered_songs))
                   .catch(err => console.log(err));
-              } else {
-              filter_songs_by_title(e.target.value)
-                .then(filtered_songs => setSongs(filtered_songs))
-                .catch(err => console.log(err));
               }
             }}
           />

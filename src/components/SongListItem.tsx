@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { add_to_queue } from "../data/importer";
-import { Song } from "../data/types";
 
 export interface SongListItemProps {
   albumName: string;
@@ -9,7 +7,7 @@ export interface SongListItemProps {
   songFilePath: string;
   onClick: () => void;
   isPlaying: boolean;
-  onUpdateQueue: (newQueue: Song[]) => void;
+  onUpdateQueue: (newSongPath: string) => void;
 }
 
 export default function SongListItem(
@@ -29,11 +27,7 @@ export default function SongListItem(
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onDoubleClick={() => {
-        add_to_queue(songFilePath)
-          .then(queue => {
-            onUpdateQueue(queue)
-          })
-          .catch(err => console.log(err));
+        onUpdateQueue(songFilePath)
       }}
     >
       {/* <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={songName}>{songName}</p> */}

@@ -4,7 +4,7 @@ import SongListItem from "./SongListItem";
 export interface SongListProps {
   songList: Song[];
   onSongClick: (song: Song) => void;
-  onUpdateQueue: (queue: Song[]) => void;
+  onUpdateQueue: (newSongPath: string) => void;
   currPlayingSong: Song | null;
 }
 

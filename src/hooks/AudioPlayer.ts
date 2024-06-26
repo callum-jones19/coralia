@@ -3,10 +3,12 @@ import {
   MutableRefObject,
   SyntheticEvent,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
 import { Song } from "../data/types";
+import { addToBackendQueue, clearBackendQueue, get_all_songs, get_queue, popBackendQueue } from "../data/importer";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,
@@ -20,6 +22,15 @@ export const useAudio = (
   const [songDuration, setSongDuration] = useState<number>(0);
   const [volume, setVolume] = useState<number>(INIT_VOL);
   const [currSong, setCurrSong] = useState<Song | null>(null);
+
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [queue, setQueue] = useState<Song[]>([]);
+
+  useEffect(() => {
+    get_all_songs()
+      .then(songs => setSongs(songs))
+      .catch(err => console.log(err))
+  })
 
   const handleDurationChange = (e: SyntheticEvent<HTMLAudioElement>) => {
     setSongDuration(e.currentTarget.duration);
@@ -103,6 +114,35 @@ export const useAudio = (
     setSongPos(newProgress);
   };
 
+  const addToQueue = (songPath: string) => {
+    addToBackendQueue(songPath)
+      .then(newQueue => {
+        setQueue(newQueue);
+      })
+      .catch(err => {
+        console.log(err);
+        return null;
+      });
+  }
+
+  const playNextInQueue = () => {
+    popBackendQueue()
+      .then(maybeSong => {
+          changeAudioSrc(maybeSong);
+          console.log(maybeSong);
+          return get_queue();
+      })
+      .then(newQueue => setQueue(() => [...newQueue]))
+      .then(() => console.log(queue))
+      .catch(err => console.log(err));
+  }
+
+  const clearQueue = () => {
+    clearBackendQueue()
+      .then(() => setQueue([]))
+      .catch(err => console.log(err));
+  }
+
   const changeAudioSrc = (song: Song) => {
     if (!soundRef.current) return;
 
@@ -126,7 +166,6 @@ export const useAudio = (
     toggleAudioPlaying,
     updateVolume,
     updateProgress,
-    changeAudioSrc,
     isPlaying,
     songDuration,
     songPos,
@@ -135,5 +174,10 @@ export const useAudio = (
     handleLoadedData,
     startPlaying,
     stopPlaying,
+    addToQueue,
+    playNextInQueue,
+    songs,
+    queue,
+    clearQueue
   };
 };

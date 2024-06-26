@@ -9,7 +9,6 @@ export default function App() {
 
   const {
     toggleAudioPlaying,
-    changeAudioSrc,
     isPlaying,
     songDuration,
     songPos,
@@ -21,6 +20,11 @@ export default function App() {
     startPlaying,
     stopPlaying,
     currSong,
+    addToQueue,
+    playNextInQueue,
+    songs,
+    queue,
+    clearQueue
   } = useAudio(audioRef);
 
   return (
@@ -38,7 +42,6 @@ export default function App() {
             path="/"
             element={
               <HomeScreen
-                changeAudioSrc={changeAudioSrc}
                 toggleAudioPlaying={toggleAudioPlaying}
                 isPlaying={isPlaying}
                 setSongPos={updateProgress}
@@ -49,6 +52,14 @@ export default function App() {
                 startPlaying={startPlaying}
                 musicTags={currSong ? currSong.tags : null}
                 currentSong={currSong}
+                queue={queue}
+                changeAudioSrc={tmp => {
+                  clearQueue();
+                  addToQueue(tmp.filePath);
+                  playNextInQueue();
+                }}
+                onQueueAdd={addToQueue}
+                songs={songs}
               />
             }
           />

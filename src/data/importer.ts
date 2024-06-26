@@ -21,10 +21,28 @@ export const get_queue = async () => {
     .catch(err => Promise.reject(err))
 };
 
-export const add_to_queue = async (song_to_add_path: string) => {
+export const addToBackendQueue = async (song_to_add_path: string) => {
   return invoke<TauriSongResponse[]>("add_to_queue", {
     songToAddPath: song_to_add_path
   })
     .then(newQueue => newQueue.map(song => tauriSongToInternalSong(song)))
+    .catch(err => Promise.reject(err));
+};
+
+export const popBackendQueue = async () => {
+  return invoke<TauriSongResponse | undefined>("queue_pop", {})
+    .then(maybe_song => {
+      if (maybe_song) {
+        return tauriSongToInternalSong(maybe_song)
+      } else {
+        return Promise.reject("Tmp");
+      }
+    })
+    .catch(err => Promise.reject(err));
+};
+
+export const clearBackendQueue = async () => {
+  return invoke("clear_queue", {})
+    .then(() => Promise.resolve())
     .catch(err => Promise.reject(err));
 }

@@ -11,8 +11,8 @@ export default function SideBar({ queueSongs }: SideBarProps) {
       <div className="flex flex-col gap-3 justify-between h-full pt-3 pb-3">
         <li className="flex flex-col gap-3 text-white">
           {queueSongs.length === 0 && <ul>Empty queue</ul>}
-          {queueSongs.map(song =>
-            <ul key={song.filePath}>{song.tags.title}</ul>
+          {queueSongs.map((song, index) =>
+            <ul key={`${song.filePath}-${index}`}>{song.tags.title}</ul>
           )}
         </li>
         <Link

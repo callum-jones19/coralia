@@ -45,8 +45,12 @@ impl Collection {
         res
     }
 
-    pub fn queue_pop(&self) -> Option<Song> {
-        self.active_queue.clone().pop_front()
+    pub fn queue_pop(&mut self) -> Option<Song> {
+        self.active_queue.pop_front()
+    }
+
+    pub fn empty_queue(&mut self) {
+        self.active_queue.clear();
     }
 
     pub fn filter_songs_by_name_ignore_case(&self, song_name: String) -> Vec<Song> {
