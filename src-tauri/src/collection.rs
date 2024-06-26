@@ -7,7 +7,7 @@ use crate::{
     song::Song,
 };
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Collection {
     scanned_songs: Vec<Song>,
     collection_folders: Vec<String>,
