@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 
 export interface MusicFooterProps {
   currSongName: string;
