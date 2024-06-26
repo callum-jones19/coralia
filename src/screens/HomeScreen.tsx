@@ -21,6 +21,7 @@ export interface HomeScreenProps {
   queue: Song[];
   onQueueAdd: (songToAddPath: string) => void;
   songs: Song[];
+  onSkipSong: () => void;
 }
 
 export default function HomeScreen(
@@ -38,6 +39,7 @@ export default function HomeScreen(
     currentSong,
     queue,
     onQueueAdd,
+    onSkipSong,
     songs
   }: HomeScreenProps,
 ) {
@@ -86,6 +88,7 @@ export default function HomeScreen(
         songDuration={songDuration}
         songPos={songPos}
         volume={volume}
+        onSkipSong={onSkipSong}
       />
     </div>
   );

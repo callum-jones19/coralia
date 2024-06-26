@@ -61,6 +61,7 @@ export default function App() {
                 }}
                 onQueueAdd={addToQueue}
                 songs={songs}
+                onSkipSong={playNextInQueue}
               />
             }
           />

@@ -10,6 +10,7 @@ export interface MusicFooterProps {
   songDuration: number;
   volume: number;
   setVolume: (newVol: number) => void;
+  onSkipSong: () => void;
 }
 
 // TODO send down the isReady variable, so we can make things like the song
@@ -26,6 +27,7 @@ export default function MusicFooter(
     volume,
     setVolume,
     songPos,
+    onSkipSong
   }: MusicFooterProps,
 ) {
   const [seekPos, setSeekPos] = useState<number>(0);
@@ -88,7 +90,7 @@ export default function MusicFooter(
             </button>
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={() => setSongPos(songDuration)}
+              onClick={onSkipSong}
             >
               &gt;
             </button>
