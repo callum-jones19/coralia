@@ -34,6 +34,13 @@ export default function SongList(
           artistName={song.tags.artist}
           onClick={() => {
             onSongClick(song);
+            for (let i = index; i < songList.length; i++) {
+              console.log(i);
+              console.log(songList[i]);
+              if (songList[i] !== undefined) {
+                onUpdateQueue(songList[i]);
+              }
+            }
           }}
           isPlaying={currPlayingSong
             ? currPlayingSong.filePath === song.filePath

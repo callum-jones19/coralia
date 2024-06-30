@@ -115,7 +115,7 @@ export const useAudio = (
   };
 
   const addToQueue = (song: Song) => {
-    setQueue(() => [...queue, song])
+    setQueue(oldQueue => [...oldQueue, song])
   }
 
   const playNextInQueue = () => {
