@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { Song } from "../data/types";
-import { addToBackendQueue, clearBackendQueue, get_all_songs, get_queue, popBackendQueue } from "../data/importer";
+import {  get_all_songs } from "../data/importer";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,
@@ -30,7 +30,7 @@ export const useAudio = (
     get_all_songs()
       .then(songs => setSongs(songs))
       .catch(err => console.log(err))
-  })
+  }, []);
 
   const handleDurationChange = (e: SyntheticEvent<HTMLAudioElement>) => {
     setSongDuration(e.currentTarget.duration);
@@ -114,33 +114,39 @@ export const useAudio = (
     setSongPos(newProgress);
   };
 
-  const addToQueue = (songPath: string) => {
-    addToBackendQueue(songPath)
-      .then(newQueue => {
-        setQueue(newQueue);
-      })
-      .catch(err => {
-        console.log(err);
-        return null;
-      });
+  const addToQueue = (song: Song) => {
+    setQueue(() => [...queue, song])
   }
 
   const playNextInQueue = () => {
-    popBackendQueue()
-      .then(maybeSong => {
-          changeAudioSrc(maybeSong);
-          console.log(maybeSong);
-          return get_queue();
-      })
-      .then(newQueue => setQueue(() => [...newQueue]))
-      .then(() => console.log(queue))
-      .catch(err => console.log(err));
+    if (queue.length === 0) return;
+    console.log(queue.toString());
+    const newSong = queue[0];
+    setQueue(() => queue.slice(1));
+    changeAudioSrc(newSong);
+    startPlaying();
+    // popBackendQueue()
+    //   .then(maybeSong => {
+    //       changeAudioSrc(maybeSong);
+    //       startPlaying();
+    //       return get_queue();
+    //   })
+    //   .then(newQueue => setQueue(() => [...newQueue]))
+    //   .then(() => console.log(queue))
+    //   .catch(err => console.log(err));
   }
 
   const clearQueue = () => {
-    clearBackendQueue()
-      .then(() => setQueue([]))
-      .catch(err => console.log(err));
+    setQueue(() => []);
+    // clearBackendQueue()
+    //   .then(() => setQueue([]))
+    //   .catch(err => console.log(err));
+  }
+
+  const resetQueueAndPlaySong = (song: Song) => {
+    setQueue([]);
+    changeAudioSrc(song);
+    startPlaying();
   }
 
   const changeAudioSrc = (song: Song) => {
@@ -178,6 +184,7 @@ export const useAudio = (
     playNextInQueue,
     songs,
     queue,
-    clearQueue
+    clearQueue,
+    resetQueueAndPlaySong
   };
 };

@@ -4,14 +4,13 @@ export interface SongListItemProps {
   albumName: string;
   artistName: string;
   songName: string;
-  songFilePath: string;
   onClick: () => void;
   isPlaying: boolean;
-  onUpdateQueue: (newSongPath: string) => void;
+  onDoubleClick: () => void;
 }
 
 export default function SongListItem(
-  { albumName, artistName, songName, songFilePath, onClick, isPlaying, onUpdateQueue }: SongListItemProps,
+  { albumName, artistName, songName, onClick, isPlaying, onDoubleClick }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
@@ -26,9 +25,7 @@ export default function SongListItem(
           : "flex-grow-0 p-2 flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 items-center")}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      onDoubleClick={() => {
-        onUpdateQueue(songFilePath)
-      }}
+      onDoubleClick={onDoubleClick}
     >
       {/* <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={songName}>{songName}</p> */}
       <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink flex flex-row items-center">

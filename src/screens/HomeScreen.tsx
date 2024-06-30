@@ -7,7 +7,7 @@ import { MusicTags, Song } from "../data/types";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
-  changeAudioSrc: (song: Song) => void;
+  onClickSong: (song: Song) => void;
   toggleAudioPlaying: () => void;
   setSongPos: (newPos: number) => void;
   songPos: number;
@@ -19,7 +19,7 @@ export interface HomeScreenProps {
   startPlaying: () => void;
   currentSong: Song | null;
   queue: Song[];
-  onQueueAdd: (songToAddPath: string) => void;
+  onQueueAdd: (songToAdd: Song) => void;
   songs: Song[];
   onSkipSong: () => void;
 }
@@ -33,7 +33,7 @@ export default function HomeScreen(
     songDuration,
     songPos,
     volume,
-    changeAudioSrc,
+    onClickSong,
     musicTags,
     startPlaying,
     currentSong,
@@ -50,17 +50,11 @@ export default function HomeScreen(
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
         <SideBar queueSongs={queue} />
-        {/* <MusicGrid changeAudioSrc={changeAudioSrc} /> */}
         <div className="basis-full flex-grow-0 min-w-0 relative">
           <SongList
             songList={filteredSongs.length === 0 ? songs : filteredSongs}
             onSongClick={s => {
-              if (s === currentSong) {
-                toggleAudioPlaying();
-              } else {
-                changeAudioSrc(s);
-                startPlaying();
-              }
+              onClickSong(s);
             }}
             currPlayingSong={currentSong}
             onUpdateQueue={onQueueAdd}
@@ -69,10 +63,13 @@ export default function HomeScreen(
             className="p-4 absolute bottom-4 right-8 rounded-lg shadow-md"
             placeholder="song title filter"
             onChange={e => {
+              console.log(e.target.value);
               if (e.target.value !== '') {
                 filter_songs_by_title(e.target.value)
                   .then(filtered_songs => setFilteredSongs(filtered_songs))
                   .catch(err => console.log(err));
+              } else {
+                setFilteredSongs([]);
               }
             }}
           />

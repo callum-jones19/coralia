@@ -4,7 +4,7 @@ import SongListItem from "./SongListItem";
 export interface SongListProps {
   songList: Song[];
   onSongClick: (song: Song) => void;
-  onUpdateQueue: (newSongPath: string) => void;
+  onUpdateQueue: (newSong: Song) => void;
   currPlayingSong: Song | null;
 }
 
@@ -26,18 +26,19 @@ export default function SongList(
           Artist Name
         </p>
       </div>
-      {songList.map(song => (
+      {songList.map((song, index) => (
         <SongListItem
           key={song.filePath}
           songName={song.tags.title}
           albumName={song.tags.album}
           artistName={song.tags.artist}
-          songFilePath={song.filePath}
-          onClick={() => onSongClick(song)}
+          onClick={() => {
+            onSongClick(song);
+          }}
           isPlaying={currPlayingSong
             ? currPlayingSong.filePath === song.filePath
             : false}
-          onUpdateQueue={onUpdateQueue}
+          onDoubleClick={() => onUpdateQueue(song)}
         />
       ))}
     </div>

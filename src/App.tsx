@@ -24,7 +24,7 @@ export default function App() {
     playNextInQueue,
     songs,
     queue,
-    clearQueue
+    resetQueueAndPlaySong
   } = useAudio(audioRef);
 
   return (
@@ -54,10 +54,8 @@ export default function App() {
                 musicTags={currSong ? currSong.tags : null}
                 currentSong={currSong}
                 queue={queue}
-                changeAudioSrc={tmp => {
-                  clearQueue();
-                  addToQueue(tmp.filePath);
-                  playNextInQueue();
+                onClickSong={clickedSong => {
+                  resetQueueAndPlaySong(clickedSong);
                 }}
                 onQueueAdd={addToQueue}
                 songs={songs}
