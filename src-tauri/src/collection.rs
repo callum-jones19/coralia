@@ -11,7 +11,6 @@ use crate::{
 pub struct Collection {
     scanned_songs: Vec<Song>,
     collection_folders: Vec<String>,
-    active_queue: VecDeque<Song>,
 }
 
 impl Collection {
@@ -28,29 +27,7 @@ impl Collection {
             }
         }
 
-        Collection { scanned_songs: all_songs, collection_folders: root_dirs, active_queue: VecDeque::new() }
-    }
-
-    pub fn add_to_queue(&mut self, song_file_path: String) {
-        let target_song: Song = self.scanned_songs
-            .iter()
-            .find(|song| song.file_path == song_file_path)
-            .unwrap()
-            .clone();
-        self.active_queue.push_back(target_song);
-    }
-
-    pub fn get_queue(&self) -> Vec<Song> {
-        let res: Vec<Song> = self.active_queue.clone().into();
-        res
-    }
-
-    pub fn queue_pop(&mut self) -> Option<Song> {
-        self.active_queue.pop_front()
-    }
-
-    pub fn empty_queue(&mut self) {
-        self.active_queue.clear();
+        Collection { scanned_songs: all_songs, collection_folders: root_dirs }
     }
 
     pub fn filter_songs_by_name_ignore_case(&self, song_name: String) -> Vec<Song> {
