@@ -157,7 +157,7 @@ export const useAudio = (
     soundRef.current.src = convertFileSrc(song.filePath);
     soundRef.current.load();
     setSongPos(0);
-    setSongDuration(soundRef.current.duration);
+    // setSongDuration(soundRef.current.duration);
     setCurrSong(song);
 
     if (isPlaying) {
