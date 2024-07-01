@@ -11,7 +11,7 @@ export default function SideBar({ queueSongs, currSongAlbumUri }: SideBarProps) 
   const tmpSrc = currSongAlbumUri ? convertFileSrc(currSongAlbumUri) : undefined;
 
   return (
-    <div className="w-72 bg-gray-950 h-full flex-grow-0 flex-shrink-0">
+    <div className="w-72 bg-gray-950 h-full flex-grow-0 flex-shrink-0 pr-2 pl-2">
       <div className="flex flex-col gap-3 justify-between h-full pt-3 pb-3">
         <li className="flex flex-col gap-3 text-white flex-grow overflow-auto">
           {queueSongs.length === 0 && <ul>Empty queue</ul>}
@@ -31,11 +31,11 @@ export default function SideBar({ queueSongs, currSongAlbumUri }: SideBarProps) 
             <img
               alt="Currently playing song album art"
               src={tmpSrc}
-              className="w-full aspect-square rounded-md p-2"
+              className="w-full aspect-square rounded-lg"
             />
           }
           <Link
-            className="bg-white ml-2 mr-2 p-1 text-center rounded-sm"
+            className="bg-white p-1 text-center rounded-sm"
             to={"/settings"}
           >
             Settings
