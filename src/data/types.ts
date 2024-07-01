@@ -3,7 +3,7 @@ export interface MusicTags {
   artist: string;
   album: string;
   genre: string;
-  encodedCoverArt: string;
+  encodedCoverArt: string | undefined;
 }
 
 export interface Song {
@@ -20,7 +20,7 @@ export interface TauriMusicTags {
   artist: string;
   album: string;
   genre: string;
-  cached_artwork_uri: string;
+  cached_artwork_uri: string | undefined;
 }
 
 export interface TauriSongResponse {

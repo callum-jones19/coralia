@@ -1,16 +1,15 @@
 import { useState } from "react";
+import { Song } from "../data/types";
 
 export interface SongListItemProps {
-  albumName: string;
-  artistName: string;
-  songName: string;
+  song: Song;
   onClick: () => void;
   isPlaying: boolean;
   onDoubleClick: () => void;
 }
 
 export default function SongListItem(
-  { albumName, artistName, songName, onClick, isPlaying, onDoubleClick }:
+  { song, onClick, isPlaying, onDoubleClick }:
     SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
@@ -38,22 +37,22 @@ export default function SongListItem(
         </button>
         <p
           className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink"
-          title={songName}
+          title={song.tags.title}
         >
-          {songName}
+          {song.tags.title}
         </p>
       </div>
       <p
         className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink"
-        title={albumName}
+        title={song.tags.album}
       >
-        {albumName}
+        {song.tags.album}
       </p>
       <p
         className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink"
-        title={artistName}
+        title={song.tags.artist}
       >
-        {artistName}
+        {song.tags.artist}
       </p>
     </div>
   );

@@ -29,9 +29,7 @@ export default function SongList(
       {songList.map((song, index) => (
         <SongListItem
           key={song.filePath}
-          songName={song.tags.title}
-          albumName={song.tags.album}
-          artistName={song.tags.artist}
+          song={song}
           onClick={() => {
             onSongClick(song);
             for (let i = index; i < songList.length; i++) {
