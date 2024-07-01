@@ -24,7 +24,7 @@ export default function App() {
     playNextInQueue,
     songs,
     queue,
-    resetQueueAndPlaySong
+    resetQueueAndPlaySong,
   } = useAudio(audioRef);
 
   return (

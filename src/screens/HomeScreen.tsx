@@ -40,10 +40,9 @@ export default function HomeScreen(
     queue,
     onQueueAdd,
     onSkipSong,
-    songs
+    songs,
   }: HomeScreenProps,
 ) {
-
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
 
   return (
@@ -64,7 +63,7 @@ export default function HomeScreen(
             placeholder="song title filter"
             onChange={e => {
               console.log(e.target.value);
-              if (e.target.value !== '') {
+              if (e.target.value !== "") {
                 filter_songs_by_title(e.target.value)
                   .then(filtered_songs => setFilteredSongs(filtered_songs))
                   .catch(err => console.log(err));

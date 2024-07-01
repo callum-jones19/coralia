@@ -10,7 +10,8 @@ export interface SongListItemProps {
 }
 
 export default function SongListItem(
-  { albumName, artistName, songName, onClick, isPlaying, onDoubleClick }: SongListItemProps,
+  { albumName, artistName, songName, onClick, isPlaying, onDoubleClick }:
+    SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
 

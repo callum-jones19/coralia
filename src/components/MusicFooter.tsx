@@ -27,7 +27,7 @@ export default function MusicFooter(
     volume,
     setVolume,
     songPos,
-    onSkipSong
+    onSkipSong,
   }: MusicFooterProps,
 ) {
   const [seekPos, setSeekPos] = useState<number>(0);

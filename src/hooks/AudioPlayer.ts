@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { get_all_songs } from "../data/importer";
 import { Song } from "../data/types";
-import {  get_all_songs } from "../data/importer";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,
@@ -29,7 +29,7 @@ export const useAudio = (
   useEffect(() => {
     get_all_songs()
       .then(songs => setSongs(songs))
-      .catch(err => console.log(err))
+      .catch(err => console.log(err));
   }, []);
 
   const handleDurationChange = (e: SyntheticEvent<HTMLAudioElement>) => {
@@ -115,8 +115,8 @@ export const useAudio = (
   };
 
   const addToQueue = (song: Song) => {
-    setQueue(oldQueue => [...oldQueue, song])
-  }
+    setQueue(oldQueue => [...oldQueue, song]);
+  };
 
   const playNextInQueue = () => {
     if (queue.length === 0) return;
@@ -134,20 +134,20 @@ export const useAudio = (
     //   .then(newQueue => setQueue(() => [...newQueue]))
     //   .then(() => console.log(queue))
     //   .catch(err => console.log(err));
-  }
+  };
 
   const clearQueue = () => {
     setQueue(() => []);
     // clearBackendQueue()
     //   .then(() => setQueue([]))
     //   .catch(err => console.log(err));
-  }
+  };
 
   const resetQueueAndPlaySong = (song: Song) => {
     setQueue([]);
     changeAudioSrc(song);
     startPlaying();
-  }
+  };
 
   const changeAudioSrc = (song: Song) => {
     if (!soundRef.current) return;
@@ -185,6 +185,6 @@ export const useAudio = (
     songs,
     queue,
     clearQueue,
-    resetQueueAndPlaySong
+    resetQueueAndPlaySong,
   };
 };
