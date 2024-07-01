@@ -35,7 +35,8 @@ export default function App() {
         onPause={stopPlaying}
         onDurationChange={handleDurationChange}
         onLoadedData={handleLoadedData}
-        onEnded={playNextInQueue}
+        onEnded={playNextInQueue
+}
       />
       <BrowserRouter>
         <Routes>

@@ -15,9 +15,16 @@ export default function SideBar({ queueSongs, currSongAlbumUri }: SideBarProps) 
       <div className="flex flex-col gap-3 justify-between h-full pt-3 pb-3">
         <li className="flex flex-col gap-3 text-white flex-grow overflow-auto">
           {queueSongs.length === 0 && <ul>Empty queue</ul>}
-          {queueSongs.map((song, index) => (
-            <ul key={`${song.filePath}-${index}`}>{song.tags.title}</ul>
-          ))}
+          {queueSongs.map((song, index) => {
+            const tmp = song.tags.encodedCoverArt ? convertFileSrc(song.tags.encodedCoverArt) : undefined;
+
+            return (
+              <ul key={`${song.filePath}-${index}`} className="flex flex-row gap-2 w-full">
+                <img alt="album art" src={tmp} className="w-6 aspect-square" />
+                <p>{song.tags.title}</p>
+              </ul>
+            );
+          })}
         </li>
         <div className="flex flex-col">
           {tmpSrc &&

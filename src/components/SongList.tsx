@@ -32,7 +32,7 @@ export default function SongList(
           song={song}
           onClick={() => {
             onSongClick(song);
-            for (let i = index; i < songList.length; i++) {
+            for (let i = index + 1; i < songList.length; i++) {
               console.log(i);
               console.log(songList[i]);
               if (songList[i] !== undefined) {
