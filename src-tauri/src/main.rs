@@ -17,7 +17,8 @@ fn main() {
         .manage(app)
         .invoke_handler(tauri::generate_handler![
             filter_songs_by_title,
-            get_all_songs
+            get_all_songs,
+            filter_songs_by_album
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -27,6 +28,12 @@ fn main() {
 fn filter_songs_by_title(title_filter: String, state: State<App>) -> Vec<Song> {
     println!("1");
     state.filter_songs_by_title(title_filter)
+}
+
+#[tauri::command(async)]
+fn filter_songs_by_album(album: String, state: State<App>) -> Vec<Song> {
+    println!("7");
+    state.filter_songs_by_album(album)
 }
 
 #[tauri::command(async)]

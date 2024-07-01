@@ -23,6 +23,13 @@ impl App {
             .filter_songs_by_name_ignore_case(song_name)
     }
 
+    pub fn filter_songs_by_album(&self, album: String) -> Vec<Song> {
+        self.collection
+            .lock()
+            .unwrap()
+            .filter_songs_by_album_ignore_case(album)
+    }
+
     pub fn get_all_songs(&self) -> Vec<Song> {
         self.collection.lock().unwrap().get_all_songs().clone()
     }

@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use serde::{Deserialize, Serialize};
 
 use crate::{data::get_file_paths_in_dir, song::Song};
