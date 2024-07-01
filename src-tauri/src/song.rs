@@ -1,4 +1,5 @@
-use std::fmt::Debug;
+use std::io::{BufWriter, Write};
+use std::{fmt::Debug, fs::File};
 use std::path::Path;
 
 use lofty::prelude::*;
@@ -11,7 +12,7 @@ pub struct MusicTags {
     pub artist: String,
     pub album: String,
     pub genre: String,
-    pub cached_artwork_uri: String,
+    pub cached_artwork_uri: Option<String>,
 }
 
 impl MusicTags {
@@ -39,12 +40,31 @@ impl MusicTags {
             },
         };
 
+        // Deal with the cover art
+        let cover = tag.pictures().first();
+        let mut cached_artwork_uri: Option<String> = None;
+        if let Some(pic) = cover {
+            let sanitised_album_title: String = tag.album().unwrap().to_string().chars().filter(|letter| letter.is_alphabetic() || letter.is_numeric()).collect();
+            let cached_art_file_name = sanitised_album_title + "_" + &tag.year().unwrap_or(0).to_string() + ".jpg";
+            match File::create(&Path::new(&cached_art_file_name)) {
+                Ok(created_file) => {
+                    let mut writer = BufWriter::new(created_file);
+                    writer.write(pic.data()).unwrap();
+                    cached_artwork_uri = Some(cached_art_file_name);
+                },
+                Err(e) => {
+                    println!("Failed to write cached art file for song with name {}", &cached_art_file_name);
+                    println!("ERROR: {}", e.to_string());
+                },
+            }
+        }
+
         Ok(MusicTags {
             title: tag.title().as_deref().unwrap_or("None").to_string(),
             album: tag.album().as_deref().unwrap_or("None").to_string(),
             artist: tag.artist().as_deref().unwrap_or("None").to_string(),
             genre: tag.genre().as_deref().unwrap_or("None").to_string(),
-            cached_artwork_uri: String::from("tmp"),
+            cached_artwork_uri: cached_artwork_uri,
         })
     }
 }

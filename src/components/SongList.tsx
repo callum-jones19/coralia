@@ -14,7 +14,7 @@ export default function SongList(
   return (
     <div className="flex flex-col h-full w-full basis-full overflow-auto scroll-smooth">
       <div
-        className={"flex-grow-0 p-2 h-full flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 text-white font-bold bg-gray-900"}
+        className="flex-grow-0 p-2 basis-auto flex flex-row gap-2 flex-shrink border-b-gray-900 border-b-2 text-white font-bold bg-gray-900"
       >
         <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
           Song Name

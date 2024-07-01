@@ -9,9 +9,10 @@ mod app;
 mod collection;
 mod data;
 mod song;
+mod artwork;
 
 fn main() {
-    let app = App::new(vec![String::from("C:/Users/Callum/Music")]);
+    let app = App::new(vec![String::from("C:/Users/Callum/Music/")]);
 
     tauri::Builder::default()
         .manage(app)
