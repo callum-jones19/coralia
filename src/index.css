@@ -6,6 +6,7 @@ html, body {
   margin: 0px;
   padding: 0px;
   height: 100vh;
+  scrollbar-color: rgb(142, 31, 14) #ffffff00
 }
 
 #root {
