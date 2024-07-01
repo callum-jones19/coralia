@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Song } from "../data/types";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export interface SongListItemProps {
   song: Song;
@@ -13,6 +14,7 @@ export default function SongListItem(
     SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const tmpSrc = song.tags.encodedCoverArt ? convertFileSrc(song.tags.encodedCoverArt) : undefined;
 
   return (
     <div
@@ -28,7 +30,8 @@ export default function SongListItem(
       onDoubleClick={onDoubleClick}
     >
       {/* <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={songName}>{songName}</p> */}
-      <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink flex flex-row items-center">
+      <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink flex flex-row items-center gap-1">
+        <img alt="album art" src={tmpSrc} className="h-10 aspect-square"/>
         <button
           className="mr-2 bg-gray-300 p-2 pt-1 pb-1 rounded-md"
           onClick={onClick}

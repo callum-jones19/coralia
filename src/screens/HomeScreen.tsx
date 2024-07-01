@@ -35,7 +35,6 @@ export default function HomeScreen(
     volume,
     onClickSong,
     musicTags,
-    startPlaying,
     currentSong,
     queue,
     onQueueAdd,
@@ -48,7 +47,7 @@ export default function HomeScreen(
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
-        <SideBar queueSongs={queue} />
+        <SideBar queueSongs={queue} currSongAlbumUri={currentSong?.tags.encodedCoverArt} />
         <div className="basis-full flex-grow-0 min-w-0 relative">
           <SongList
             songList={filteredSongs.length === 0 ? songs : filteredSongs}
