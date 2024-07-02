@@ -25,6 +25,9 @@ export default function SongList(
         <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
           Artist Name
         </p>
+        <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink">
+          Album Artist
+        </p>
       </div>
       {songList.map((song, index) => (
         <SongListItem

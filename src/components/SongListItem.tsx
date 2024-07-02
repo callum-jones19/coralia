@@ -57,6 +57,12 @@ export default function SongListItem(
       >
         {song.tags.artist}
       </p>
+      <p
+        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink"
+        title={song.tags.album_artist}
+      >
+        {song.tags.album_artist}
+      </p>
     </div>
   );
 }

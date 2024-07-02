@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 pub struct MusicTags {
     pub title: String,
     pub artist: String,
+    pub album_artist: String,
     pub album: String,
     pub genre: String,
     pub cached_artwork_uri: Option<String>,
@@ -40,6 +41,10 @@ impl MusicTags {
             },
         };
 
+        let album_artist: Vec<String> = tag.get_strings(&ItemKey::AlbumArtist)
+            .map(|artist| artist.to_string())
+            .collect();
+
         // Deal with the cover art
         // Create the cache folder, if it doesn't exist
         let cached_dir_path = Path::new("C:/Users/Callum/AppData/Roaming/Kleo");
@@ -65,6 +70,7 @@ impl MusicTags {
         Ok(MusicTags {
             title: tag.title().as_deref().unwrap_or("None").to_string(),
             album: tag.album().as_deref().unwrap_or("None").to_string(),
+            album_artist: album_artist.first().unwrap().to_string(),
             artist: tag.artist().as_deref().unwrap_or("None").to_string(),
             genre: tag.genre().as_deref().unwrap_or("None").to_string(),
             cached_artwork_uri: cached_artwork_uri,

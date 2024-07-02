@@ -2,6 +2,7 @@ export interface MusicTags {
   title: string;
   artist: string;
   album: string;
+  album_artist: string;
   genre: string;
   encodedCoverArt: string | undefined;
 }
@@ -19,6 +20,7 @@ export interface TauriMusicTags {
   title: string;
   artist: string;
   album: string;
+  album_artist: string;
   genre: string;
   cached_artwork_uri: string | undefined;
 }
@@ -38,6 +40,7 @@ export const tauriSongToInternalSong = (tauriSong: TauriSongResponse): Song => {
     tags: {
       album: tauriSong.tags.album,
       artist: tauriSong.tags.artist,
+      album_artist: tauriSong.tags.album_artist,
       encodedCoverArt: tauriSong.tags.cached_artwork_uri,
       genre: tauriSong.tags.genre,
       title: tauriSong.tags.title,
