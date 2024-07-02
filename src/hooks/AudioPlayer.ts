@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { get_all_songs } from "../data/importer";
-import { Song } from "../data/types";
+import { get_all_albums, get_all_songs } from "../data/importer";
+import { Album, Song } from "../data/types";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,
@@ -25,10 +25,15 @@ export const useAudio = (
 
   const [songs, setSongs] = useState<Song[]>([]);
   const [queue, setQueue] = useState<Song[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
 
   useEffect(() => {
     get_all_songs()
       .then(songs => setSongs(songs))
+      .catch(err => console.log(err));
+
+    get_all_albums()
+      .then(albums => setAlbums(albums))
       .catch(err => console.log(err));
   }, []);
 
@@ -186,5 +191,6 @@ export const useAudio = (
     queue,
     clearQueue,
     resetQueueAndPlaySong,
+    albums
   };
 };

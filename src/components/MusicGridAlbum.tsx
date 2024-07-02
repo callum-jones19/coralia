@@ -2,7 +2,6 @@ export interface MusicGridAlbumProps {
   artSrc: string;
   title: string;
   artist: string;
-  changeAudioSrc: (newSrc: string) => void;
 }
 
 export default function MusicGridAlbum(

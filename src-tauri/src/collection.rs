@@ -1,6 +1,8 @@
+use std::collections::HashSet;
+
 use serde::{Deserialize, Serialize};
 
-use crate::{data::get_file_paths_in_dir, song::Song};
+use crate::{album::Album, data::get_file_paths_in_dir, song::Song};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Collection {
@@ -53,6 +55,26 @@ impl Collection {
             .collect();
 
         filtered_songs.to_owned()
+    }
+
+    // TODO cache this in RAM
+    pub fn get_all_albums(&self) -> Vec<Album> {
+        // FIXME this won't work if two albums exist with the same name but
+        // different artists
+        let mut res: Vec<Album> = vec![];
+        let mut seen_album_names: HashSet<String> = HashSet::new();
+        for song in &self.scanned_songs {
+            if !seen_album_names.contains(&song.tags.album) {
+                seen_album_names.insert(song.tags.album.clone());
+                let new_album = Album::new(song.tags.album.clone(), song.tags.cached_artwork_uri.clone().unwrap(), song.tags.album_artist.clone());
+                res.push(new_album);
+            }
+        }
+
+        // Sort alphabetically because why not
+        res.sort_by(|a, b| a.title.cmp(&b.title));
+
+        res
     }
 
     pub fn get_all_songs(&self) -> &Vec<Song> {

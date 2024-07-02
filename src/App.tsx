@@ -25,6 +25,7 @@ export default function App() {
     songs,
     queue,
     resetQueueAndPlaySong,
+    albums
   } = useAudio(audioRef);
 
   return (
@@ -61,6 +62,7 @@ export default function App() {
                 onQueueAdd={addToQueue}
                 songs={songs}
                 onSkipSong={playNextInQueue}
+                albums={albums}
               />
             }
           />

@@ -12,6 +12,12 @@ export interface Song {
   tags: MusicTags;
 }
 
+export interface Album {
+  title: string;
+  cached_artwork_uri: string;
+  album_artist: string;
+}
+
 export interface Collection {
   songs: Song[];
 }
@@ -29,6 +35,8 @@ export interface TauriSongResponse {
   file_path: string;
   tags: TauriMusicTags;
 }
+
+export type TauriAlbumResponse = Album;
 
 export interface TauriCollectionResponse {
   songs: TauriSongResponse[];
@@ -74,3 +82,11 @@ export const songsToTauriSongs = (songs: Song[]): TauriSongResponse[] => {
     } as TauriSongResponse;
   });
 };
+
+export const tauriAlbumToInternalAlbum = (album: TauriAlbumResponse): Album => {
+  return {
+    album_artist: album.album_artist,
+    cached_artwork_uri: album.cached_artwork_uri,
+    title: album.title
+  }
+}

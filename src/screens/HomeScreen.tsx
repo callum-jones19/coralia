@@ -3,7 +3,8 @@ import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { filter_songs_by_title } from "../data/importer";
-import { MusicTags, Song } from "../data/types";
+import { Album, MusicTags, Song } from "../data/types";
+import MusicGrid from "../components/MusicGrid";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -22,6 +23,7 @@ export interface HomeScreenProps {
   onQueueAdd: (songToAdd: Song) => void;
   songs: Song[];
   onSkipSong: () => void;
+  albums: Album[];
 }
 
 export default function HomeScreen(
@@ -40,6 +42,7 @@ export default function HomeScreen(
     onQueueAdd,
     onSkipSong,
     songs,
+    albums
   }: HomeScreenProps,
 ) {
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
@@ -48,8 +51,8 @@ export default function HomeScreen(
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
         <SideBar queueSongs={queue} currSongAlbumUri={currentSong?.tags.encodedCoverArt} />
-        <div className="basis-full flex-grow-0 min-w-0 relative">
-          <SongList
+        <div className="basis-full flex-grow-0 min-w-0 relative overflow-auto">
+          {/* <SongList
             songList={filteredSongs.length === 0 ? songs : filteredSongs}
             onSongClick={s => {
               onClickSong(s);
@@ -70,7 +73,8 @@ export default function HomeScreen(
                 setFilteredSongs([]);
               }
             }}
-          />
+          /> */}
+          <MusicGrid albums={albums} />
         </div>
       </div>
       <MusicFooter
