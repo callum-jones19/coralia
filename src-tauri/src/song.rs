@@ -41,11 +41,14 @@ impl MusicTags {
         };
 
         // Deal with the cover art
+        // Create the cache folder, if it doesn't exist
+        let cached_dir_path = Path::new("C:/Users/Callum/AppData/Roaming/Kleo");
+
         let cover = tag.pictures().first();
         let mut cached_artwork_uri: Option<String> = None;
         if let Some(pic) = cover {
             let sanitised_album_title: String = tag.album().unwrap().to_string().chars().filter(|letter| letter.is_alphabetic() || letter.is_numeric()).collect();
-            let cached_art_file_name = sanitised_album_title + "_" + &tag.year().unwrap_or(0).to_string() + ".jpg";
+            let cached_art_file_name = cached_dir_path.join(sanitised_album_title + "_" + &tag.year().unwrap_or(0).to_string() + ".jpg").to_str().unwrap().to_string();
             match File::create(&Path::new(&cached_art_file_name)) {
                 Ok(created_file) => {
                     let mut writer = BufWriter::new(created_file);

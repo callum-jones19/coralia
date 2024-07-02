@@ -26,7 +26,7 @@ export default function SideBar({ queueSongs, currSongAlbumUri }: SideBarProps) 
             );
           })}
         </li>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-3">
           {tmpSrc &&
             <img
               alt="Currently playing song album art"

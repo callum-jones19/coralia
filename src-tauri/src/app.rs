@@ -31,6 +31,8 @@ impl App {
     }
 
     pub fn get_all_songs(&self) -> Vec<Song> {
-        self.collection.lock().unwrap().get_all_songs().clone()
+        let mut res = self.collection.lock().unwrap().get_all_songs().clone();
+        res.sort_by(|a, b| a.tags.album.cmp(&b.tags.album));
+        res
     }
 }
