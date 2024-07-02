@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{borrow::Borrow, collections::HashSet};
 
 use serde::{Deserialize, Serialize};
 
@@ -62,10 +62,10 @@ impl Collection {
         // FIXME this won't work if two albums exist with the same name but
         // different artists
         let mut res: Vec<Album> = vec![];
-        let mut seen_album_names: HashSet<String> = HashSet::new();
+        let mut seen_albums: HashSet<(&str, &str)> = HashSet::new();
         for song in &self.scanned_songs {
-            if !seen_album_names.contains(&song.tags.album) {
-                seen_album_names.insert(song.tags.album.clone());
+            if !seen_albums.contains(&(&song.tags.album, &song.tags.album_artist)) {
+                seen_albums.insert((&song.tags.album, &song.tags.album_artist));
                 let new_album = Album::new(song.tags.album.clone(), song.tags.cached_artwork_uri.clone().unwrap(), song.tags.album_artist.clone());
                 res.push(new_album);
             }
