@@ -6,14 +6,14 @@ use app::App;
 use song::Song;
 use tauri::State;
 
+mod album;
 mod app;
 mod collection;
 mod data;
 mod song;
-mod album;
 
 fn main() {
-    let app = App::new(vec![String::from("C:/Users/Callum/Music/")]);
+    let app = App::new(vec![String::from("/home/callumjones/Music")]);
 
     tauri::Builder::default()
         .manage(app)
@@ -47,6 +47,5 @@ fn get_all_songs(state: State<App>) -> Vec<Song> {
 
 #[tauri::command(async)]
 fn get_all_albums(state: State<App>) -> Vec<Album> {
-
     state.collection.lock().unwrap().get_all_albums()
 }

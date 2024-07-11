@@ -1,10 +1,11 @@
 import { useState } from "react";
 import MusicFooter from "../components/MusicFooter";
+import MusicGrid from "../components/MusicGrid";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { filter_songs_by_title } from "../data/importer";
 import { Album, MusicTags, Song } from "../data/types";
-import MusicGrid from "../components/MusicGrid";
+import AlbumScreen from "./AlbumScreen";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -42,7 +43,7 @@ export default function HomeScreen(
     onQueueAdd,
     onSkipSong,
     songs,
-    albums
+    albums,
   }: HomeScreenProps,
 ) {
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
@@ -50,7 +51,10 @@ export default function HomeScreen(
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
-        <SideBar queueSongs={queue} currSongAlbumUri={currentSong?.tags.encodedCoverArt} />
+        <SideBar
+          queueSongs={queue}
+          currSongAlbumUri={currentSong?.tags.encodedCoverArt}
+        />
         <div className="basis-full flex-grow-0 min-w-0 relative overflow-auto">
           {/* <SongList
             songList={filteredSongs.length === 0 ? songs : filteredSongs}
@@ -74,7 +78,11 @@ export default function HomeScreen(
               }
             }}
           /> */}
-          <MusicGrid albums={albums} />
+          {/* <MusicGrid albums={albums} /> */}
+          <AlbumScreen
+            albumArtUri="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcultfollowing.co.uk%2Fwp-content%2Fuploads%2F2023%2F05%2FBlur-The-Ballad-of-Darren.png%3Ffit%3D927%252C929%26ssl%3D1&f=1&nofb=1&ipt=4d6f94d6e1b71c3b1004a2b28df6abba526a86ff70277f7340b5cbee9aa10453&ipo=images"
+            songs={songs.filter(song => song.tags.album === "The Ballad of Darren")}
+          />
         </div>
       </div>
       <MusicFooter
