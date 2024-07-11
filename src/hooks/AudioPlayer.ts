@@ -191,6 +191,6 @@ export const useAudio = (
     queue,
     clearQueue,
     resetQueueAndPlaySong,
-    albums
+    albums,
   };
 };

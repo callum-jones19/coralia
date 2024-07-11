@@ -5,7 +5,7 @@ export interface AlbumArtProps {
   songs: Song[];
 }
 
-export default function AlbumScreen ({ albumArtUri, songs }: AlbumArtProps) {
+export default function AlbumScreen({ albumArtUri, songs }: AlbumArtProps) {
   return (
     <div className="flex flex-col gap-2 h-full">
       <div id="album-header" className="h-fit p-3 flex flex-row gap-3">
@@ -25,9 +25,15 @@ export default function AlbumScreen ({ albumArtUri, songs }: AlbumArtProps) {
             id="controls"
             className="w-full flex flex-row gap-2"
           >
-            <button className="bg-gray-950 min-w-20 rounded-full text-white p-1">Play</button>
-            <button className="bg-gray-950 min-w-20 rounded-full text-white p-1">Shuffle</button>
-            <button className="bg-gray-950 min-w-14 rounded-full text-white p-1">...</button>
+            <button className="bg-gray-950 min-w-20 rounded-full text-white p-1">
+              Play
+            </button>
+            <button className="bg-gray-950 min-w-20 rounded-full text-white p-1">
+              Shuffle
+            </button>
+            <button className="bg-gray-950 min-w-14 rounded-full text-white p-1">
+              ...
+            </button>
           </div>
         </div>
       </div>
@@ -46,14 +52,16 @@ export default function AlbumScreen ({ albumArtUri, songs }: AlbumArtProps) {
           return (
             <li key={song.filePath}>
               <div className="flex flex-row w-full gap-2 p-2 hover:bg-gray-300">
-                <button className="flex-grow basis-1/12 hover:bg-gray-500 text-left">1</button>
+                <button className="flex-grow basis-1/12 hover:bg-gray-500 text-left">
+                  1
+                </button>
                 <p className="flex-grow basis-1/2">{song.tags.title}</p>
                 <p className="flex-grow basis-1/2">{song.tags.genre}</p>
               </div>
             </li>
-          )
+          );
         })}
       </ul>
     </div>
-  )
+  );
 }

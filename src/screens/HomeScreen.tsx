@@ -56,7 +56,8 @@ export default function HomeScreen(
           currSongAlbumUri={currentSong?.tags.encodedCoverArt}
         />
         <div className="basis-full flex-grow-0 min-w-0 relative overflow-auto">
-          {/* <SongList
+          {
+            /* <SongList
             songList={filteredSongs.length === 0 ? songs : filteredSongs}
             onSongClick={s => {
               onClickSong(s);
@@ -77,11 +78,14 @@ export default function HomeScreen(
                 setFilteredSongs([]);
               }
             }}
-          /> */}
+          /> */
+          }
           {/* <MusicGrid albums={albums} /> */}
           <AlbumScreen
             albumArtUri="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcultfollowing.co.uk%2Fwp-content%2Fuploads%2F2023%2F05%2FBlur-The-Ballad-of-Darren.png%3Ffit%3D927%252C929%26ssl%3D1&f=1&nofb=1&ipt=4d6f94d6e1b71c3b1004a2b28df6abba526a86ff70277f7340b5cbee9aa10453&ipo=images"
-            songs={songs.filter(song => song.tags.album === "The Ballad of Darren")}
+            songs={songs.filter(song =>
+              song.tags.album === "The Ballad of Darren"
+            )}
           />
         </div>
       </div>

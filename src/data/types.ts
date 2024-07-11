@@ -87,6 +87,6 @@ export const tauriAlbumToInternalAlbum = (album: TauriAlbumResponse): Album => {
   return {
     album_artist: album.album_artist,
     cached_artwork_uri: album.cached_artwork_uri,
-    title: album.title
-  }
-}
+    title: album.title,
+  };
+};

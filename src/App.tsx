@@ -25,7 +25,7 @@ export default function App() {
     songs,
     queue,
     resetQueueAndPlaySong,
-    albums
+    albums,
   } = useAudio(audioRef);
 
   return (
@@ -36,8 +36,7 @@ export default function App() {
         onPause={stopPlaying}
         onDurationChange={handleDurationChange}
         onLoadedData={handleLoadedData}
-        onEnded={playNextInQueue
-}
+        onEnded={playNextInQueue}
       />
       <BrowserRouter>
         <Routes>
