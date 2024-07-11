@@ -1,13 +1,18 @@
-import { Song } from "../data/types";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { Album, Song } from "../data/types";
 
 export interface AlbumArtProps {
-  albumArtUri: string;
+  album: Album;
   songs: Song[];
 }
 
-export default function AlbumScreen({ albumArtUri, songs }: AlbumArtProps) {
+export default function AlbumScreen({ album, songs }: AlbumArtProps) {
+  console.log(album.cached_artwork_uri)
+
+  const albumArtUri = convertFileSrc(album.cached_artwork_uri);
+
   return (
-    <div className="flex flex-col gap-2 h-full">
+    <div className="flex flex-col gap-2 min-h-full">
       <div id="album-header" className="h-fit p-3 flex flex-row gap-3">
         <img
           alt="Album Art Image"
@@ -18,8 +23,8 @@ export default function AlbumScreen({ albumArtUri, songs }: AlbumArtProps) {
         />
         <div className="flex flex-col justify-between gap-3">
           <div>
-            <p className="font-extrabold text-4xl">The Ballad of Darren</p>
-            <p className="italic text-2xl">Blur</p>
+            <p className="font-extrabold text-4xl">{album.title}</p>
+            <p className="italic text-2xl">{album.album_artist}</p>
           </div>
           <div
             id="controls"
@@ -48,12 +53,12 @@ export default function AlbumScreen({ albumArtUri, songs }: AlbumArtProps) {
             <p className="flex-grow basis-1/2">Genre</p>
           </div>
         </li>
-        {songs.map(song => {
+        {songs.map((song, index) => {
           return (
             <li key={song.filePath}>
               <div className="flex flex-row w-full gap-2 p-2 hover:bg-gray-300">
                 <button className="flex-grow basis-1/12 hover:bg-gray-500 text-left">
-                  1
+                  {index}
                 </button>
                 <p className="flex-grow basis-1/2">{song.tags.title}</p>
                 <p className="flex-grow basis-1/2">{song.tags.genre}</p>

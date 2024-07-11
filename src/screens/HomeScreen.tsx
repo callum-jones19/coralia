@@ -81,12 +81,12 @@ export default function HomeScreen(
           /> */
           }
           {/* <MusicGrid albums={albums} /> */}
-          <AlbumScreen
-            albumArtUri="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcultfollowing.co.uk%2Fwp-content%2Fuploads%2F2023%2F05%2FBlur-The-Ballad-of-Darren.png%3Ffit%3D927%252C929%26ssl%3D1&f=1&nofb=1&ipt=4d6f94d6e1b71c3b1004a2b28df6abba526a86ff70277f7340b5cbee9aa10453&ipo=images"
+          {albums.length > 0 && <AlbumScreen
+            album={albums[2]}
             songs={songs.filter(song =>
-              song.tags.album === "The Ballad of Darren"
+              song.tags.album === albums[2].title
             )}
-          />
+          />}
         </div>
       </div>
       <MusicFooter
