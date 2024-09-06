@@ -41,8 +41,10 @@ impl MusicTags {
     }
 
     pub fn new_from_file(music_file: &mut File) -> Result<Self, String> {
-        let tagged_file =
-            read_from(music_file).expect("Could not read file as a tagged music file");
+        let tagged_file = match read_from(music_file) {
+            Ok(t) => t,
+            Err(e) => return Err(format!("Could not read tags from file. Error: {}", e)),
+        };
 
         // TODO give a match to parse the specific tags types. Gives us strong
         // control over reading

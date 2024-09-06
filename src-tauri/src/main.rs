@@ -3,6 +3,7 @@
 
 use std::{env, path::Path};
 
+use library::Library;
 use music::{music_tags::MusicTags, song::Song};
 
 mod music;
@@ -10,8 +11,8 @@ mod library;
 
 fn main() {
   let args: Vec<String> = env::args().collect();
-  let song_path = Path::new(&args[1]);
+  let root_dir = Path::new(&args[1]);
 
-  let tmp = Song::new_from_file(song_path).unwrap();
-  println!("{:?}", tmp);
+  let lib = Library::new(root_dir);
+  println!("{:?}", lib);
 }

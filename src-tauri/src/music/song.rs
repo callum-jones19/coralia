@@ -6,7 +6,7 @@ use super::music_tags::MusicTags;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Song {
-    pub file_path: String,
+    pub file_path: Box<Path>,
     pub tags: MusicTags,
     // TODO artwork
 }
@@ -17,7 +17,7 @@ impl Song {
             .expect(&format!("Failed to open given file {}", song_path.display()));
         let music_tags = MusicTags::new_from_file(&mut music_file)?;
 
-        Ok(Song { file_path: String::from("()"), tags: music_tags })
+        Ok(Song { file_path: song_path.into(), tags: music_tags })
     }
 
     pub fn has_album_name(&self, album_name: &str) -> bool {
