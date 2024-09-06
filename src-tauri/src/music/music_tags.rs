@@ -43,10 +43,9 @@ impl MusicTags {
         }
     }
 
-    fn tags_from_file(self, path: &Path) -> Result<MusicTags, String> {
-        let mut music_file = File::open(path).expect("Failed to find file");
+    pub fn new_from_file(music_file: &mut File) -> Result<Self, String> {
         let tagged_file =
-            read_from(&mut music_file).expect("Could not read file as a tagged music file");
+            read_from(music_file).expect("Could not read file as a tagged music file");
 
         // TODO give a match to parse the specific tags types. Gives us strong
         // control over reading
@@ -88,46 +87,6 @@ impl MusicTags {
 
         Ok(base_tags)
     }
-
-    // pub fn set_artist(mut self, artist: String) -> Self {
-    //   self.artist = Some(artist);
-    //   self
-    // }
-
-    // pub fn set_album_artist(mut self, album_artist: String) ->  Self {
-    //   self.album_artist = Some(album_artist);
-    //   self
-    // }
-
-    // pub fn set_album(mut self, album: String) -> Self {
-    //   self.album = Some(album);
-    //   self
-    // }
-
-    // pub fn set_genre(mut self, genre: String) -> Self {
-    //   self.genre = Some(genre);
-    //   self
-    // }
-
-    // pub fn set_year(mut self, year: String) -> Self {
-    //   self.year = Some(year);
-    //   self
-    // }
-
-    // pub fn set_publisher(mut self, publisher: String) -> Self {
-    //   self.publiser = Some(publisher);
-    //   self
-    // }
-
-    // pub fn set_composer(mut self, composer: String) -> Self {
-    //   self.composer = Some(composer);
-    //   self
-    // }
-
-    // pub fn set_original_year(mut self, original_year: String) -> Self {
-    //   self.original_year = Some(original_year);
-    //   self
-    // }
 
     // pub fn new_from_file(file_path: &Path) -> Self {
 

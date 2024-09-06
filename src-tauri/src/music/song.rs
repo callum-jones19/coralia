@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{fs::File, path::Path};
 
 use serde::{Deserialize, Serialize};
 
@@ -11,8 +11,11 @@ pub struct Song {
 }
 
 impl Song {
-    pub fn new_from_file(song_path: &Path) -> Self {
+    pub fn new_from_file(song_path: &Path) -> Result<Self, String> {
+        let mut music_file = File::open(song_path)
+            .expect(&format!("Failed to find given file {}", song_path.display()));
+        let music_tags = MusicTags::new_from_file(&mut music_file)?;
 
-        todo!()
+        Ok(Song { file_path: String::from("()"), tags: music_tags })
     }
 }
