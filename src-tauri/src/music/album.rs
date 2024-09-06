@@ -13,18 +13,42 @@ impl Album {
     /// Given an album title and album artist, filter out all the songs in the
     /// given list that meet these two values, and then construct a new
     /// album from them
-    pub fn new_filtered(album_title: String, album_artist: String, songs: Vec<Song>) -> Self {
-        let filtered_songs: Vec<Song> = songs
-            .into_iter()
-            .filter(|song| {
-                song.has_album_artist(&album_artist) && song.has_album_name(&album_title)
-            })
-            .collect();
+    pub fn create_from_song(first_song: &Song) -> Result<Self, String> {
+        let album_artist = match &first_song.tags.album_artist {
+            Some(album_artist) => album_artist,
+            None => return Err(String::from("Attempted to create an album from a song with no album artist")),
+        };
 
-        Album {
-            title: album_title,
-            album_artist: album_artist,
-            album_songs: filtered_songs,
+        let album = match &first_song.tags.album {
+            Some(album) => album,
+            None => return Err(String::from("Attempted to create an album from a song with no album")),
+        };
+
+        Ok(Album {
+            album_artist: album_artist.to_string(),
+            title: album.to_string(),
+            album_songs: vec![first_song.clone()],
+        })
+    }
+
+    /// If new_song belongs in this album, add it. Otherwise, throw an error
+    /// FIXME I don't like how this is returning info. Please improve
+    pub fn try_add_song(&mut self, new_song: &Song) -> Result<(), String> {
+        let album_artist = match &new_song.tags.album_artist {
+            Some(album_artist) => album_artist,
+            None => return Err(String::from("Attempted to create an album from a song with no album artist")),
+        };
+
+        let album = match &new_song.tags.album {
+            Some(album) => album,
+            None => return Err(String::from("Attempted to create an album from a song with no album")),
+        };
+
+        if album == &self.title && album_artist == &self.album_artist {
+            self.album_songs.push(new_song.clone());
+            Ok(())
+        } else {
+            Err(String::from("New song did not match album criteria"))
         }
     }
 }

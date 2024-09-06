@@ -4,10 +4,7 @@
 use music::music_tags::MusicTags;
 
 mod music;
+mod library;
 
 fn main() {
-    let tmp = MusicTags::new_empty_tags(String::from("song_title+tmp"))
-        .set_album_artist(String::from("Test"))
-        .set_artist(String::from("Test2"));
-
 }
