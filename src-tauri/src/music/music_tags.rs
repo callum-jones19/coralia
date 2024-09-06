@@ -20,7 +20,7 @@ pub struct MusicTags {
     pub genre: Option<String>,
     // Maybe rename \/
     pub year: Option<String>,
-    pub publiser: Option<String>,
+    pub publisher: Option<String>,
     pub composer: Option<String>,
     pub original_year: Option<String>,
 }
@@ -34,7 +34,7 @@ impl MusicTags {
             album: None,
             genre: None,
             year: None,
-            publiser: None,
+            publisher: None,
             composer: None,
             original_year: None,
         }
@@ -69,7 +69,7 @@ impl MusicTags {
             .get_string(&ItemKey::ReleaseDate)
             .as_deref()
             .map(str::to_string);
-        base_tags.publiser = tags
+        base_tags.publisher = tags
             .get_string(&ItemKey::Publisher)
             .as_deref()
             .map(str::to_string);

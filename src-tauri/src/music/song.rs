@@ -14,7 +14,7 @@ pub struct Song {
 impl Song {
     pub fn new_from_file(song_path: &Path) -> Result<Self, String> {
         let mut music_file = File::open(song_path)
-            .expect(&format!("Failed to find given file {}", song_path.display()));
+            .expect(&format!("Failed to open given file {}", song_path.display()));
         let music_tags = MusicTags::new_from_file(&mut music_file)?;
 
         Ok(Song { file_path: String::from("()"), tags: music_tags })
