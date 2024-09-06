@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use serde::{Deserialize, Serialize};
 
 use super::music_tags::MusicTags;
@@ -9,5 +11,8 @@ pub struct Song {
 }
 
 impl Song {
+    pub fn new_from_file(song_path: &Path) -> Self {
 
+        todo!()
+    }
 }
