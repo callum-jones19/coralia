@@ -14,5 +14,5 @@ fn main() {
   let root_dir = Path::new(&args[1]);
 
   let lib = Library::new(root_dir);
-  println!("{:?}", lib);
+  println!("{}", serde_json::to_string(&lib).unwrap());
 }

@@ -31,6 +31,24 @@ impl Album {
         })
     }
 
+    pub fn should_contain_song(&self, song_to_check: &Song) -> bool {
+        let album_artist = match &song_to_check.tags.album_artist {
+            Some(album_artist) => album_artist,
+            None => return false,
+        };
+
+        let album = match &song_to_check.tags.album {
+            Some(album) => album,
+            None => return false,
+        };
+
+        if album == &self.title && album_artist == &self.album_artist {
+            true
+        } else {
+            false
+        }
+    }
+
     /// If new_song belongs in this album, add it. Otherwise, throw an error
     /// FIXME I don't like how this is returning info. Please improve
     pub fn try_add_song(&mut self, new_song: &Song) -> Result<(), String> {
