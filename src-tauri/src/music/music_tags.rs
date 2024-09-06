@@ -1,9 +1,9 @@
-use std::{fs::File, path::Path};
+use std::fs::File;
 
 use lofty::{
     file::TaggedFileExt,
     read_from,
-    tag::{Accessor, ItemKey, Tag},
+    tag::{Accessor, ItemKey},
 };
 use serde::{Deserialize, Serialize};
 
@@ -23,8 +23,6 @@ pub struct MusicTags {
     pub publiser: Option<String>,
     pub composer: Option<String>,
     pub original_year: Option<String>,
-    // pub lyrics: TODO
-    pub cached_artwork_uri: Option<String>,
 }
 
 impl MusicTags {
@@ -39,7 +37,6 @@ impl MusicTags {
             publiser: None,
             composer: None,
             original_year: None,
-            cached_artwork_uri: None,
         }
     }
 
@@ -87,9 +84,4 @@ impl MusicTags {
 
         Ok(base_tags)
     }
-
-    // pub fn new_from_file(file_path: &Path) -> Self {
-
-    //   todo!()
-    // }
 }
