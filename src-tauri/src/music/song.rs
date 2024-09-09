@@ -13,11 +13,16 @@ pub struct Song {
 
 impl Song {
     pub fn new_from_file(song_path: &Path) -> Result<Self, String> {
-        let mut music_file = File::open(song_path)
-            .expect(&format!("Failed to open given file {}", song_path.display()));
+        let mut music_file = match File::open(song_path) {
+            Ok(f) => f,
+            Err(e) => return Err(format!("Failed to open file {:?}. Error {}", song_path, e)),
+        };
         let music_tags = MusicTags::new_from_file(&mut music_file)?;
 
-        Ok(Song { file_path: song_path.into(), tags: music_tags })
+        Ok(Song {
+            file_path: song_path.into(),
+            tags: music_tags,
+        })
     }
 
     pub fn has_album_name(&self, album_name: &str) -> bool {
