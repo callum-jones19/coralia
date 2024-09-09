@@ -16,12 +16,20 @@ impl Album {
     pub fn create_from_song(first_song: &Song) -> Result<Self, String> {
         let album_artist = match &first_song.tags.album_artist {
             Some(album_artist) => album_artist,
-            None => return Err(String::from("Attempted to create an album from a song with no album artist")),
+            None => {
+                return Err(String::from(
+                    "Attempted to create an album from a song with no album artist",
+                ))
+            }
         };
 
         let album = match &first_song.tags.album {
             Some(album) => album,
-            None => return Err(String::from("Attempted to create an album from a song with no album")),
+            None => {
+                return Err(String::from(
+                    "Attempted to create an album from a song with no album",
+                ))
+            }
         };
 
         Ok(Album {
@@ -42,11 +50,7 @@ impl Album {
             None => return false,
         };
 
-        if album == &self.title && album_artist == &self.album_artist {
-            true
-        } else {
-            false
-        }
+        album == &self.title && album_artist == &self.album_artist
     }
 
     /// If new_song belongs in this album, add it. Otherwise, throw an error
@@ -54,12 +58,20 @@ impl Album {
     pub fn try_add_song(&mut self, new_song: &Song) -> Result<(), String> {
         let album_artist = match &new_song.tags.album_artist {
             Some(album_artist) => album_artist,
-            None => return Err(String::from("Attempted to create an album from a song with no album artist")),
+            None => {
+                return Err(String::from(
+                    "Attempted to create an album from a song with no album artist",
+                ))
+            }
         };
 
         let album = match &new_song.tags.album {
             Some(album) => album,
-            None => return Err(String::from("Attempted to create an album from a song with no album")),
+            None => {
+                return Err(String::from(
+                    "Attempted to create an album from a song with no album",
+                ))
+            }
         };
 
         if album == &self.title && album_artist == &self.album_artist {

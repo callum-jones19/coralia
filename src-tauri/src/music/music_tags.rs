@@ -61,27 +61,14 @@ impl MusicTags {
         let song_title = tags.title().unwrap().to_string();
         let mut base_tags = MusicTags::empty_with_title(song_title);
         base_tags.artist = tags.artist().as_deref().map(str::to_string);
-        base_tags.album_artist = tags
-            .get_string(&ItemKey::AlbumArtist)
-            .as_deref()
-            .map(str::to_string);
+        base_tags.album_artist = tags.get_string(&ItemKey::AlbumArtist).map(str::to_string);
         base_tags.album = tags.album().as_deref().map(str::to_string);
         base_tags.genre = tags.genre().as_deref().map(str::to_string);
-        base_tags.year = tags
-            .get_string(&ItemKey::ReleaseDate)
-            .as_deref()
-            .map(str::to_string);
-        base_tags.publisher = tags
-            .get_string(&ItemKey::Publisher)
-            .as_deref()
-            .map(str::to_string);
-        base_tags.composer = tags
-            .get_string(&ItemKey::Composer)
-            .as_deref()
-            .map(str::to_string);
+        base_tags.year = tags.get_string(&ItemKey::ReleaseDate).map(str::to_string);
+        base_tags.publisher = tags.get_string(&ItemKey::Publisher).map(str::to_string);
+        base_tags.composer = tags.get_string(&ItemKey::Composer).map(str::to_string);
         base_tags.original_year = tags
             .get_string(&ItemKey::OriginalReleaseDate)
-            .as_deref()
             .map(str::to_string);
 
         Ok(base_tags)
