@@ -54,6 +54,7 @@ impl Library {
         };
 
         new_lib.scan_library_songs();
+        new_lib.scan_library_albums();
 
         new_lib
     }
@@ -74,6 +75,11 @@ impl Library {
         // Loop over every file in this directory
         let lib_songs = scan_songs_recursively(paths);
         self.songs = lib_songs;
+    }
+
+    pub fn scan_library_albums(&mut self) {
+        let lib_albums = albums_from_songs(&self.songs);
+        self.albums = lib_albums;
     }
 }
 
