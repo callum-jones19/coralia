@@ -3,10 +3,8 @@
 
 use std::{env, path::Path};
 
-use library::Library;
-use music::{music_tags::MusicTags, song::Song};
+use library::library::Library;
 
-mod music;
 mod library;
 
 fn main() {
