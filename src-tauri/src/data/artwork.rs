@@ -33,9 +33,14 @@ impl Artwork {
         };
 
         if art_file_exists {
-            return Artwork {
+            Artwork {
                 cached_embedded_art: None,
                 folder_album_art: Some(song_path.clone())
+            }
+        } else {
+            Artwork {
+                cached_embedded_art: None,
+                folder_album_art: None
             }
         }
     }
