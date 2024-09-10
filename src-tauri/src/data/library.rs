@@ -35,9 +35,9 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Library {
-    root_dir: Box<Path>,
-    songs: Vec<Song>,
-    albums: Vec<Album>,
+    pub root_dir: Box<Path>,
+    pub songs: Vec<Song>,
+    pub albums: Vec<Album>,
 }
 
 impl Library {
