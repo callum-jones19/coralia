@@ -3,9 +3,9 @@
 
 use std::{env, path::Path};
 
-use library::library::Library;
+use data::library::Library;
 
-mod library;
+mod data;
 
 fn main() {
   let args: Vec<String> = env::args().collect();
