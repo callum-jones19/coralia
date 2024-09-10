@@ -32,10 +32,6 @@ impl Artwork {
         // FIXME change to try_exists when you fix MSRV
         let art_file_exists = song_path.exists();
 
-        println!("{:?}", song_path);
-        println!("{:?}", art_file_exists);
-        println!("==========================================================");
-
         if art_file_exists {
             Some(Artwork {
                 cached_embedded_art: None,
