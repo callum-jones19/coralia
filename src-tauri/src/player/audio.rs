@@ -1,14 +1,24 @@
 use std::{borrow::BorrowMut, fs::File, io::BufReader, path::Path};
 
-use rodio::{Decoder, OutputStream, Source};
+use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 
-pub fn test_play(song_path: &Path) {
-  let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+use crate::data::song::Song;
 
-  let file = BufReader::new(File::open(song_path).unwrap());
+pub struct Player {
+    _stream: OutputStream,
+    _stream_handle: OutputStreamHandle,
+    pub audio_sink: Sink,
+}
 
-  let source = Decoder::new(file).unwrap();
-  let _ = stream_handle.play_raw(source.convert_samples());
+impl Player {
+    pub fn new() -> Self {
+        let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+        let sink = Sink::try_new(&stream_handle).unwrap();
 
-  std::thread::sleep(std::time::Duration::from_secs(5));
+        Player {
+            audio_sink: sink,
+            _stream: _stream,
+            _stream_handle: stream_handle,
+        }
+    }
 }
