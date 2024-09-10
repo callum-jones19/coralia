@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 /// to use as the default
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Artwork {
-    cached_embedded_art: Option<Box<Path>>,
-    folder_album_art: Option<Box<Path>>,
+    cached_embedded_art: Option<PathBuf>,
+    folder_album_art: Option<PathBuf>,
 }
 
 impl Artwork {
@@ -19,6 +19,24 @@ impl Artwork {
         Artwork {
             cached_embedded_art: None,
             folder_album_art: None,
+        }
+    }
+
+    pub fn artwork_from_folder(song_path: &mut PathBuf) -> Self {
+        // Look for folder artwork.
+        song_path.pop();
+        song_path.push("cover.jpg");
+
+        let art_file_exists = match song_path.try_exists() {
+            Ok(e) => e,
+            Err(err) => panic!("Error checking file system for art folder art path {:?}. Error {}", song_path, err),
+        };
+
+        if art_file_exists {
+            return Artwork {
+                cached_embedded_art: None,
+                folder_album_art: Some(song_path.clone())
+            }
         }
     }
 
