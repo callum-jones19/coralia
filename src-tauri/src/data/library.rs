@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 
 use super::{album::Album, song::Song};
 
-
 fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
     let mut albums: Vec<Album> = Vec::new();
 

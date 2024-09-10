@@ -1,12 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-use super::song::Song;
+use super::{artwork::Artwork, song::Song};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Album {
     pub title: String,
     pub album_artist: String,
     pub album_songs: Vec<Song>,
+    pub artwork: Artwork,
 }
 
 impl Album {
@@ -36,6 +37,7 @@ impl Album {
             album_artist: album_artist.to_string(),
             title: album.to_string(),
             album_songs: vec![first_song.clone()],
+            artwork: Artwork::blank_artwork(),
         })
     }
 

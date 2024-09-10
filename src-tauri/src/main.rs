@@ -8,9 +8,9 @@ use data::library::Library;
 mod data;
 
 fn main() {
-  let args: Vec<String> = env::args().collect();
-  let root_dir = Path::new(&args[1]);
+    let args: Vec<String> = env::args().collect();
+    let root_dir = Path::new(&args[1]);
 
-  let lib = Library::new(root_dir);
-  println!("{}", serde_json::to_string(&lib).unwrap());
+    let lib = Library::new(root_dir);
+    println!("{}", serde_json::to_string(&lib).unwrap());
 }

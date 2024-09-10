@@ -2,13 +2,13 @@ use std::{fs::File, path::Path};
 
 use serde::{Deserialize, Serialize};
 
-use super::music_tags::MusicTags;
+use super::{artwork::Artwork, music_tags::MusicTags};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Song {
     pub file_path: Box<Path>,
     pub tags: MusicTags,
-    // TODO artwork
+    pub artwork: Artwork,
 }
 
 impl Song {
@@ -22,6 +22,7 @@ impl Song {
         Ok(Song {
             file_path: song_path.into(),
             tags: music_tags,
+            artwork: Artwork::blank_artwork(),
         })
     }
 
