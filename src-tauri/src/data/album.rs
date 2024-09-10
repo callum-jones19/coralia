@@ -37,7 +37,7 @@ impl Album {
             album_artist: album_artist.to_string(),
             title: album.to_string(),
             album_songs: vec![first_song.clone()],
-            artwork: Artwork::blank_artwork(),
+            artwork: first_song.artwork.clone(),
         })
     }
 
@@ -78,6 +78,12 @@ impl Album {
 
         if album == &self.title && album_artist == &self.album_artist {
             self.album_songs.push(new_song.clone());
+
+            // Check if we need to update the album's artwork
+            if self.artwork.has_no_art() && new_song.artwork.has_art() {
+                self.artwork = new_song.artwork.clone();
+            }
+
             Ok(())
         } else {
             Err(String::from("New song did not match album criteria"))
