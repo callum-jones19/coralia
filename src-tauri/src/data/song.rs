@@ -19,26 +19,12 @@ impl Song {
         };
         let music_tags = MusicTags::new_from_file(&mut music_file)?;
         // TODO get potentially embedded artwork
-        let artwork = Artwork::artwork_from_folder(&mut song_path.to_path_buf());
+        let artwork = Artwork::art_from_song_folder(&mut song_path.to_path_buf());
 
         Ok(Song {
             file_path: song_path.into(),
             tags: music_tags,
-            artwork: artwork,
+            artwork,
         })
-    }
-
-    pub fn has_album_name(&self, album_name: &str) -> bool {
-        match &self.tags.album {
-            Some(album) => album == album_name,
-            None => false,
-        }
-    }
-
-    pub fn has_album_artist(&self, album_artist: &str) -> bool {
-        match &self.tags.artist {
-            Some(artist) => artist == album_artist,
-            None => false,
-        }
     }
 }

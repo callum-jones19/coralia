@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
@@ -22,27 +22,61 @@ impl Artwork {
         }
     }
 
-    pub fn artwork_from_folder(song_path: &mut PathBuf) -> Self {
+    /// Look in the folder of the given song path for an artwork file with the
+    /// given art file name
+    fn try_art_by_name(song_path: &mut PathBuf, art_file_name: &str) -> Option<Self> {
         // Look for folder artwork.
         song_path.pop();
-        song_path.push("cover.jpg");
+        song_path.push(art_file_name);
 
-        let art_file_exists = match song_path.try_exists() {
-            Ok(e) => e,
-            Err(err) => panic!("Error checking file system for art folder art path {:?}. Error {}", song_path, err),
-        };
+        // FIXME change to try_exists when you fix MSRV
+        let art_file_exists = song_path.exists();
+
+        println!("{:?}", song_path);
+        println!("{:?}", art_file_exists);
+        println!("==========================================================");
 
         if art_file_exists {
-            Artwork {
+            Some(Artwork {
                 cached_embedded_art: None,
-                folder_album_art: Some(song_path.clone())
-            }
+                folder_album_art: Some(song_path.clone()),
+            })
         } else {
-            Artwork {
-                cached_embedded_art: None,
-                folder_album_art: None
+            None
+        }
+    }
+
+    pub fn art_from_song_folder(song_path: &mut PathBuf) -> Self {
+        let cover_name_opts = vec![
+            "folder",
+            "Folder",
+            "cover",
+            "Cover",
+            "front",
+            "Front",
+            "artwork",
+            "Artwork",
+        ];
+
+        // Try each possible art file name in the list and return the first
+        // found artwork
+        for cover_name in cover_name_opts {
+            let cover_name_jpg = cover_name.to_owned() + ".jpg";
+            let cover_name_png = cover_name.to_owned() + ".png";
+
+            let try_art_jpg = Self::try_art_by_name(song_path, &cover_name_jpg);
+            if let Some(art) = try_art_jpg {
+                return art;
+            }
+
+            let try_art_png = Self::try_art_by_name(song_path, &cover_name_png);
+            if let Some(art) = try_art_png {
+                return art;
             }
         }
+
+        // If no art was found, return a blank artwork
+        return Self::blank_artwork();
     }
 
     pub fn has_no_art(&self) -> bool {
@@ -53,13 +87,13 @@ impl Artwork {
         self.cached_embedded_art.is_some() || self.folder_album_art.is_some()
     }
 
-    pub fn get_artwork(&self) -> Option<&Path> {
-        if let Some(art) = &self.folder_album_art {
-            Some(art.as_ref())
-        } else if let Some(art) = &self.cached_embedded_art {
-            Some(art.as_ref())
-        } else {
-            None
-        }
-    }
+    // pub fn get_artwork(&self) -> Option<&Path> {
+    //     if let Some(art) = &self.folder_album_art {
+    //         Some(art.as_ref())
+    //     } else if let Some(art) = &self.cached_embedded_art {
+    //         Some(art.as_ref())
+    //     } else {
+    //         None
+    //     }
+    // }
 }
