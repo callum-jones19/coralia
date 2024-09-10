@@ -94,7 +94,7 @@ fn scan_songs_recursively(paths: fs::ReadDir) -> Vec<Song> {
         // Otherwise, recursively scan the next folder
         if direntry.file_type().unwrap().is_dir() {
             // Recurse
-            let recurse_paths = match read_dir(&direntry.path()) {
+            let recurse_paths = match read_dir(direntry.path()) {
                 Ok(p) => p,
                 Err(_) => todo!(),
             };
