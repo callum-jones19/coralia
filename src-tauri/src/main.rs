@@ -16,14 +16,7 @@ mod data;
 mod player;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    // let root_dir = Path::new(&args[1]);
-
-    // let lib = Library::new(root_dir);
-
     let mut player = Player::new();
-
-    // player.test_play(vec![&lib.songs[0], &lib.songs[1],&lib.songs[2]])
 
     println!("Enter command:");
     loop {
@@ -55,8 +48,11 @@ fn main() {
 
             player.add_to_queue(song);
             player.play();
+        } else if command == "skip" {
+            player.skip();
         } else if command == "help" {
-            println!("Available commands: play, pause, q, enqueue")
+            println!("Current queue: {:?}", player.queue());
+            println!("Available commands: play, pause, q, enqueue, skip");
         } else {
             println!("Unknown command");
         }

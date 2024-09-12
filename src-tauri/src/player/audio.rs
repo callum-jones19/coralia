@@ -36,11 +36,11 @@ impl Player {
         self.audio_sink.append(song_source);
     }
 
-    pub fn play(&mut self) {
-        if !self.audio_sink.is_paused() {
-            return;
-        }
+    pub fn queue(&self) -> &VecDeque<Song> {
+        &self.queue
+    }
 
+    pub fn play(&mut self) {
         if self.audio_sink.len() > 0 {
             // If the sink has something in it, then we just want to start
             // playing that
@@ -54,6 +54,18 @@ impl Player {
                 self.audio_sink.play();
             }
         }
+    }
+
+    pub fn skip(&mut self) {
+        // There is nothing in the sink right now (excluding
+        // currently playing). Check if we can add anything into it
+        let next_song_try = self.queue.pop_front();
+        let next_song = match next_song_try {
+            Some(next_song) => next_song,
+            None => return,
+        };
+        self.append_song_into_sink(next_song);
+        self.audio_sink.skip_one();
     }
 
     /// Add a song to the queue
