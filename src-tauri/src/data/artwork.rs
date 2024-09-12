@@ -44,14 +44,7 @@ impl Artwork {
 
     pub fn art_from_song_folder(song_path: &mut PathBuf) -> Self {
         let cover_name_opts = vec![
-            "folder",
-            "Folder",
-            "cover",
-            "Cover",
-            "front",
-            "Front",
-            "artwork",
-            "Artwork",
+            "folder", "Folder", "cover", "Cover", "front", "Front", "artwork", "Artwork",
         ];
 
         // Try each possible art file name in the list and return the first
@@ -72,7 +65,7 @@ impl Artwork {
         }
 
         // If no art was found, return a blank artwork
-        return Self::blank_artwork();
+        Self::blank_artwork()
     }
 
     pub fn has_no_art(&self) -> bool {
