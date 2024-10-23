@@ -2,15 +2,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    env,
-    fs::File,
-    io::{self, stdin, BufReader, Write},
-    path::Path,
+    io::{self, Write},
+    path::Path, sync::mpsc::channel,
 };
 
-use data::{library::Library, song::Song};
+use data::song::Song;
 use player::audio::Player;
-use rodio::Decoder;
 
 mod data;
 mod player;
@@ -20,6 +17,11 @@ fn main() {
 
     println!("Enter command:");
     loop {
+        handle_inputs(&mut player);
+    }
+}
+
+fn handle_inputs(player: &mut Player) {
         print!(">: ");
         std::io::stdout().flush().unwrap();
         let mut input = String::new();
@@ -29,11 +31,11 @@ fn main() {
         let mut whole_command = tmp_cmd.split_whitespace();
         let command = whole_command.next().unwrap();
         if command == "play" {
-            todo!();
+            player.play();
         } else if command == "pause" {
-            todo!();
+            player.pause();
         } else if command == "q" {
-            break;
+            return;
         } else if command == "enqueue" {
             let path = Path::new(whole_command.next().unwrap());
             println!("Path: {:?}", path);
@@ -42,19 +44,18 @@ fn main() {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Could not parse given song path");
-                    continue;
+                    return;
                 }
             };
 
-            player.add_to_queue(song);
-            player.play();
+            player.add_to_queue(&song);
         } else if command == "skip" {
-            player.skip();
+            player.skip_current_song();
+        } else if command == "debug" {
+            player.debug_queue();
         } else if command == "help" {
-            println!("Current queue: {:?}", player.queue());
-            println!("Available commands: play, pause, q, enqueue, skip");
+            println!("Available commands: play, pause, q, enqueue, skip, debug");
         } else {
             println!("Unknown command");
         }
-    }
 }

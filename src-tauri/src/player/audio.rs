@@ -1,19 +1,19 @@
-use std::{collections::VecDeque, fs::File};
+use std::{collections::VecDeque, fs::File, io::BufReader, path::{Path, PathBuf}};
 
 use rodio::{
-    cpal::{default_host, traits::HostTrait},
-    Decoder, DeviceTrait, OutputStream, OutputStreamHandle, Sink,
+    source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sample, Sink, Source
 };
 
 use crate::data::song::Song;
 
 pub struct Player {
+    // Need these to keep the player stream alive, but we don't
+    // want to actually access it.
     _stream: OutputStream,
     _stream_handle: OutputStreamHandle,
-    // Remember, the sink will just have a "list" of sources in it
-    // So , when we skip it jumps into the next source waiting in the sink
+    // Actual values
     audio_sink: Sink,
-    queue: VecDeque<Song>,
+    files_queue: VecDeque<PathBuf>
 }
 
 impl Player {
@@ -23,53 +23,58 @@ impl Player {
 
         Player {
             audio_sink: sink,
-            queue: VecDeque::new(),
+            files_queue: VecDeque::new(),
             _stream,
             _stream_handle: stream_handle,
         }
     }
 
-    fn append_song_into_sink(&mut self, song: Song) {
-        let song_path = song.file_path;
-        let song_file = File::open(song_path).unwrap();
+    fn open_song_into_sink(&mut self, song: &Song) {
+        // Open the file and place its source into the sink.
+        let song_file = BufReader::new(File::open(&song.file_path).unwrap());
         let song_source = Decoder::new(song_file).unwrap();
         self.audio_sink.append(song_source);
+
+        // Now create a callback source and place it after this song, so we can signal
+        // when it has finished playback.
+        let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(|| {
+            println!("Song finished!");
+        }));
+        self.audio_sink.append(callback_source);
     }
 
-    pub fn queue(&self) -> &VecDeque<Song> {
-        &self.queue
-    }
+    /// Add to our queue of paths that we want to play.
+    pub fn add_to_queue(&mut self, song: &Song) {
+        self.files_queue.push_back(song.file_path.to_path_buf());
 
-    pub fn play(&mut self) {
-        if self.audio_sink.len() > 0 {
-            // If the sink has something in it, then we just want to start
-            // playing that
-            self.audio_sink.play();
-        } else {
-            // If the sink is empty, then we want to put in the first song we
-            // have in Queue into it
-            let try_next_song = self.queue.pop_front();
-            if let Some(next_song) = try_next_song {
-                self.append_song_into_sink(next_song);
-                self.audio_sink.play();
-            }
+        // We want to add this to the sink as an actual opened source if the sink has room
+        if self.audio_sink.len() < 5 {
+            self.open_song_into_sink(&song);
         }
     }
 
-    pub fn skip(&mut self) {
-        // There is nothing in the sink right now (excluding
-        // currently playing). Check if we can add anything into it
-        let next_song_try = self.queue.pop_front();
-        let next_song = match next_song_try {
-            Some(next_song) => next_song,
-            None => return,
-        };
-        self.append_song_into_sink(next_song);
+    pub fn play(&mut self) {
+        self.audio_sink.play();
+    }
+
+    pub fn pause(&mut self) {
+        self.audio_sink.pause();
+    }
+
+    pub fn toggle_playing(&mut self) {
+        if self.audio_sink.is_paused() {
+            self.play();
+        } else {
+            self.pause();
+        }
+    }
+
+    pub fn skip_current_song(&mut self) {
         self.audio_sink.skip_one();
     }
 
-    /// Add a song to the queue
-    pub fn add_to_queue(&mut self, song: Song) {
-        self.queue.push_back(song);
+    pub fn debug_queue(&self) {
+        println!("file queue: {:?}", self.files_queue);
+        print!("Song queue: {:?}", self.audio_sink.len());
     }
 }
