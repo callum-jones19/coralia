@@ -16,20 +16,29 @@ fn main() {
     let mut player = Player::new();
 
     println!("Enter command:");
-    loop {
-        handle_inputs(&mut player);
-    }
+    handle_inputs(&mut player);
 }
 
 fn handle_inputs(player: &mut Player) {
+    loop {
         print!(">: ");
         std::io::stdout().flush().unwrap();
         let mut input = String::new();
-        io::stdin().read_line(&mut input).unwrap();
-        let tmp_cmd = input.strip_suffix("\n").unwrap();
+        match io::stdin().read_line(&mut input) {
+            Err(_) => continue,
+            _ => {},
+        }
+        let tmp_cmd = match input.strip_suffix("\n") {
+            Some(c) => c,
+            None => continue,
+        };
 
         let mut whole_command = tmp_cmd.split_whitespace();
-        let command = whole_command.next().unwrap();
+        let command = match whole_command.next() {
+            Some(c) => c,
+            None => continue,
+        };
+
         if command == "play" {
             player.play();
         } else if command == "pause" {
@@ -58,4 +67,5 @@ fn handle_inputs(player: &mut Player) {
         } else {
             println!("Unknown command");
         }
+    }
 }

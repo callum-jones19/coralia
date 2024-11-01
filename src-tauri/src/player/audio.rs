@@ -1,10 +1,16 @@
-use std::{collections::VecDeque, fs::File, io::BufReader, path::{Path, PathBuf}};
+use std::{collections::VecDeque, fs::File, io::BufReader, path::{Path, PathBuf}, sync::mpsc::{channel, Receiver, Sender}, thread};
 
 use rodio::{
     source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sample, Sink, Source
 };
 
 use crate::data::song::Song;
+
+enum PlayerCommand {
+    Pause,
+    Play,
+    Enqueue(Song),
+}
 
 pub struct Player {
     // Need these to keep the player stream alive, but we don't
@@ -13,7 +19,9 @@ pub struct Player {
     _stream_handle: OutputStreamHandle,
     // Actual values
     audio_sink: Sink,
-    files_queue: VecDeque<PathBuf>
+    files_queue: VecDeque<PathBuf>,
+    event_rx: Receiver<()>,
+    command_tx: Sender<PlayerCommand>,
 }
 
 impl Player {
@@ -21,11 +29,16 @@ impl Player {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
 
+        let (event_tx, event_rx): (Sender<()>, Receiver<()>) = channel();
+        let (command_tx, command_rx): (Sender<PlayerCommand>, Receiver<PlayerCommand>) = channel();
+
         Player {
-            audio_sink: sink,
-            files_queue: VecDeque::new(),
             _stream,
             _stream_handle: stream_handle,
+            audio_sink: sink,
+            files_queue: VecDeque::new(),
+            command_tx,
+            event_rx
         }
     }
 
@@ -37,10 +50,16 @@ impl Player {
 
         // Now create a callback source and place it after this song, so we can signal
         // when it has finished playback.
-        let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(|| {
+        let cmd_tx = self.command_tx.clone();
+        let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
             println!("Song finished!");
         }));
         self.audio_sink.append(callback_source);
+
+        // Don't start playing on append
+        if self.audio_sink.is_paused() {
+            self.audio_sink.pause();
+        }
     }
 
     /// Add to our queue of paths that we want to play.
