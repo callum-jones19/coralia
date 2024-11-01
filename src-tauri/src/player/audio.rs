@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, fs::File, io::BufReader, path::{Path, PathBuf}, sync::mpsc::{channel, Receiver, Sender}, thread};
+use std::{collections::VecDeque, fs::File, io::BufReader, path::{Path, PathBuf}, sync::{mpsc::{channel, Receiver, Sender}, Arc, Mutex}, thread};
 
 use rodio::{
     source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sample, Sink, Source
@@ -18,7 +18,7 @@ pub struct Player {
     _stream: OutputStream,
     _stream_handle: OutputStreamHandle,
     // Actual values
-    audio_sink: Sink,
+    audio_sink: Arc<Mutex<Sink>>,
     files_queue: VecDeque<PathBuf>,
     event_rx: Receiver<()>,
     command_tx: Sender<PlayerCommand>,
@@ -35,7 +35,7 @@ impl Player {
         Player {
             _stream,
             _stream_handle: stream_handle,
-            audio_sink: sink,
+            audio_sink: Arc::new(Mutex::new(sink)),
             files_queue: VecDeque::new(),
             command_tx,
             event_rx
@@ -46,19 +46,21 @@ impl Player {
         // Open the file and place its source into the sink.
         let song_file = BufReader::new(File::open(&song.file_path).unwrap());
         let song_source = Decoder::new(song_file).unwrap();
-        self.audio_sink.append(song_source);
+        self.audio_sink.lock().unwrap().append(song_source);
 
         // Now create a callback source and place it after this song, so we can signal
         // when it has finished playback.
-        let cmd_tx = self.command_tx.clone();
+        let tmp: Arc<Mutex<Sink>> = Arc::clone(&self.audio_sink);
         let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
             println!("Song finished!");
+            let t1 = tmp.lock().unwrap().is_paused();
+            println!("{}", t1);
         }));
-        self.audio_sink.append(callback_source);
+        self.audio_sink.lock().unwrap().append(callback_source);
 
         // Don't start playing on append
-        if self.audio_sink.is_paused() {
-            self.audio_sink.pause();
+        if self.audio_sink.lock().unwrap().is_paused() {
+            self.audio_sink.lock().unwrap().pause();
         }
     }
 
@@ -67,21 +69,21 @@ impl Player {
         self.files_queue.push_back(song.file_path.to_path_buf());
 
         // We want to add this to the sink as an actual opened source if the sink has room
-        if self.audio_sink.len() < 5 {
+        if self.audio_sink.lock().unwrap().len() < 5 {
             self.open_song_into_sink(&song);
         }
     }
 
     pub fn play(&mut self) {
-        self.audio_sink.play();
+        self.audio_sink.lock().unwrap().play();
     }
 
     pub fn pause(&mut self) {
-        self.audio_sink.pause();
+        self.audio_sink.lock().unwrap().pause();
     }
 
     pub fn toggle_playing(&mut self) {
-        if self.audio_sink.is_paused() {
+        if self.audio_sink.lock().unwrap().is_paused() {
             self.play();
         } else {
             self.pause();
@@ -89,11 +91,11 @@ impl Player {
     }
 
     pub fn skip_current_song(&mut self) {
-        self.audio_sink.skip_one();
+        self.audio_sink.lock().unwrap().skip_one();
     }
 
     pub fn debug_queue(&self) {
         println!("file queue: {:?}", self.files_queue);
-        print!("Song queue: {:?}", self.audio_sink.len());
+        print!("Song queue: {:?}", self.audio_sink.lock().unwrap().len());
     }
 }
