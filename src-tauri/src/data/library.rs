@@ -36,7 +36,7 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Library {
     pub root_dir: Box<Path>,
-    pub songs: Vec<Song>,
+    songs: Vec<Song>,
     pub albums: Vec<Album>,
 }
 
@@ -77,6 +77,14 @@ impl Library {
     pub fn scan_library_albums(&mut self) {
         let lib_albums = albums_from_songs(&self.songs);
         self.albums = lib_albums;
+    }
+
+    pub fn get_all_songs(&self) -> Vec<Song> {
+        self.songs.clone()
+    }
+
+    pub fn get_all_albums(&self) -> Vec<Album> {
+        self.albums.clone()
     }
 }
 

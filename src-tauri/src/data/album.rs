@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{artwork::Artwork, song::Song};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Album {
     pub title: String,
     pub album_artist: String,

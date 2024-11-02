@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { get_all_albums, get_all_songs } from "../data/importer";
 import { Album, Song } from "../data/types";
+import { get_all_albums, get_library_songs } from "../data/importer";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,
@@ -28,7 +28,7 @@ export const useAudio = (
   const [albums, setAlbums] = useState<Album[]>([]);
 
   useEffect(() => {
-    get_all_songs()
+    get_library_songs()
       .then(songs => setSongs(songs))
       .catch(err => console.log(err));
 
