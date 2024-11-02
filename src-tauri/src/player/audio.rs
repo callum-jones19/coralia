@@ -121,6 +121,10 @@ impl Player {
         }
     }
 
+    pub fn change_vol(&mut self, vol: f32) {
+        self.audio_sink.lock().unwrap().set_volume(vol);
+    }
+
     pub fn play(&mut self) {
         self.audio_sink.lock().unwrap().play();
     }

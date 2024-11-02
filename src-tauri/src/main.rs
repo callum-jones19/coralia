@@ -11,14 +11,21 @@ use tauri::{async_runtime::{Runtime, TokioRuntime}, Manager, State};
 mod data;
 mod player;
 
+enum PlayerCommand {
+    Enqueue(Song),
+    Play,
+    Pause,
+    SetVolume(f32)
+}
+
 struct AppState {
-    command_tx: Sender<()>,
+    command_tx: Sender<PlayerCommand>,
 }
 
 fn main() {
     let tauri_context = tauri::generate_context!();
 
-    let (tx, rx): (Sender<()> , Receiver<()>) = mpsc::channel();
+    let (tx, rx): (Sender<PlayerCommand> , Receiver<PlayerCommand>) = mpsc::channel();
 
 
     tauri::Builder::default()
@@ -28,12 +35,21 @@ fn main() {
                 let mut player = Player::new();
 
                 loop {
-                    rx.recv().unwrap();
-
-                    println!("Receied event in side-loop");
-                    let tmp_s_path = String::from("C:/Users/Callum/Desktop/1.mp3");
-                    let s = Song::new_from_file(Path::new(&tmp_s_path)).unwrap();
-                    player.add_to_queue(&s);
+                    let command = rx.recv().unwrap();
+                    match command {
+                        PlayerCommand::Enqueue(song) => {
+                            player.add_to_queue(&song);
+                        },
+                        PlayerCommand::Play => {
+                            player.play();
+                        },
+                        PlayerCommand::Pause => {
+                            player.pause();
+                        },
+                        PlayerCommand::SetVolume(vol) => {
+                            player.change_vol(vol);
+                        },
+                    }
                 }
             });
             Ok(())
@@ -47,12 +63,17 @@ fn main() {
 }
 
 #[tauri::command]
-async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
-    let mut state = state_mutex.lock().unwrap();
-    println!("fuck!");
-    state.command_tx.send(()).unwrap();
+async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
+    println!("Received tauri command: enqueue_song");
+
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::Enqueue(song)).unwrap();
     Ok(())
 }
+
+
+
+
 
 // fn handle_inputs(player: &mut Player) {
 //     loop {

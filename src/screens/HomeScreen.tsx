@@ -48,11 +48,6 @@ export default function HomeScreen(
 ) {
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
 
-  useEffect(() => {
-    console.log('test');
-    invoke('enqueue_song').catch(e => console.log(e));
-  }, []);
-
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
