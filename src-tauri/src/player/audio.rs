@@ -2,17 +2,15 @@ use std::{
     collections::VecDeque,
     fs::File,
     io::BufReader,
-    path::{Path, PathBuf},
     sync::{
         mpsc::{channel, Receiver, Sender},
         Arc, Mutex,
     },
     thread,
-    time::Duration,
 };
 
 use rodio::{
-    source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sample, Sink, Source,
+    source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink,
 };
 
 use crate::data::song::Song;
@@ -133,20 +131,7 @@ impl Player {
         self.audio_sink.lock().unwrap().pause();
     }
 
-    pub fn toggle_playing(&mut self) {
-        if self.audio_sink.lock().unwrap().is_paused() {
-            self.play();
-        } else {
-            self.pause();
-        }
-    }
-
     pub fn skip_current_song(&mut self) {
         self.audio_sink.lock().unwrap().skip_one();
-    }
-
-    pub fn debug_queue(&self) {
-        println!("file queue: {:?}", self.songs_queue);
-        print!("Song queue: {:?}", self.audio_sink.lock().unwrap().len());
     }
 }
