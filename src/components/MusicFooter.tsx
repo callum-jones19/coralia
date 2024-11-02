@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from "react";
+import { Pause, Play, SkipBack, SkipForward } from "react-feather";
 
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
@@ -53,7 +54,7 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip }: Mu
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
               onClick={() => console.log("todo")}
             >
-              &lt;
+              <SkipBack className="m-auto h-1/2 w-1/2" />
             </button>
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
@@ -65,14 +66,14 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip }: Mu
                 }
               }}
             >
-              {isPaused && <p>⏵︎</p>}
-              {!isPaused && <p>⏸︎</p>}
+              {isPaused && <Play className="m-auto h-1/2 w-1/2" />}
+              {!isPaused && <Pause className="m-auto h-1/2 w-1/2" />}
             </button>
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
               onClick={onClickSkip}
             >
-              &gt;
+              <SkipForward className="m-auto h-1/2 w-1/2" />
             </button>
           </div>
           <div id="music-info" className="flex flex-col text-white text-center">
