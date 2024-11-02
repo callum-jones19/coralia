@@ -1,4 +1,5 @@
-import { Song } from "../data/types";
+import { enqueue_song } from "../api/commands";
+import { Song } from "../types";
 import SongListItem from "./SongListItem";
 
 export interface SongListProps {
@@ -29,19 +30,13 @@ export default function SongList(
           Album Artist
         </p>
       </div>
-      {songList.map((song, index) => (
+      {songList.map(song => (
         <SongListItem
           key={song.filePath}
           song={song}
           onClick={() => {
             onSongClick(song);
-            for (let i = index + 1; i < songList.length; i++) {
-              console.log(i);
-              console.log(songList[i]);
-              if (songList[i] !== undefined) {
-                onUpdateQueue(songList[i]);
-              }
-            }
+            enqueue_song(song);
           }}
           isPlaying={currPlayingSong
             ? currPlayingSong.filePath === song.filePath

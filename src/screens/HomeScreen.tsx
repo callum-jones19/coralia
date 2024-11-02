@@ -1,84 +1,32 @@
 import { useEffect, useState } from "react";
-import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
-import { filter_songs_by_title } from "../data/importer";
-import { Album, MusicTags, Song } from "../data/types";
-import MusicGrid from "../components/MusicGrid";
-import { invoke } from "@tauri-apps/api";
+import { Song } from "../types";
+import { get_library_songs } from "../api/importer";
 
-// FIXME consolidate music data into a single
-export interface HomeScreenProps {
-  onClickSong: (song: Song) => void;
-  toggleAudioPlaying: () => void;
-  setSongPos: (newPos: number) => void;
-  songPos: number;
-  isPlaying: boolean;
-  songDuration: number;
-  volume: number;
-  setVolume: (newVol: number) => void;
-  musicTags: MusicTags | null;
-  startPlaying: () => void;
-  currentSong: Song | null;
-  queue: Song[];
-  onQueueAdd: (songToAdd: Song) => void;
-  songs: Song[];
-  onSkipSong: () => void;
-  albums: Album[];
-}
+export default function HomeScreen() {
+  const [songs, setSongs] = useState<Song[]>([]);
 
-export default function HomeScreen(
-  {
-    toggleAudioPlaying,
-    isPlaying,
-    setSongPos,
-    setVolume,
-    songDuration,
-    songPos,
-    volume,
-    onClickSong,
-    musicTags,
-    currentSong,
-    queue,
-    onQueueAdd,
-    onSkipSong,
-    songs,
-    albums
-  }: HomeScreenProps,
-) {
-  const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
+  useEffect(() => {
+    get_library_songs()
+      .then(songs => setSongs(songs))
+      .catch(e => console.log(e));
+  }, []);
 
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
-        <SideBar queueSongs={queue} currSongAlbumUri={currentSong?.tags.encodedCoverArt} />
+        <SideBar queueSongs={[]} currSongAlbumUri={undefined} />
         <div className="basis-full flex-grow-0 min-w-0 relative overflow-auto">
-          {/* <SongList
-            songList={filteredSongs.length === 0 ? songs : filteredSongs}
-            onSongClick={s => {
-              onClickSong(s);
-            }}
-            currPlayingSong={currentSong}
-            onUpdateQueue={onQueueAdd}
+          <SongList
+            songList={songs}
+            onSongClick={s => console.log(s)}
+            currPlayingSong={null}
+            onUpdateQueue={() => console.log("todo")}
           />
-          <input
-            className="p-4 absolute bottom-4 right-8 rounded-lg shadow-md"
-            placeholder="song title filter"
-            onChange={e => {
-              console.log(e.target.value);
-              if (e.target.value !== "") {
-                filter_songs_by_title(e.target.value)
-                  .then(filtered_songs => setFilteredSongs(filtered_songs))
-                  .catch(err => console.log(err));
-              } else {
-                setFilteredSongs([]);
-              }
-            }}
-          /> */}
-          <MusicGrid albums={albums} />
         </div>
       </div>
-      <MusicFooter
+      {/* <MusicFooter
         currSongArtist={!musicTags ? "..." : musicTags.artist}
         currSongName={!musicTags ? "..." : musicTags.title}
         toggleAudioPlaying={toggleAudioPlaying}
@@ -89,7 +37,7 @@ export default function HomeScreen(
         songPos={songPos}
         volume={volume}
         onSkipSong={onSkipSong}
-      />
+      /> */}
     </div>
   );
 }

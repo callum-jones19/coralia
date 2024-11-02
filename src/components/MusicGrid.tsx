@@ -1,5 +1,5 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { Album } from "../data/types";
+import { Album } from "../types";
 import MusicGridAlbum from "./MusicGridAlbum";
 
 export interface MusicGridProps {

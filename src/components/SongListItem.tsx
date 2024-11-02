@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Song } from "../data/types";
+import { Song } from "../types";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export interface SongListItemProps {

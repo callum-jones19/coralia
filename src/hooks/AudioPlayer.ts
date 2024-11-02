@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { Album, Song } from "../data/types";
-import { get_all_albums, get_library_songs } from "../data/importer";
+import { Album, Song } from "../types";
+import { get_all_albums, get_library_songs } from "../api/importer";
 
 export const useAudio = (
   soundRef: MutableRefObject<HTMLAudioElement | null>,

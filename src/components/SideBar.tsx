@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Song } from "../data/types";
+import { Song } from "../types";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export interface SideBarProps {
