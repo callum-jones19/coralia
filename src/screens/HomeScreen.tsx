@@ -3,8 +3,15 @@ import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { Song } from "../types";
 import { get_library_songs } from "../api/importer";
+import MusicFooter from "../components/MusicFooter";
 
-export default function HomeScreen() {
+export interface HomeScreenProps {
+  isPaused: boolean;
+  onUpdatePause: (isPaused: boolean) => void;
+  onClickSkip: () => void;
+}
+
+export default function HomeScreen({ isPaused, onUpdatePause, onClickSkip }: HomeScreenProps) {
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
@@ -26,18 +33,7 @@ export default function HomeScreen() {
           />
         </div>
       </div>
-      {/* <MusicFooter
-        currSongArtist={!musicTags ? "..." : musicTags.artist}
-        currSongName={!musicTags ? "..." : musicTags.title}
-        toggleAudioPlaying={toggleAudioPlaying}
-        isPlaying={isPlaying}
-        setSongPos={setSongPos}
-        setVolume={setVolume}
-        songDuration={songDuration}
-        songPos={songPos}
-        volume={volume}
-        onSkipSong={onSkipSong}
-      /> */}
+      <MusicFooter isPaused={isPaused} onUpdatePause={onUpdatePause} onClickSkip={onClickSkip} />
     </div>
   );
 }

@@ -68,22 +68,30 @@ impl Player {
         thread::spawn(move || {
             loop {
                 // Sleep this thread until a song ends
-                let _ = player_event_rx.recv();
-                println!("Song finished!");
+                let player_evt = player_event_rx.recv().unwrap();
+                match player_evt {
+                    PlayerEvent::SongEnd => {
+                        println!("Song finished!");
 
-                let mut sink3 = sink2.lock().unwrap();
-                let mut queue3 = queue2.lock().unwrap();
+                        let mut sink3 = sink2.lock().unwrap();
+                        let mut queue3 = queue2.lock().unwrap();
 
-                println!("Sink length: {}", sink3.len());
+                        println!("Sink length: {}", sink3.len());
 
-                // Pop the old song out of the queue
-                queue3.pop_front();
+                        // Pop the old song out of the queue
+                        queue3.pop_front();
 
-                let next_song = match queue3.get(2) {
-                    Some(s) => s,
-                    None => continue,
-                };
-                open_song_into_sink(&mut sink3, next_song, &end_event_tx2);
+                        let next_song = match queue3.get(2) {
+                            Some(s) => s,
+                            None => continue,
+                        };
+                        open_song_into_sink(&mut sink3, next_song, &end_event_tx2);
+                    },
+                    // FIXME this might suggest i did something dumb in the
+                    // architecture. Think about it when you're less delirious.
+                    _ => {}
+                }
+
             }
         });
         // ======================================================================
@@ -121,6 +129,9 @@ impl Player {
         if self.number_songs_in_sink() < 3 {
             self.song_into_sink(&song);
         }
+
+        println!("{:?}", self.songs_queue);
+        println!("{}", self.number_songs_in_sink());
     }
 
     pub fn change_vol(&mut self, vol: f32) {
@@ -139,5 +150,6 @@ impl Player {
 
     pub fn skip_current_song(&mut self) {
         self.audio_sink.lock().unwrap().skip_one();
+        self.songs_queue.lock().unwrap().pop_front();
     }
 }

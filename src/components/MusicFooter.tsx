@@ -1,68 +1,48 @@
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 export interface MusicFooterProps {
-  currSongName: string;
-  currSongArtist: string;
-  toggleAudioPlaying: () => void;
-  setSongPos: (newPos: number) => void;
-  songPos: number;
-  isPlaying: boolean;
-  songDuration: number;
-  volume: number;
-  setVolume: (newVol: number) => void;
-  onSkipSong: () => void;
+  onUpdatePause: (isPaused: boolean) => void;
+  isPaused: boolean;
+  onClickSkip: () => void;
 }
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
 // the song
-export default function MusicFooter(
-  {
-    songDuration,
-    currSongArtist,
-    currSongName,
-    toggleAudioPlaying,
-    setSongPos,
-    isPlaying,
-    volume,
-    setVolume,
-    songPos,
-    onSkipSong,
-  }: MusicFooterProps,
-) {
+export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip }: MusicFooterProps) {
   const [seekPos, setSeekPos] = useState<number>(0);
   // FIXME
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
 
-  const songPosMins = useMemo(() => {
-    const mins = Math.floor(songPos / 60).toString().padStart(2, "0");
-    return mins;
-  }, [songPos]);
+  // const songPosMins = useMemo(() => {
+  //   const mins = Math.floor(songPos / 60).toString().padStart(2, "0");
+  //   return mins;
+  // }, [songPos]);
 
-  const songPosSecs = useMemo(() => {
-    const secs = Math.floor(songPos % 60).toString().padStart(2, "0");
-    return secs;
-  }, [songPos]);
+  // const songPosSecs = useMemo(() => {
+  //   const secs = Math.floor(songPos % 60).toString().padStart(2, "0");
+  //   return secs;
+  // }, [songPos]);
 
-  const seekPosMins = useMemo(() => {
-    const mins = Math.floor(seekPos / 60).toString().padStart(2, "0");
-    return mins;
-  }, [seekPos]);
+  // const seekPosMins = useMemo(() => {
+  //   const mins = Math.floor(seekPos / 60).toString().padStart(2, "0");
+  //   return mins;
+  // }, [seekPos]);
 
-  const seekPosSecs = useMemo(() => {
-    const secs = Math.floor(seekPos % 60).toString().padStart(2, "0");
-    return secs;
-  }, [seekPos]);
+  // const seekPosSecs = useMemo(() => {
+  //   const secs = Math.floor(seekPos % 60).toString().padStart(2, "0");
+  //   return secs;
+  // }, [seekPos]);
 
-  const durationMins = useMemo(() => {
-    const mins = Math.floor(songDuration / 60).toString().padStart(2, "0");
-    return mins;
-  }, [songDuration]);
+  // const durationMins = useMemo(() => {
+  //   const mins = Math.floor(songDuration / 60).toString().padStart(2, "0");
+  //   return mins;
+  // }, [songDuration]);
 
-  const durationSecs = useMemo(() => {
-    const secs = Math.floor(songDuration % 60).toString().padStart(2, "0");
-    return secs;
-  }, [songDuration]);
+  // const durationSecs = useMemo(() => {
+  //   const secs = Math.floor(songDuration % 60).toString().padStart(2, "0");
+  //   return secs;
+  // }, [songDuration]);
 
   return (
     <div className="bg-gray-950 basis-16 flex-shrink-0 pt-3 pb-3">
@@ -71,33 +51,33 @@ export default function MusicFooter(
           <div id="play-controls" className="flex flex-row items-center">
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={() => {
-                if (songPos >= 2) {
-                  setSongPos(0);
-                }
-              }}
+              onClick={() => console.log("todo")}
             >
               &lt;
             </button>
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
               onClick={() => {
-                toggleAudioPlaying();
+                if (isPaused) {
+                  onUpdatePause(false);
+                } else {
+                  onUpdatePause(true);
+                }
               }}
             >
-              {!isPlaying && <p>⏵︎</p>}
-              {isPlaying && <p>⏸︎</p>}
+              {isPaused && <p>⏵︎</p>}
+              {!isPaused && <p>⏸︎</p>}
             </button>
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={onSkipSong}
+              onClick={onClickSkip}
             >
               &gt;
             </button>
           </div>
           <div id="music-info" className="flex flex-col text-white text-center">
-            <p className="font-bold">{currSongName}</p>
-            <p className="font-light">{currSongArtist}</p>
+            <p className="font-bold">TODO</p>
+            <p className="font-light">TODO</p>
           </div>
           <div id="volume" className="flex flex-row gap-2">
             <svg
@@ -116,7 +96,7 @@ export default function MusicFooter(
                 strokeLinejoin="round"
               />
             </svg>
-            <input
+            {/* <input
               id="volume-slider"
               type="range"
               readOnly
@@ -127,10 +107,10 @@ export default function MusicFooter(
                 const newVol = parseFloat(e.target.value);
                 setVolume(newVol);
               }}
-            />
+            /> */}
           </div>
         </div>
-        <div className="flex flex-row mr-10 ml-10">
+        {/* <div className="flex flex-row mr-10 ml-10">
           {!isSeeking && (
             <p className="text-white">{songPosMins}:{songPosSecs}</p>
           )}
@@ -158,7 +138,7 @@ export default function MusicFooter(
             }}
           />
           <p className="text-white">{durationMins}:{durationSecs}</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

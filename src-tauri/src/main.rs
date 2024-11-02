@@ -19,11 +19,6 @@ enum PlayerCommand {
     SkipOne,
 }
 
-struct PlayerState {
-    is_playing: bool,
-    curr_song_pos: Option<f32>,
-}
-
 struct AppState {
     command_tx: Sender<PlayerCommand>,
     library: Library,
@@ -77,13 +72,13 @@ fn main() {
                     let event = player_event_rx2.recv().unwrap();
                     match event {
                         PlayerEvent::SongEnd => {
-                            handle.emit_all("songEnd", ()).unwrap();
+                            handle.emit_all("song-end", ()).unwrap();
                         },
                         PlayerEvent::SongPause => {
-                            handle.emit_all("isPaused", true).unwrap();
+                            handle.emit_all("is-paused", true).unwrap();
                         },
                         PlayerEvent::SongPlay => {
-                            handle.emit_all("isPaused", false).unwrap();
+                            handle.emit_all("is-paused", false).unwrap();
                         },
                     }
                 }
