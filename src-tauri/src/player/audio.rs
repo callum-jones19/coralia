@@ -48,8 +48,7 @@ impl Player {
     pub fn new() -> Self {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
-        sink.set_speed(5.0);
-        sink.set_volume(0.3);
+        sink.set_volume(0.2);
         let (end_event_tx,end_event_rx): (Sender<()>, Receiver<()>) = channel();
 
         let sink_wrapped = Arc::new(Mutex::new(sink));
@@ -61,18 +60,26 @@ impl Player {
         let sink2 = Arc::clone(&sink_wrapped);
         let queue2 = Arc::clone(&songs_queue_wrapped);
         let end_event_tx2 = end_event_tx.clone();
+
+        // This is also good because it means the callback won't accidentally
+        // delay playback. Don't forget that the callback must execute to
+        // completion before the next song in the sink plays.
         thread::spawn(move || {
             loop {
                 // Sleep this thread until a song ends
                 let _ = end_event_rx.recv();
+                println!("Song finished!");
+
 
                 let mut sink3 = sink2.lock().unwrap();
                 let mut queue3 = queue2.lock().unwrap();
 
+                println!("Sink length: {}", sink3.len());
+
                 // Pop the old song out of the queue
                 queue3.pop_front();
 
-                let next_song = match queue3.get(3) {
+                let next_song = match queue3.get(2) {
                     Some(s) => s,
                     None => continue,
                 };
