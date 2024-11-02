@@ -4,14 +4,14 @@
 use std::{
     path::Path,
     sync::{
-        mpsc::{self, Receiver, Sender},
         Mutex,
     },
 };
 
+use crossbeam::channel::Sender;
 use data::{album::Album, library::Library, song::Song};
-use player::audio::Player;
-use tauri::State;
+use player::audio::{Player, PlayerEvent};
+use tauri::{Manager, State};
 
 mod data;
 mod player;
@@ -22,6 +22,11 @@ enum PlayerCommand {
     Pause,
     SetVolume(f32),
     SkipOne
+}
+
+struct PlayerState {
+    is_playing: bool,
+    curr_song_pos: Option<f32>,
 }
 
 struct AppState {
@@ -37,12 +42,12 @@ fn main() {
     println!("Setting up music library...");
     let music_library = Library::new(root_lib);
     println!("Scanned music library...");
-    let (tx, rx): (Sender<PlayerCommand>, Receiver<PlayerCommand>) = mpsc::channel();
+    let (tx, rx) = crossbeam::channel::unbounded::<PlayerCommand>();
 
     tauri::Builder::default()
-        .setup(move |_| {
+        .setup(move |app| {
             tauri::async_runtime::spawn(async move {
-                println!("Starting loop");
+                println!("Starting player command handler loop");
                 let mut player = Player::new();
 
                 loop {
@@ -66,6 +71,17 @@ fn main() {
                     }
                 }
             });
+
+            let handle = app.app_handle();
+
+            tauri::async_runtime::spawn(async move {
+                println!("Starting player event handler loop");
+                loop {
+
+                    handle.emit_all("isPlaying", false).unwrap();
+                }
+            });
+
             Ok(())
         })
         .manage(Mutex::new(AppState {
@@ -143,3 +159,8 @@ async fn get_library_albums(state_mutex: State<'_, Mutex<AppState>>) -> Result<V
     let state = state_mutex.lock().unwrap();
     Ok(state.library.get_all_albums())
 }
+
+// async fn is_player_playing(state_mutex: State<'_, Mutex<AppState>>) -> Result<bool, ()> {
+//     let state = state_mutex.lock().unwrap();
+//     Ok(state.player_state.is_playing)
+// }

@@ -3,17 +3,23 @@ use std::{
     fs::File,
     io::BufReader,
     sync::{
-        mpsc::{channel, Receiver, Sender},
         Arc, Mutex,
     },
     thread,
 };
 
+use crossbeam::channel::Sender;
 use rodio::{
     source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink,
 };
 
 use crate::data::song::Song;
+
+pub enum PlayerEvent {
+    SongEnd,
+    SongPause,
+    SongPlay
+}
 
 pub struct Player {
     // Need these to keep the player stream alive, but we don't
@@ -23,10 +29,10 @@ pub struct Player {
     // Actual values
     audio_sink: Arc<Mutex<Sink>>,
     songs_queue: Arc<Mutex<VecDeque<Song>>>,
-    song_end_tx: Sender<()>,
+    player_event_tx: Sender<PlayerEvent>,
 }
 
-fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<()>) {
+fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<PlayerEvent>) {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
     let song_source = Decoder::new(song_file).unwrap();
@@ -34,7 +40,7 @@ fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<()>) {
     // Create a callback
     let song_end_tx = song_end_tx.clone();
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
-        song_end_tx.send(()).unwrap();
+        song_end_tx.send(PlayerEvent::SongEnd).unwrap();
     }));
 
     // Append the song and its end callback signaler into the queue
@@ -47,7 +53,7 @@ impl Player {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
         sink.set_volume(0.2);
-        let (end_event_tx, end_event_rx): (Sender<()>, Receiver<()>) = channel();
+        let (player_event_tx, player_event_rx) = crossbeam::channel::unbounded::<PlayerEvent>();
 
         let sink_wrapped = Arc::new(Mutex::new(sink));
         let songs_queue_wrapped = Arc::new(Mutex::new(VecDeque::<Song>::new()));
@@ -56,7 +62,7 @@ impl Player {
         // God help me
         let sink2 = Arc::clone(&sink_wrapped);
         let queue2 = Arc::clone(&songs_queue_wrapped);
-        let end_event_tx2 = end_event_tx.clone();
+        let end_event_tx2 = player_event_tx.clone();
 
         // This is also good because it means the callback won't accidentally
         // delay playback. Don't forget that the callback must execute to
@@ -64,7 +70,7 @@ impl Player {
         thread::spawn(move || {
             loop {
                 // Sleep this thread until a song ends
-                let _ = end_event_rx.recv();
+                let _ = player_event_rx.recv();
                 println!("Song finished!");
 
                 let mut sink3 = sink2.lock().unwrap();
@@ -89,13 +95,13 @@ impl Player {
             _stream_handle: stream_handle,
             audio_sink: sink_wrapped,
             songs_queue: songs_queue_wrapped,
-            song_end_tx: end_event_tx,
+            player_event_tx,
         }
     }
 
     fn song_into_sink(&mut self, song: &Song) {
         let mut sink = self.audio_sink.lock().unwrap();
-        open_song_into_sink(&mut sink, &song, &self.song_end_tx.clone());
+        open_song_into_sink(&mut sink, &song, &self.player_event_tx.clone());
     }
 
     ///
@@ -125,10 +131,12 @@ impl Player {
 
     pub fn play(&mut self) {
         self.audio_sink.lock().unwrap().play();
+        self.player_event_tx.send(PlayerEvent::SongPlay).unwrap();
     }
 
     pub fn pause(&mut self) {
         self.audio_sink.lock().unwrap().pause();
+        self.player_event_tx.send(PlayerEvent::SongPause).unwrap();
     }
 
     pub fn skip_current_song(&mut self) {
