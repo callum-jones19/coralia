@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { filter_songs_by_title } from "../data/importer";
 import { Album, MusicTags, Song } from "../data/types";
 import MusicGrid from "../components/MusicGrid";
+import { invoke } from "@tauri-apps/api";
 
 // FIXME consolidate music data into a single
 export interface HomeScreenProps {
@@ -46,6 +47,11 @@ export default function HomeScreen(
   }: HomeScreenProps,
 ) {
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
+
+  useEffect(() => {
+    console.log('test');
+    invoke('enqueue_song').catch(e => console.log(e));
+  }, []);
 
   return (
     <div className="h-full flex flex-col">

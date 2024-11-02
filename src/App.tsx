@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useAudio } from "./hooks/AudioPlayer";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import { invoke } from "@tauri-apps/api";
 
 export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
