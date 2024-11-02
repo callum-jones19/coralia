@@ -1,16 +1,21 @@
-use std::{collections::VecDeque, fs::File, io::BufReader, path::{Path, PathBuf}, sync::{mpsc::{channel, Receiver, Sender}, Arc, Mutex}, thread};
+use std::{
+    collections::VecDeque,
+    fs::File,
+    io::BufReader,
+    path::{Path, PathBuf},
+    sync::{
+        mpsc::{channel, Receiver, Sender},
+        Arc, Mutex,
+    },
+    thread,
+    time::Duration,
+};
 
 use rodio::{
-    source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sample, Sink, Source
+    source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sample, Sink, Source,
 };
 
 use crate::data::song::Song;
-
-enum PlayerCommand {
-    Pause,
-    Play,
-    Enqueue(Song),
-}
 
 pub struct Player {
     // Need these to keep the player stream alive, but we don't
@@ -19,58 +24,95 @@ pub struct Player {
     _stream_handle: OutputStreamHandle,
     // Actual values
     audio_sink: Arc<Mutex<Sink>>,
-    files_queue: VecDeque<PathBuf>,
-    event_rx: Receiver<()>,
-    command_tx: Sender<PlayerCommand>,
+    songs_queue: Arc<Mutex<VecDeque<Song>>>,
+    song_end_tx: Sender<()>,
+}
+
+fn open_song_into_sink(sink:&mut Sink, song: &Song, song_end_tx: &Sender<()>) {
+    // Open the file.
+    let song_file = BufReader::new(File::open(&song.file_path).unwrap());
+    let song_source = Decoder::new(song_file).unwrap();
+
+    // Create a callback
+    let song_end_tx = song_end_tx.clone();
+    let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
+        song_end_tx.send(()).unwrap();
+    }));
+
+    // Append the song and its end callback signaler into the queue
+    sink.append(song_source);
+    sink.append(callback_source);
 }
 
 impl Player {
     pub fn new() -> Self {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
+        sink.set_speed(5.0);
+        sink.set_volume(0.3);
+        let (end_event_tx,end_event_rx): (Sender<()>, Receiver<()>) = channel();
 
-        let (event_tx, event_rx): (Sender<()>, Receiver<()>) = channel();
-        let (command_tx, command_rx): (Sender<PlayerCommand>, Receiver<PlayerCommand>) = channel();
+        let sink_wrapped = Arc::new(Mutex::new(sink));
+        let songs_queue_wrapped = Arc::new(Mutex::new(VecDeque::<Song>::new()));
+
+
+        // ======================================================================
+        // God help me
+        let sink2 = Arc::clone(&sink_wrapped);
+        let queue2 = Arc::clone(&songs_queue_wrapped);
+        let end_event_tx2 = end_event_tx.clone();
+        thread::spawn(move || {
+            loop {
+                // Sleep this thread until a song ends
+                let _ = end_event_rx.recv();
+
+                let mut sink3 = sink2.lock().unwrap();
+                let mut queue3 = queue2.lock().unwrap();
+
+                // Pop the old song out of the queue
+                queue3.pop_front();
+
+                let next_song = match queue3.get(3) {
+                    Some(s) => s,
+                    None => continue,
+                };
+                open_song_into_sink(&mut sink3, next_song, &end_event_tx2);
+            }
+        });
+        // ======================================================================
 
         Player {
             _stream,
             _stream_handle: stream_handle,
-            audio_sink: Arc::new(Mutex::new(sink)),
-            files_queue: VecDeque::new(),
-            command_tx,
-            event_rx
+            audio_sink: sink_wrapped,
+            songs_queue: songs_queue_wrapped,
+            song_end_tx: end_event_tx,
         }
     }
 
-    fn open_song_into_sink(&mut self, song: &Song) {
-        // Open the file and place its source into the sink.
-        let song_file = BufReader::new(File::open(&song.file_path).unwrap());
-        let song_source = Decoder::new(song_file).unwrap();
-        self.audio_sink.lock().unwrap().append(song_source);
+    fn song_into_sink(&mut self, song: &Song) {
+        let mut sink = self.audio_sink.lock().unwrap();
+        open_song_into_sink(&mut sink, &song, &self.song_end_tx.clone());
+    }
 
-        // Now create a callback source and place it after this song, so we can signal
-        // when it has finished playback.
-        let tmp: Arc<Mutex<Sink>> = Arc::clone(&self.audio_sink);
-        let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
-            println!("Song finished!");
-            let t1 = tmp.lock().unwrap().is_paused();
-            println!("{}", t1);
-        }));
-        self.audio_sink.lock().unwrap().append(callback_source);
-
-        // Don't start playing on append
-        if self.audio_sink.lock().unwrap().is_paused() {
-            self.audio_sink.lock().unwrap().pause();
-        }
+    ///
+    /// Gets number of actual songs in the sink. This prevents us accidentally
+    /// double counting empty signalling sources as songs.
+    fn number_songs_in_sink(&self) -> usize {
+        let num_srcs_in_sink = self.audio_sink.lock().unwrap().len();
+        let num_songs = num_srcs_in_sink / 2;
+        num_songs
     }
 
     /// Add to our queue of paths that we want to play.
     pub fn add_to_queue(&mut self, song: &Song) {
-        self.files_queue.push_back(song.file_path.to_path_buf());
+        self.songs_queue.lock().unwrap().push_back(song.clone());
 
-        // We want to add this to the sink as an actual opened source if the sink has room
-        if self.audio_sink.lock().unwrap().len() < 5 {
-            self.open_song_into_sink(&song);
+        // The sink should have at most 3 song files open in it at any given time.
+        // If it is full, we just leave the song in the file queue, and then
+        // will pull more into the sink as other songs finish playing.
+        if self.number_songs_in_sink() < 3 {
+            self.song_into_sink(&song);
         }
     }
 
@@ -95,7 +137,7 @@ impl Player {
     }
 
     pub fn debug_queue(&self) {
-        println!("file queue: {:?}", self.files_queue);
+        println!("file queue: {:?}", self.songs_queue);
         print!("Song queue: {:?}", self.audio_sink.lock().unwrap().len());
     }
 }
