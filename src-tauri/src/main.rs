@@ -1,9 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{path::Path, sync::Mutex};
+use std::{path::Path, sync::{mpsc::{channel, Sender}, Mutex}};
 
-use crossbeam::channel::Sender;
 use data::{album::Album, library::Library, song::Song};
 use player::audio::{Player, PlayerEvent};
 use tauri::{Manager, State};
@@ -32,16 +31,16 @@ fn main() {
     println!("Setting up music library...");
     let music_library = Library::new(root_lib);
     println!("Scanned music library...");
-    let (player_cmd_tx, player_cmd_rx) = crossbeam::channel::unbounded::<PlayerCommand>();
+    let (player_cmd_tx, player_cmd_rx) =  channel::<PlayerCommand>();
 
     tauri::Builder::default()
         .setup(move |app| {
-            let (player_event_tx, player_event_rx) = crossbeam::channel::unbounded::<PlayerEvent>();
-            let player_event_rx2 = player_event_rx.clone();
+            let (player_event_tx, player_event_rx) =  channel::<PlayerEvent>();
+            let handle = app.app_handle();
 
             tauri::async_runtime::spawn(async move {
                 println!("Starting player command handler loop");
-                let mut player = Player::new(player_event_tx, player_event_rx);
+                let mut player = Player::new(player_event_tx, player_event_rx, handle);
 
                 loop {
                     let command = player_cmd_rx.recv().unwrap();
@@ -59,27 +58,9 @@ fn main() {
                             player.change_vol(vol);
                         }
                         PlayerCommand::SkipOne => {
+                            println!("skipping");
                             player.skip_current_song();
                         }
-                    }
-                }
-            });
-
-            let handle = app.app_handle();
-            tauri::async_runtime::spawn(async move {
-                println!("Starting player event handler loop");
-                loop {
-                    let event = player_event_rx2.recv().unwrap();
-                    match event {
-                        PlayerEvent::SongEnd => {
-                            handle.emit_all("song-end", ()).unwrap();
-                        },
-                        PlayerEvent::SongPause => {
-                            handle.emit_all("is-paused", true).unwrap();
-                        },
-                        PlayerEvent::SongPlay => {
-                            handle.emit_all("is-paused", false).unwrap();
-                        },
                     }
                 }
             });

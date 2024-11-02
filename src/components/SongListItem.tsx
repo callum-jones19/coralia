@@ -14,7 +14,7 @@ export default function SongListItem(
     SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
-  const tmpSrc = song.tags.encodedCoverArt ? convertFileSrc(song.tags.encodedCoverArt) : undefined;
+  const tmpSrc = song.artwork['folder_album_art'] ? convertFileSrc(song.artwork['folder_album_art']) : undefined;
 
   return (
     <div
@@ -31,7 +31,7 @@ export default function SongListItem(
     >
       {/* <p className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink" title={songName}>{songName}</p> */}
       <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex-shrink flex flex-row items-center gap-1">
-        <img alt="album art" src={tmpSrc} className="h-10 aspect-square"/>
+        {/* <img loading="lazy" alt="album art" src={tmpSrc} className="h-10 aspect-square"/> */}
         <button
           className="mr-2 bg-gray-300 p-2 pt-1 pb-1 rounded-md"
           onClick={onClick}

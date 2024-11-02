@@ -107,6 +107,7 @@ dependencies = [
  "symphonia-metadata",
  "tauri",
  "tauri-build",
+ "tokio",
 ]
 
 [[package]]

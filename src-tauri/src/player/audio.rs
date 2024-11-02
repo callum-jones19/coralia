@@ -2,12 +2,12 @@ use std::{
     collections::VecDeque,
     fs::File,
     io::BufReader,
-    sync::{Arc, Mutex},
+    sync::{mpsc::{Receiver, Sender}, Arc, Mutex},
     thread,
 };
 
-use crossbeam::channel::{Receiver, Sender};
 use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
+use tauri::{AppHandle, Manager};
 
 use crate::data::song::Song;
 
@@ -26,6 +26,7 @@ pub struct Player {
     audio_sink: Arc<Mutex<Sink>>,
     songs_queue: Arc<Mutex<VecDeque<Song>>>,
     player_event_tx: Sender<PlayerEvent>,
+    app_handle: AppHandle,
 }
 
 fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<PlayerEvent>) {
@@ -36,7 +37,11 @@ fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<Player
     // Create a callback
     let song_end_tx = song_end_tx.clone();
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
-        song_end_tx.send(PlayerEvent::SongEnd).unwrap();
+        println!("Callback running");
+        match song_end_tx.send(PlayerEvent::SongEnd) {
+            Ok(a) => println!("Successfully sent song end event"),
+            Err(e) => println!("{:?}", e),
+        }
     }));
 
     // Append the song and its end callback signaler into the queue
@@ -48,6 +53,7 @@ impl Player {
     pub fn new(
         player_event_tx: Sender<PlayerEvent>,
         player_event_rx: Receiver<PlayerEvent>,
+        appHandle: AppHandle,
     ) -> Self {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
@@ -65,10 +71,20 @@ impl Player {
         // This is also good because it means the callback won't accidentally
         // delay playback. Don't forget that the callback must execute to
         // completion before the next song in the sink plays.
-        thread::spawn(move || {
+        let inner_app_handle = appHandle.clone();
+        thread::spawn( move || {
             loop {
                 // Sleep this thread until a song ends
-                let player_evt = player_event_rx.recv().unwrap();
+                println!("Sleeping");
+                let player_evt = match player_event_rx.recv() {
+                    Ok(e) => e,
+                    Err(err) => {
+                        println!("Error receiving message");
+                        println!("{:?}", err);
+                        continue;
+                    }
+                };
+                println!("Awake");
                 match player_evt {
                     PlayerEvent::SongEnd => {
                         println!("Song finished!");
@@ -86,11 +102,16 @@ impl Player {
                             None => continue,
                         };
                         open_song_into_sink(&mut sink3, next_song, &end_event_tx2);
+                        inner_app_handle.emit_all("song-end", ()).unwrap();
+
+                        let t: Vec<&String> = queue3.iter().map(|s| &s.tags.title).collect();
+
+                        println!("{:?}", t);
                     },
                     // FIXME this might suggest i did something dumb in the
                     // architecture. Think about it when you're less delirious.
-                    _ => {}
-                }
+                    _ => continue
+                };
 
             }
         });
@@ -102,6 +123,7 @@ impl Player {
             audio_sink: sink_wrapped,
             songs_queue: songs_queue_wrapped,
             player_event_tx,
+            app_handle: appHandle,
         }
     }
 
@@ -130,8 +152,11 @@ impl Player {
             self.song_into_sink(&song);
         }
 
-        println!("{:?}", self.songs_queue);
-        println!("{}", self.number_songs_in_sink());
+        let locked_songs = self.songs_queue.lock().unwrap();
+        let t: Vec<&String> = locked_songs.iter().map(|s| &s.tags.title).collect();
+
+        println!("{:?}", t);
+        println!("{}", self.audio_sink.lock().unwrap().len());
     }
 
     pub fn change_vol(&mut self, vol: f32) {
@@ -140,16 +165,15 @@ impl Player {
 
     pub fn play(&mut self) {
         self.audio_sink.lock().unwrap().play();
-        self.player_event_tx.send(PlayerEvent::SongPlay).unwrap();
+        self.app_handle.emit_all("is-paused", false).unwrap();
     }
 
     pub fn pause(&mut self) {
         self.audio_sink.lock().unwrap().pause();
-        self.player_event_tx.send(PlayerEvent::SongPause).unwrap();
+        self.app_handle.emit_all("is-paused", true).unwrap();
     }
 
     pub fn skip_current_song(&mut self) {
         self.audio_sink.lock().unwrap().skip_one();
-        self.songs_queue.lock().unwrap().pop_front();
     }
 }
