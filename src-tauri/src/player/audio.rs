@@ -2,23 +2,19 @@ use std::{
     collections::VecDeque,
     fs::File,
     io::BufReader,
-    sync::{
-        Arc, Mutex,
-    },
+    sync::{Arc, Mutex},
     thread,
 };
 
 use crossbeam::channel::Sender;
-use rodio::{
-    source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink,
-};
+use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
 
 use crate::data::song::Song;
 
 pub enum PlayerEvent {
     SongEnd,
     SongPause,
-    SongPlay
+    SongPlay,
 }
 
 pub struct Player {

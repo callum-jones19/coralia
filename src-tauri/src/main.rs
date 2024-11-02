@@ -1,12 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{
-    path::Path,
-    sync::{
-        Mutex,
-    },
-};
+use std::{path::Path, sync::Mutex};
 
 use crossbeam::channel::Sender;
 use data::{album::Album, library::Library, song::Song};
@@ -21,7 +16,7 @@ enum PlayerCommand {
     Play,
     Pause,
     SetVolume(f32),
-    SkipOne
+    SkipOne,
 }
 
 struct PlayerState {
@@ -67,7 +62,7 @@ fn main() {
                         }
                         PlayerCommand::SkipOne => {
                             player.skip_current_song();
-                        },
+                        }
                     }
                 }
             });
@@ -77,7 +72,6 @@ fn main() {
             tauri::async_runtime::spawn(async move {
                 println!("Starting player event handler loop");
                 loop {
-
                     handle.emit_all("isPlaying", false).unwrap();
                 }
             });
@@ -134,7 +128,10 @@ async fn set_volume(state_mutex: State<'_, Mutex<AppState>>, new_volume: f32) ->
     println!("Received tauri command: set_volume");
 
     let state = state_mutex.lock().unwrap();
-    state.command_tx.send(PlayerCommand::SetVolume(new_volume)).unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::SetVolume(new_volume))
+        .unwrap();
     Ok(())
 }
 
