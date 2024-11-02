@@ -28,7 +28,7 @@ pub struct Player {
     song_end_tx: Sender<()>,
 }
 
-fn open_song_into_sink(sink:&mut Sink, song: &Song, song_end_tx: &Sender<()>) {
+fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<()>) {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
     let song_source = Decoder::new(song_file).unwrap();
@@ -49,11 +49,10 @@ impl Player {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
         sink.set_volume(0.2);
-        let (end_event_tx,end_event_rx): (Sender<()>, Receiver<()>) = channel();
+        let (end_event_tx, end_event_rx): (Sender<()>, Receiver<()>) = channel();
 
         let sink_wrapped = Arc::new(Mutex::new(sink));
         let songs_queue_wrapped = Arc::new(Mutex::new(VecDeque::<Song>::new()));
-
 
         // ======================================================================
         // God help me
@@ -69,7 +68,6 @@ impl Player {
                 // Sleep this thread until a song ends
                 let _ = end_event_rx.recv();
                 println!("Song finished!");
-
 
                 let mut sink3 = sink2.lock().unwrap();
                 let mut queue3 = queue2.lock().unwrap();

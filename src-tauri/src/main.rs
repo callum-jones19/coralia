@@ -3,7 +3,8 @@
 
 use std::{
     io::{self, Write},
-    path::Path, sync::mpsc::channel,
+    path::Path,
+    sync::mpsc::channel,
 };
 
 use data::song::Song;
@@ -26,7 +27,7 @@ fn handle_inputs(player: &mut Player) {
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
             Err(_) => continue,
-            _ => {},
+            _ => {}
         }
         let tmp_cmd = match input.strip_suffix("\n") {
             Some(c) => c,
