@@ -37,16 +37,19 @@ fn main() {
     println!("Setting up music library...");
     let music_library = Library::new(root_lib);
     println!("Scanned music library...");
-    let (tx, rx) = crossbeam::channel::unbounded::<PlayerCommand>();
+    let (player_cmd_tx, player_cmd_rx) = crossbeam::channel::unbounded::<PlayerCommand>();
 
     tauri::Builder::default()
         .setup(move |app| {
+            let (player_event_tx, player_event_rx) = crossbeam::channel::unbounded::<PlayerEvent>();
+            let player_event_rx2 = player_event_rx.clone();
+
             tauri::async_runtime::spawn(async move {
                 println!("Starting player command handler loop");
-                let mut player = Player::new();
+                let mut player = Player::new(player_event_tx, player_event_rx);
 
                 loop {
-                    let command = rx.recv().unwrap();
+                    let command = player_cmd_rx.recv().unwrap();
                     match command {
                         PlayerCommand::Enqueue(song) => {
                             player.add_to_queue(&song);
@@ -68,18 +71,28 @@ fn main() {
             });
 
             let handle = app.app_handle();
-
             tauri::async_runtime::spawn(async move {
                 println!("Starting player event handler loop");
                 loop {
-                    handle.emit_all("isPlaying", false).unwrap();
+                    let event = player_event_rx2.recv().unwrap();
+                    match event {
+                        PlayerEvent::SongEnd => {
+                            handle.emit_all("songEnd", ()).unwrap();
+                        },
+                        PlayerEvent::SongPause => {
+                            handle.emit_all("isPaused", true).unwrap();
+                        },
+                        PlayerEvent::SongPlay => {
+                            handle.emit_all("isPaused", false).unwrap();
+                        },
+                    }
                 }
             });
 
             Ok(())
         })
         .manage(Mutex::new(AppState {
-            command_tx: tx,
+            command_tx: player_cmd_tx,
             library: music_library,
         }))
         .invoke_handler(tauri::generate_handler![

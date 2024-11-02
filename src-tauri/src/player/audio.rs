@@ -6,7 +6,7 @@ use std::{
     thread,
 };
 
-use crossbeam::channel::Sender;
+use crossbeam::channel::{Receiver, Sender};
 use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
 
 use crate::data::song::Song;
@@ -45,11 +45,13 @@ fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<Player
 }
 
 impl Player {
-    pub fn new() -> Self {
+    pub fn new(
+        player_event_tx: Sender<PlayerEvent>,
+        player_event_rx: Receiver<PlayerEvent>,
+    ) -> Self {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
         sink.set_volume(0.2);
-        let (player_event_tx, player_event_rx) = crossbeam::channel::unbounded::<PlayerEvent>();
 
         let sink_wrapped = Arc::new(Mutex::new(sink));
         let songs_queue_wrapped = Arc::new(Mutex::new(VecDeque::<Song>::new()));
