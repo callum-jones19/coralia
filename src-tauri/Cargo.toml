@@ -15,6 +15,7 @@ description = "A Tauri App"
 tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
+crossbeam = "0.8.2"
 dirs = "5.0.1"
 glob = "0.3.1"
 lofty = "0.20.0"
