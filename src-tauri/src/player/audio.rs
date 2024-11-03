@@ -2,12 +2,11 @@ use std::{
     collections::VecDeque,
     fs::File,
     io::BufReader,
-    sync::{mpsc::{channel, Receiver, Sender}, Arc, Mutex},
+    sync::{mpsc::{channel, Sender}, Arc, Mutex},
     thread,
 };
 
 use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
-use tauri::{AppHandle, Manager};
 
 use crate::data::song::Song;
 
@@ -76,7 +75,7 @@ impl Player {
         // delay playback. Don't forget that the callback must execute to
         // completion before the next song in the sink plays.
         let state_update_tx2 = state_update_tx.clone();
-        thread::spawn( move || {
+        thread::spawn(move || {
             loop {
                 // Sleep this thread until a song ends
                 println!("Sleeping");
@@ -164,6 +163,7 @@ impl Player {
 
     pub fn change_vol(&mut self, vol: f32) {
         self.audio_sink.lock().unwrap().set_volume(vol);
+        self.state_update_tx.send(PlayerStateUpdate::VolumeChange(vol));
     }
 
     pub fn play(&mut self) {

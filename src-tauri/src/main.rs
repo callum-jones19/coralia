@@ -71,7 +71,7 @@ fn main() {
                     let state_update = state_update_rx.recv().unwrap();
                     match state_update {
                         PlayerStateUpdate::VolumeChange(new_vol) => {
-                            handle.emit_all("song-end", new_vol).unwrap()
+                            handle.emit_all("volume-change", new_vol).unwrap()
                         },
                         PlayerStateUpdate::SongEnd => {
                             handle.emit_all("song-end", ()).unwrap();
