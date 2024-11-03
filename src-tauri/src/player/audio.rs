@@ -2,15 +2,22 @@ use std::{
     collections::VecDeque,
     fs::File,
     io::BufReader,
-    sync::{mpsc::{channel, Sender}, Arc, Mutex},
+    sync::{
+        mpsc::{channel, Sender},
+        Arc, Mutex,
+    },
     thread,
 };
 
-use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
+use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 
 use crate::data::song::Song;
 
-fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<PlayerEvent>) {
+fn open_song_into_sink(
+    sink: &mut Sink,
+    song: &Song,
+    song_end_tx: &Sender<PlayerEvent>,
+) {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
     let song_source = Decoder::new(song_file).unwrap();
@@ -36,6 +43,7 @@ pub enum PlayerEvent {
 
 pub enum PlayerStateUpdate {
     VolumeChange(f32),
+    DurationChange(f32),
     SongEnd,
     SongPlay,
     SongPause,
@@ -48,18 +56,18 @@ pub struct Player {
     _stream_handle: OutputStreamHandle,
     // Actual values
     audio_sink: Arc<Mutex<Sink>>,
+    // We need a list of sources to track what is currently in the sink,
+    // as the sink gives us no info about the sources inside it.
     songs_queue: Arc<Mutex<VecDeque<Song>>>,
     player_event_tx: Sender<PlayerEvent>,
     state_update_tx: Sender<PlayerStateUpdate>,
 }
 
 impl Player {
-    pub fn new(
-        state_update_tx: Sender<PlayerStateUpdate>,
-    ) -> Self {
+    pub fn new(state_update_tx: Sender<PlayerStateUpdate>) -> Self {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
-        let (player_event_tx, player_event_rx) =  channel::<PlayerEvent>();
+        let (player_event_tx, player_event_rx) = channel::<PlayerEvent>();
         sink.set_volume(0.2);
 
         let sink_wrapped = Arc::new(Mutex::new(sink));
@@ -75,7 +83,7 @@ impl Player {
         // delay playback. Don't forget that the callback must execute to
         // completion before the next song in the sink plays.
         let state_update_tx2 = state_update_tx.clone();
-        thread::spawn(move || {
+        thread::spawn(move || -> ! {
             loop {
                 // Sleep this thread until a song ends
                 println!("Sleeping");
@@ -109,12 +117,8 @@ impl Player {
                         let t: Vec<&String> = queue3.iter().map(|s| &s.tags.title).collect();
                         state_update_tx2.send(PlayerStateUpdate::SongEnd).unwrap();
                         println!("{:?}", t);
-                    },
-                    // FIXME this might suggest i did something dumb in the
-                    // architecture. Think about it when you're less delirious.
-                    _ => continue
+                    }
                 };
-
             }
         });
         // ======================================================================
@@ -163,17 +167,23 @@ impl Player {
 
     pub fn change_vol(&mut self, vol: f32) {
         self.audio_sink.lock().unwrap().set_volume(vol);
-        self.state_update_tx.send(PlayerStateUpdate::VolumeChange(vol)).unwrap();
+        self.state_update_tx
+            .send(PlayerStateUpdate::VolumeChange(vol))
+            .unwrap();
     }
 
     pub fn play(&mut self) {
         self.audio_sink.lock().unwrap().play();
-        self.state_update_tx.send(PlayerStateUpdate::SongPlay).unwrap();
+        self.state_update_tx
+            .send(PlayerStateUpdate::SongPlay)
+            .unwrap();
     }
 
     pub fn pause(&mut self) {
         self.audio_sink.lock().unwrap().pause();
-        self.state_update_tx.send(PlayerStateUpdate::SongPause).unwrap();
+        self.state_update_tx
+            .send(PlayerStateUpdate::SongPause)
+            .unwrap();
     }
 
     pub fn skip_current_song(&mut self) {

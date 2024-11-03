@@ -14,6 +14,8 @@ export default function App() {
     skipSong,
     updateVolume,
     volume,
+    songDuration,
+    updateSongDuration,
   } = useAudio();
 
   useEffect(() => {

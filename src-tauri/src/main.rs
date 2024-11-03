@@ -1,7 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{path::Path, sync::{mpsc::{channel, Sender}, Mutex}};
+use std::{
+    path::Path,
+    sync::{
+        mpsc::{channel, Sender},
+        Mutex,
+    },
+};
 
 use data::{album::Album, library::Library, song::Song};
 use player::audio::{Player, PlayerEvent, PlayerStateUpdate};
@@ -31,7 +37,7 @@ fn main() {
     println!("Setting up music library...");
     let music_library = Library::new(root_lib);
     println!("Scanned music library...");
-    let (player_cmd_tx, player_cmd_rx) =  channel::<PlayerCommand>();
+    let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
     let (state_update_tx, state_update_rx) = channel::<PlayerStateUpdate>();
 
     tauri::Builder::default()
@@ -72,16 +78,17 @@ fn main() {
                     match state_update {
                         PlayerStateUpdate::VolumeChange(new_vol) => {
                             handle.emit_all("volume-change", new_vol).unwrap()
-                        },
+                        }
                         PlayerStateUpdate::SongEnd => {
                             handle.emit_all("song-end", ()).unwrap();
-                        },
+                        }
                         PlayerStateUpdate::SongPlay => {
                             handle.emit_all("is-paused", false).unwrap();
-                        },
+                        }
                         PlayerStateUpdate::SongPause => {
                             handle.emit_all("is-paused", false).unwrap();
-                        },
+                        }
+                        PlayerStateUpdate::DurationChange(_) => todo!(),
                     }
                 }
             });

@@ -4,8 +4,8 @@ import { pausePlayer, playPlayer, setVolumeBackend, skipOneSong } from "../api/c
 export const useAudio = () => {
 
   const [isPaused, setIsPaused] = useState<boolean>(false);
-  // FIXME
   const [volume, setVolume] = useState<number>(1);
+  const [songDuration, setSongDuration] = useState<number | undefined>(undefined);
 
   const skipSong = () => {
     skipOneSong();
@@ -25,11 +25,17 @@ export const useAudio = () => {
     setVolumeBackend(newVol);
   }
 
+  const updateSongDuration = (newDuration: number | undefined) => {
+    setSongDuration(newDuration);
+  }
+
   return {
     isPaused,
     updateIsPaused,
     skipSong,
     updateVolume,
-    volume
+    volume,
+    updateSongDuration,
+    songDuration,
   };
 };
