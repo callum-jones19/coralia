@@ -7,11 +7,13 @@ import MusicFooter from "../components/MusicFooter";
 
 export interface HomeScreenProps {
   isPaused: boolean;
+  volume: number;
   onUpdatePause: (isPaused: boolean) => void;
+  onUpdateVolume: (newVol: number) => void;
   onClickSkip: () => void;
 }
 
-export default function HomeScreen({ isPaused, onUpdatePause, onClickSkip }: HomeScreenProps) {
+export default function HomeScreen({ isPaused, onUpdatePause, onClickSkip, onUpdateVolume, volume }: HomeScreenProps) {
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
@@ -33,7 +35,13 @@ export default function HomeScreen({ isPaused, onUpdatePause, onClickSkip }: Hom
           />
         </div>
       </div>
-      <MusicFooter isPaused={isPaused} onUpdatePause={onUpdatePause} onClickSkip={onClickSkip} />
+      <MusicFooter
+        isPaused={isPaused}
+        onUpdatePause={onUpdatePause}
+        onClickSkip={onClickSkip}
+        onUpdateVolume={onUpdateVolume}
+        volume={volume}
+      />
     </div>
   );
 }

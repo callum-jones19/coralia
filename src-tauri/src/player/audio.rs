@@ -163,7 +163,7 @@ impl Player {
 
     pub fn change_vol(&mut self, vol: f32) {
         self.audio_sink.lock().unwrap().set_volume(vol);
-        self.state_update_tx.send(PlayerStateUpdate::VolumeChange(vol));
+        self.state_update_tx.send(PlayerStateUpdate::VolumeChange(vol)).unwrap();
     }
 
     pub fn play(&mut self) {

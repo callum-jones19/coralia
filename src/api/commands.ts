@@ -21,3 +21,8 @@ export const skipOneSong = () => {
   invoke('skip_current_song', {})
     .catch(e => console.error(e));
 }
+
+export const setVolumeBackend = (newVolume: number) => {
+  invoke('set_volume', { newVolume: newVolume })
+    .catch(e => console.error(e));
+}

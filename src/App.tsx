@@ -12,6 +12,8 @@ export default function App() {
     isPaused,
     updateIsPaused,
     skipSong,
+    updateVolume,
+    volume,
   } = useAudio();
 
   useEffect(() => {
@@ -20,6 +22,10 @@ export default function App() {
     }).catch(e => console.error(e));
 
     listen('is-paused', (event) => {
+      console.log(event);
+    }).catch(e => console.error(e));
+
+    listen('volume-change', (event) => {
       console.log(event);
     }).catch(e => console.error(e));
   }, []);
@@ -35,6 +41,8 @@ export default function App() {
                 isPaused={isPaused}
                 onUpdatePause={updateIsPaused}
                 onClickSkip={skipSong}
+                onUpdateVolume={updateVolume}
+                volume={volume}
               />
             }
           />

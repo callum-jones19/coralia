@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { pausePlayer, playPlayer, skipOneSong } from "../api/commands";
+import { pausePlayer, playPlayer, setVolumeBackend, skipOneSong } from "../api/commands";
 
 export const useAudio = () => {
 
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  // FIXME
+  const [volume, setVolume] = useState<number>(1);
 
   const skipSong = () => {
     skipOneSong();
@@ -18,9 +20,16 @@ export const useAudio = () => {
     }
   };
 
+  const updateVolume = (newVol: number) => {
+    setVolume(newVol);
+    setVolumeBackend(newVol);
+  }
+
   return {
     isPaused,
     updateIsPaused,
-    skipSong
+    skipSong,
+    updateVolume,
+    volume
   };
 };

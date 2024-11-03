@@ -3,6 +3,8 @@ import { Pause, Play, SkipBack, SkipForward, Volume2 } from "react-feather";
 
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
+  onUpdateVolume: (newVol: number) => void;
+  volume: number;
   isPaused: boolean;
   onClickSkip: () => void;
 }
@@ -10,7 +12,7 @@ export interface MusicFooterProps {
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
 // the song
-export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip }: MusicFooterProps) {
+export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUpdateVolume, volume }: MusicFooterProps) {
   const [seekPos, setSeekPos] = useState<number>(0);
   // FIXME
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
@@ -85,14 +87,13 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip }: Mu
             <input
               id="volume-slider"
               type="range"
-              readOnly
-              // value={volume}
-              step={0.01}
+              defaultValue={0.3}
+              step={0.05}
               max={1}
-              // onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              //   const newVol = parseFloat(e.target.value);
-              //   setVolume(newVol);
-              // }}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const newVol = parseFloat(e.target.value);
+                onUpdateVolume(newVol);
+              }}
             />
           </div>
         </div>
