@@ -4,7 +4,7 @@
 use std::{path::Path, sync::{mpsc::{channel, Sender}, Mutex}};
 
 use data::{album::Album, library::Library, song::Song};
-use player::audio::{Player, PlayerEvent};
+use player::audio::{Player, PlayerEvent, PlayerStateUpdate};
 use tauri::{Manager, State};
 
 mod data;
@@ -32,15 +32,15 @@ fn main() {
     let music_library = Library::new(root_lib);
     println!("Scanned music library...");
     let (player_cmd_tx, player_cmd_rx) =  channel::<PlayerCommand>();
+    let (state_update_tx, state_update_rx) = channel::<PlayerStateUpdate>();
 
     tauri::Builder::default()
         .setup(move |app| {
-            let (player_event_tx, player_event_rx) =  channel::<PlayerEvent>();
             let handle = app.app_handle();
 
             tauri::async_runtime::spawn(async move {
                 println!("Starting player command handler loop");
-                let mut player = Player::new(player_event_tx, player_event_rx, handle);
+                let mut player = Player::new(state_update_tx);
 
                 loop {
                     let command = player_cmd_rx.recv().unwrap();
@@ -61,6 +61,27 @@ fn main() {
                             println!("skipping");
                             player.skip_current_song();
                         }
+                    }
+                }
+            });
+
+            tauri::async_runtime::spawn(async move {
+                println!("Starting player state update handler loop");
+                loop {
+                    let state_update = state_update_rx.recv().unwrap();
+                    match state_update {
+                        PlayerStateUpdate::VolumeChange(new_vol) => {
+                            handle.emit_all("song-end", new_vol).unwrap()
+                        },
+                        PlayerStateUpdate::SongEnd => {
+                            handle.emit_all("song-end", ()).unwrap();
+                        },
+                        PlayerStateUpdate::SongPlay => {
+                            handle.emit_all("is-paused", false).unwrap();
+                        },
+                        PlayerStateUpdate::SongPause => {
+                            handle.emit_all("is-paused", false).unwrap();
+                        },
                     }
                 }
             });

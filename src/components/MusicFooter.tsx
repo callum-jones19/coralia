@@ -86,13 +86,13 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip }: Mu
               id="volume-slider"
               type="range"
               readOnly
-              value={volume}
+              // value={volume}
               step={0.01}
               max={1}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                const newVol = parseFloat(e.target.value);
-                setVolume(newVol);
-              }}
+              // onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              //   const newVol = parseFloat(e.target.value);
+              //   setVolume(newVol);
+              // }}
             />
           </div>
         </div>
