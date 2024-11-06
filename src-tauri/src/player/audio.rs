@@ -9,15 +9,11 @@ use std::{
     thread,
 };
 
-use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
+use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
 
 use crate::data::song::Song;
 
-fn open_song_into_sink(
-    sink: &mut Sink,
-    song: &Song,
-    song_end_tx: &Sender<PlayerEvent>,
-) {
+fn open_song_into_sink(sink: &mut Sink, song: &Song, song_end_tx: &Sender<PlayerEvent>) {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
     let song_source = Decoder::new(song_file).unwrap();
@@ -27,7 +23,7 @@ fn open_song_into_sink(
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
         println!("Callback running");
         match song_end_tx.send(PlayerEvent::SongEnd) {
-            Ok(a) => println!("Successfully sent song end event"),
+            Ok(_) => println!("Successfully sent song end event"),
             Err(e) => println!("{:?}", e),
         }
     }));
@@ -42,7 +38,6 @@ pub enum PlayerEvent {
 }
 
 pub enum PlayerStateUpdate {
-    VolumeChange(f32),
     DurationChange(f32),
     SongEnd,
     SongPlay,
@@ -167,9 +162,6 @@ impl Player {
 
     pub fn change_vol(&mut self, vol: f32) {
         self.audio_sink.lock().unwrap().set_volume(vol);
-        self.state_update_tx
-            .send(PlayerStateUpdate::VolumeChange(vol))
-            .unwrap();
     }
 
     pub fn play(&mut self) {

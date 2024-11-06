@@ -10,17 +10,17 @@ use std::{
 };
 
 use data::{album::Album, library::Library, song::Song};
-use player::audio::{Player, PlayerEvent, PlayerStateUpdate};
+use player::audio::{Player, PlayerStateUpdate};
 use tauri::{Manager, State};
 
 mod data;
 mod player;
 
 enum PlayerCommand {
-    Enqueue(Song),
+    Enqueue(Box<Song>),
     Play,
     Pause,
-    SetVolume(f32),
+    SetVolume(u8),
     SkipOne,
 }
 
@@ -61,7 +61,9 @@ fn main() {
                             player.pause();
                         }
                         PlayerCommand::SetVolume(vol) => {
-                            player.change_vol(vol);
+                            let clamped_vol = if vol > 100 { 100 } else { vol };
+                            let parsed_vol = f32::from(clamped_vol);
+                            player.change_vol(parsed_vol);
                         }
                         PlayerCommand::SkipOne => {
                             println!("skipping");
@@ -76,9 +78,6 @@ fn main() {
                 loop {
                     let state_update = state_update_rx.recv().unwrap();
                     match state_update {
-                        PlayerStateUpdate::VolumeChange(new_vol) => {
-                            handle.emit_all("volume-change", new_vol).unwrap()
-                        }
                         PlayerStateUpdate::SongEnd => {
                             handle.emit_all("song-end", ()).unwrap();
                         }
@@ -118,7 +117,10 @@ async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Re
     println!("Received tauri command: enqueue_song");
 
     let state = state_mutex.lock().unwrap();
-    state.command_tx.send(PlayerCommand::Enqueue(song)).unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::Enqueue(Box::new(song)))
+        .unwrap();
     Ok(())
 }
 
@@ -141,7 +143,7 @@ async fn pause(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
 }
 
 #[tauri::command]
-async fn set_volume(state_mutex: State<'_, Mutex<AppState>>, new_volume: f32) -> Result<(), ()> {
+async fn set_volume(state_mutex: State<'_, Mutex<AppState>>, new_volume: u8) -> Result<(), ()> {
     println!("Received tauri command: set_volume");
 
     let state = state_mutex.lock().unwrap();
