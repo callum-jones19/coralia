@@ -4,10 +4,15 @@ export interface Library {
   albums: Album[];
 }
 
+export interface SongProperties {
+  duration: number;
+}
+
 export interface Song {
   filePath: string;
   tags: MusicTags;
   artwork: Artwork;
+  properties: SongProperties;
 }
 
 export interface MusicTags {

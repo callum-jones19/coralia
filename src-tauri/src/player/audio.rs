@@ -171,6 +171,11 @@ impl Player {
             .unwrap();
     }
 
+    pub fn clear(&mut self) {
+        self.audio_sink.lock().unwrap().clear();
+        self.songs_queue.lock().unwrap().clear();
+    }
+
     pub fn pause(&mut self) {
         self.audio_sink.lock().unwrap().pause();
         self.state_update_tx

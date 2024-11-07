@@ -11,9 +11,13 @@ export interface HomeScreenProps {
   onUpdatePause: (isPaused: boolean) => void;
   onUpdateVolume: (newVol: number) => void;
   onClickSkip: () => void;
+  onChangeSong: (song: Song) => void;
+  onEnqueueSong: (song: Song) => void;
+  currentSong: Song | null;
+  queue: Song[];
 }
 
-export default function HomeScreen({ isPaused, onUpdatePause, onClickSkip, onUpdateVolume, volume }: HomeScreenProps) {
+export default function HomeScreen({ onChangeSong, queue ,isPaused, onUpdatePause, onClickSkip, currentSong, onUpdateVolume, volume, onEnqueueSong }: HomeScreenProps) {
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
@@ -25,13 +29,13 @@ export default function HomeScreen({ isPaused, onUpdatePause, onClickSkip, onUpd
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
-        <SideBar queueSongs={[]} currSongAlbumUri={undefined} />
+        <SideBar queueSongs={queue} currSongAlbumUri={undefined} />
         <div className="basis-full flex-grow-0 min-w-0 relative overflow-auto">
           <SongList
             songList={songs}
-            onSongClick={s => console.log(s)}
+            onSongClick={s => onChangeSong(s)}
             currPlayingSong={null}
-            onUpdateQueue={() => console.log("todo")}
+            onAddToQueue={s => onEnqueueSong(s)}
           />
         </div>
       </div>
@@ -41,6 +45,7 @@ export default function HomeScreen({ isPaused, onUpdatePause, onClickSkip, onUpd
         onClickSkip={onClickSkip}
         onUpdateVolume={onUpdateVolume}
         volume={volume}
+        currentSong={currentSong}
       />
     </div>
   );

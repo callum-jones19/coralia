@@ -1,5 +1,6 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { Pause, Play, SkipBack, SkipForward, Volume2 } from "react-feather";
+import { Song } from "../types";
 
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
@@ -7,45 +8,67 @@ export interface MusicFooterProps {
   volume: number;
   isPaused: boolean;
   onClickSkip: () => void;
+  currentSong: Song | null;
 }
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
 // the song
-export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUpdateVolume, volume }: MusicFooterProps) {
+export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUpdateVolume, currentSong }: MusicFooterProps) {
   const [seekPos, setSeekPos] = useState<number>(0);
   // FIXME
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
+  const [songPos, setSongPos] = useState<number | null>(null);
 
-  // const songPosMins = useMemo(() => {
-  //   const mins = Math.floor(songPos / 60).toString().padStart(2, "0");
-  //   return mins;
-  // }, [songPos]);
+  console.log(currentSong);
 
-  // const songPosSecs = useMemo(() => {
-  //   const secs = Math.floor(songPos % 60).toString().padStart(2, "0");
-  //   return secs;
-  // }, [songPos]);
+  const songDuration = undefined;
 
-  // const seekPosMins = useMemo(() => {
-  //   const mins = Math.floor(seekPos / 60).toString().padStart(2, "0");
-  //   return mins;
-  // }, [seekPos]);
+  const songPosMins = useMemo(() => {
+    if (songPos) {
+      const mins = Math.floor(songPos / 60).toString().padStart(2, "0");
+      return mins;
+    } else {
+      return null;
+    }
+  }, [songPos]);
 
-  // const seekPosSecs = useMemo(() => {
-  //   const secs = Math.floor(seekPos % 60).toString().padStart(2, "0");
-  //   return secs;
-  // }, [seekPos]);
+  const songPosSecs = useMemo(() => {
+    if (songPos) {
+      const secs = Math.floor(songPos % 60).toString().padStart(2, "0");
+      return secs;
+    } else {
+      return null;
+    }
+  }, [songPos]);
 
-  // const durationMins = useMemo(() => {
-  //   const mins = Math.floor(songDuration / 60).toString().padStart(2, "0");
-  //   return mins;
-  // }, [songDuration]);
+  const seekPosMins = useMemo(() => {
+    const mins = Math.floor(seekPos / 60).toString().padStart(2, "0");
+    return mins;
+  }, [seekPos]);
 
-  // const durationSecs = useMemo(() => {
-  //   const secs = Math.floor(songDuration % 60).toString().padStart(2, "0");
-  //   return secs;
-  // }, [songDuration]);
+  const seekPosSecs = useMemo(() => {
+    const secs = Math.floor(seekPos % 60).toString().padStart(2, "0");
+    return secs;
+  }, [seekPos]);
+
+  const durationMins = useMemo(() => {
+    if (songDuration) {
+      const mins = Math.floor(songDuration / 60).toString().padStart(2, "0");
+      return mins;
+    } else {
+      return null;
+    }
+  }, [songDuration]);
+
+  const durationSecs = useMemo(() => {
+    if (songDuration) {
+      const secs = Math.floor(songDuration % 60).toString().padStart(2, "0");
+      return secs;
+    } else {
+      return null;
+    }
+  }, [songDuration]);
 
   return (
     <div className="bg-gray-950 basis-16 flex-shrink-0 pt-3 pb-3">
@@ -79,17 +102,17 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUp
             </button>
           </div>
           <div id="music-info" className="flex flex-col text-white text-center">
-            <p className="font-bold">TODO</p>
-            <p className="font-light">TODO</p>
+            <p className="font-bold">{currentSong ? currentSong.tags.title : "~"}</p>
+            <p className="font-light">{currentSong ? currentSong.tags.artist : "~"}</p>
           </div>
           <div id="volume" className="flex flex-row gap-2 items-center">
             <Volume2 color="white"/>
             <input
               id="volume-slider"
               type="range"
-              defaultValue={0.3}
-              step={0.05}
-              max={1}
+              defaultValue={30}
+              step={5}
+              max={100}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const newVol = parseFloat(e.target.value);
                 onUpdateVolume(newVol);
@@ -97,20 +120,21 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUp
             />
           </div>
         </div>
-        {/* <div className="flex flex-row mr-10 ml-10">
+        <div className="flex flex-row mr-10 ml-10">
           {!isSeeking && (
-            <p className="text-white">{songPosMins}:{songPosSecs}</p>
+            <p className="text-white">{songPosMins ? songPosMins : "00"}:{songPosSecs ? songPosSecs : "00"}</p>
           )}
           {isSeeking && (
-            <p className="text-white">{seekPosMins}:{seekPosSecs}</p>
+            <p className="text-white">{seekPosMins ? seekPosMins : "00"}:{seekPosSecs ? seekPosSecs : "00"}</p>
           )}
           <input
             id="seekbar-range"
             className="w-full ml-5 mr-5 bg-transparent"
             type="range"
+            disabled={!songDuration || Number.isNaN(songDuration)}
             readOnly
-            value={(seekPos && isSeeking) ? seekPos : songPos}
-            max={Number.isNaN(songDuration) ? 0 : songDuration}
+            value={!songPos ? 0 : (seekPos && isSeeking) ? seekPos : songPos}
+            max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
             onMouseDown={() => setIsSeeking(true)}
             onChange={(e) => {
               const tmp = parseFloat(e.target.value);
@@ -125,7 +149,7 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUp
             }}
           />
           <p className="text-white">{durationMins}:{durationSecs}</p>
-        </div> */}
+        </div>
       </div>
     </div>
   );

@@ -14,8 +14,10 @@ export default function App() {
     skipSong,
     updateVolume,
     volume,
-    songDuration,
-    updateSongDuration,
+    currentSong,
+    changeCurrentSong,
+    enqueueSong,
+    queue
   } = useAudio();
 
   useEffect(() => {
@@ -43,8 +45,12 @@ export default function App() {
                 isPaused={isPaused}
                 onUpdatePause={updateIsPaused}
                 onClickSkip={skipSong}
+                onEnqueueSong={enqueueSong}
                 onUpdateVolume={updateVolume}
+                queue={queue}
                 volume={volume}
+                currentSong={currentSong}
+                onChangeSong={s => changeCurrentSong(s)}
               />
             }
           />

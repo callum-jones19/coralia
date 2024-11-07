@@ -5,12 +5,12 @@ import SongListItem from "./SongListItem";
 export interface SongListProps {
   songList: Song[];
   onSongClick: (song: Song) => void;
-  onUpdateQueue: (newSong: Song) => void;
+  onAddToQueue: (newSong: Song) => void;
   currPlayingSong: Song | null;
 }
 
 export default function SongList(
-  { songList, onSongClick, currPlayingSong, onUpdateQueue }: SongListProps,
+  { songList, onSongClick, currPlayingSong, onAddToQueue }: SongListProps,
 ) {
   return (
     <div className="flex flex-col h-full w-full basis-full overflow-auto scroll-smooth">
@@ -36,12 +36,11 @@ export default function SongList(
           song={song}
           onClick={() => {
             onSongClick(song);
-            enqueue_song(song);
           }}
           isPlaying={currPlayingSong
             ? currPlayingSong.filePath === song.filePath
             : false}
-          onDoubleClick={() => onUpdateQueue(song)}
+          onDoubleClick={() => onAddToQueue(song)}
         />
       ))}
     </div>

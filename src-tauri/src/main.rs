@@ -17,6 +17,7 @@ mod data;
 mod player;
 
 enum PlayerCommand {
+    EmptyAndPlay(Box<Song>),
     Enqueue(Box<Song>),
     Play,
     Pause,
@@ -31,7 +32,7 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("C:/Users/Callum/Music/music");
+    let root_lib_str = String::from("/home/callumjones/Music/Music/Magdalena Bay");
     let root_lib = Path::new(&root_lib_str);
 
     println!("Setting up music library...");
@@ -62,13 +63,18 @@ fn main() {
                         }
                         PlayerCommand::SetVolume(vol) => {
                             let clamped_vol = if vol > 100 { 100 } else { vol };
-                            let parsed_vol = f32::from(clamped_vol);
+                            let parsed_vol = f32::from(clamped_vol) / 100.0;
+                            println!("{}", parsed_vol);
                             player.change_vol(parsed_vol);
                         }
                         PlayerCommand::SkipOne => {
                             println!("skipping");
                             player.skip_current_song();
                         }
+                        PlayerCommand::EmptyAndPlay(song) => {
+                            player.clear();
+                            player.add_to_queue(&song);
+                        },
                     }
                 }
             });
@@ -100,6 +106,7 @@ fn main() {
         }))
         .invoke_handler(tauri::generate_handler![
             enqueue_song,
+            clear_queue_and_play,
             play,
             pause,
             set_volume,
@@ -125,6 +132,18 @@ async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Re
 }
 
 #[tauri::command]
+async fn clear_queue_and_play(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
+    println!("Received tauri command: enqueue_song");
+
+    let state = state_mutex.lock().unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::EmptyAndPlay(Box::new(song)))
+        .unwrap();
+    Ok(())
+}
+
+#[tauri::command]
 async fn play(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
     println!("Received tauri command: play");
 
@@ -144,7 +163,7 @@ async fn pause(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
 
 #[tauri::command]
 async fn set_volume(state_mutex: State<'_, Mutex<AppState>>, new_volume: u8) -> Result<(), ()> {
-    println!("Received tauri command: set_volume");
+    println!("Received tauri command: set_volume, {}", new_volume);
 
     let state = state_mutex.lock().unwrap();
     state
