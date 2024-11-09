@@ -9,7 +9,7 @@ use std::{
     thread, time::Duration,
 };
 
-use rodio::{queue, source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
+use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
 
 use crate::data::song::Song;
 
@@ -193,9 +193,6 @@ impl Player {
 
     pub fn seek_current_song(&mut self, seek_amount: Duration) {
         let unlocked_sink = self.audio_sink.lock().unwrap();
-        match unlocked_sink.try_seek(seek_amount) {
-            Ok(_) => {},
-            Err(e) => todo!(),
-        }
+        unlocked_sink.try_seek(seek_amount).unwrap();
     }
 }
