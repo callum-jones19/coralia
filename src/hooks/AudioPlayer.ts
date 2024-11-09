@@ -21,6 +21,13 @@ export const useAudio = () => {
       setQueue(newQueue);
     }).catch(e => console.error(e));
 
+    const unlistenQueue = listen<Song[]>('queue-change', e => {
+      console.log('queue changed');
+
+      const newQueue = e.payload;
+      setQueue(newQueue);
+    })
+
     const unlistenPause = listen('is-paused', (event) => {
       console.log(event);
     }).catch(e => console.error(e));
@@ -33,6 +40,7 @@ export const useAudio = () => {
       unlistenEnd.then(f => f).catch(e => console.log(e));
       unlistenPause.then(f => f).catch(e => console.log(e));
       unlistenVolume.then(f => f).catch(e => console.log(e));
+      unlistenQueue.then(f => f).catch(e => console.log(e));
     };
   }, []);
 

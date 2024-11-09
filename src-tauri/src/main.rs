@@ -93,7 +93,10 @@ fn main() {
                         }
                         PlayerStateUpdate::SongPause => {
                             handle.emit_all("is-paused", false).unwrap();
-                        }
+                        },
+                        PlayerStateUpdate::QueueUpdate(updated_queue) => {
+                            handle.emit_all("queue-change", updated_queue).unwrap();
+                        },
                     }
                 }
             });

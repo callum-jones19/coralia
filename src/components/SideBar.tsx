@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Song } from "../types";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { Volume1 } from "react-feather";
 
 export interface SideBarProps {
   queueSongs: Song[];
@@ -19,8 +20,10 @@ export default function SideBar({ queueSongs, currSongAlbumUri }: SideBarProps) 
             const tmp = song.tags.encodedCoverArt ? convertFileSrc(song.tags.encodedCoverArt) : undefined;
 
             return (
-              <ul key={`${song.filePath}-${index}`} className="flex flex-row gap-2 w-full">
-                <img alt="album art" src={tmp} className="w-6 aspect-square" />
+              <ul key={`${song.filePath}-${index}`} className="flex flex-row gap-2 w-full items-center">
+                {index === 0 && <Volume1 size={18} />}
+                {index !== 0 &&<p>{index}.</p>}
+                {/* <img alt="album art" src={tmp} className="w-6 aspect-square" /> */}
                 <p>{song.tags.title}</p>
               </ul>
             );

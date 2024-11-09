@@ -9,7 +9,7 @@ use std::{
     thread,
 };
 
-use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
+use rodio::{queue, source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
 
 use crate::data::song::Song;
 
@@ -41,6 +41,7 @@ pub enum PlayerStateUpdate {
     SongEnd(Box<VecDeque<Song>>),
     SongPlay,
     SongPause,
+    QueueUpdate(Box<VecDeque<Song>>)
 }
 
 pub struct Player {
@@ -157,11 +158,9 @@ impl Player {
             self.song_into_sink(&song);
         }
 
-        let locked_songs = self.songs_queue.lock().unwrap();
-        let t: Vec<&String> = locked_songs.iter().map(|s| &s.tags.title).collect();
-
-        println!("{:?}", t);
-        println!("{}", self.audio_sink.lock().unwrap().len());
+        let queue_to_send = self.songs_queue.lock().unwrap().clone();
+        let queue_change_state = PlayerStateUpdate::QueueUpdate(Box::new(queue_to_send));
+        self.state_update_tx.send(queue_change_state).unwrap();
     }
 
     pub fn change_vol(&mut self, vol: f32) {
