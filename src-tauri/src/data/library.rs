@@ -34,6 +34,7 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Library {
     pub root_dir: Box<Path>,
     songs: Vec<Song>,

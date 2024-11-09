@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::{artwork::Artwork, music_tags::MusicTags};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Song {
     pub file_path: Box<Path>,
     pub tags: MusicTags,
