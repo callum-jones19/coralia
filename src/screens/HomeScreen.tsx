@@ -32,7 +32,7 @@ export default function HomeScreen({ onChangeSong, queue ,isPaused, onUpdatePaus
           <SongList
             songList={songs}
             onSongClick={s => onChangeSong(s)}
-            currPlayingSong={null}
+            currPlayingSong={currentSong}
             onAddToQueue={s => onEnqueueSong(s)}
           />
         </div>
