@@ -27,8 +27,9 @@ export const useAudio = () => {
       setQueue(newQueue);
     })
 
-    const unlistenPause = listen('is-paused', (event) => {
-      console.log(event);
+    const unlistenPause = listen<boolean>('is-paused', (e) => {
+      const isPaused = e.payload;
+      setIsPaused(isPaused);
     }).catch(e => console.error(e));
 
     const unlistenVolume = listen('volume-change', (event) => {
@@ -49,7 +50,6 @@ export const useAudio = () => {
   }
 
   const updateIsPaused = (paused: boolean) => {
-    setIsPaused(paused);
     if (paused) {
       pausePlayer();
     } else {

@@ -112,6 +112,9 @@ impl Player {
                         // queue?
                         if let Some(s) = queue3.get(2) {
                             open_song_into_sink(&mut sink3, s, &end_event_tx2);
+                        } else if queue3.len() == 0 {
+                            sink3.pause();
+                            state_update_tx2.send(PlayerStateUpdate::SongPause).unwrap();
                         }
 
                     }
