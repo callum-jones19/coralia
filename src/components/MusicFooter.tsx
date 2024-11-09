@@ -5,7 +5,6 @@ import { Song } from "../types";
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
   onUpdateVolume: (newVol: number) => void;
-  volume: number;
   isPaused: boolean;
   onClickSkip: () => void;
   currentSong: Song | null;
@@ -111,7 +110,7 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUp
               id="volume-slider"
               type="range"
               defaultValue={30}
-              step={5}
+              step={1}
               max={100}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const newVol = parseFloat(e.target.value);

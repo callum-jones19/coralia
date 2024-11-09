@@ -48,7 +48,6 @@ export default function App() {
                 onEnqueueSong={enqueueSong}
                 onUpdateVolume={updateVolume}
                 queue={queue}
-                volume={volume}
                 currentSong={currentSong}
                 onChangeSong={s => changeCurrentSong(s)}
               />

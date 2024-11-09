@@ -13,13 +13,6 @@ export const useAudio = () => {
   useEffect(() => {
     listen('song-end', () => {
       console.log('Song ended!');
-      const newQueue = [...queue].slice(0, 1);
-      setQueue(newQueue);
-      if (queue.length >= 1) {
-        setCurrentSong(newQueue[0])
-      } else {
-        setCurrentSong(null);
-      }
     }).catch(e => console.error(e));
 
     listen('is-paused', (event) => {
@@ -34,11 +27,6 @@ export const useAudio = () => {
 
   const skipSong = () => {
     skipOneSong();
-    if (queue.length <= 1) {
-      setQueue([]);
-    } else {
-      setQueue([...queue].slice(0, 1));
-    }
   }
 
   const updateIsPaused = (paused: boolean) => {
@@ -57,12 +45,9 @@ export const useAudio = () => {
 
   const enqueueSong = (newSong: Song) => {
     enqueueSongBackend(newSong);
-    setQueue([...queue, newSong]);
   }
 
   const changeCurrentSong = (newSong: Song) => {
-    setCurrentSong(newSong);
-    setQueue([newSong]);
     clearAndPlayBackend(newSong);
   };
 
