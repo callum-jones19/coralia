@@ -103,9 +103,6 @@ impl Player {
                         // Pop the old song out of the queue
                         queue3.pop_front();
 
-                        let t: Vec<&String> = queue3.iter().map(|s| &s.tags.title).collect();
-                        println!("{:?}", t);
-
                         let new_queue = queue3.clone();
                         println!("Sending queue with SongEnd event");
                         state_update_tx2.send(PlayerStateUpdate::SongEnd(Box::new(new_queue))).unwrap();

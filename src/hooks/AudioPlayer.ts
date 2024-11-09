@@ -5,7 +5,7 @@ import { listen } from "@tauri-apps/api/event";
 
 export const useAudio = () => {
 
-  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(true);
   const [queue, setQueue] = useState<Song[]>([]);
 
   const currentSong = useMemo(() => queue.length !== 0 ? queue[0] : null, [queue]);

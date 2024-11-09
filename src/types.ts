@@ -4,8 +4,13 @@ export interface Library {
   albums: Album[];
 }
 
+export interface Duration {
+  nanos: number;
+  secs: number;
+}
+
 export interface SongProperties {
-  duration: number;
+  duration: Duration;
 }
 
 export interface Song {

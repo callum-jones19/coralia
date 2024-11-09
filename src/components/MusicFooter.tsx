@@ -25,7 +25,7 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, curr
 
   console.log(currentSong);
 
-  const songDuration = undefined;
+  const songDuration = currentSong?.properties.duration.secs;
 
   const songPosMins = useMemo(() => {
     if (songPos) {
