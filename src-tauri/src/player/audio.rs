@@ -38,8 +38,7 @@ pub enum PlayerEvent {
 }
 
 pub enum PlayerStateUpdate {
-    DurationChange(f32),
-    SongEnd,
+    SongEnd(Box<VecDeque<Song>>),
     SongPlay,
     SongPause,
 }
@@ -103,15 +102,20 @@ impl Player {
                         // Pop the old song out of the queue
                         queue3.pop_front();
 
-                        let next_song = match queue3.get(2) {
-                            Some(s) => s,
-                            None => continue,
-                        };
-                        open_song_into_sink(&mut sink3, next_song, &end_event_tx2);
-
                         let t: Vec<&String> = queue3.iter().map(|s| &s.tags.title).collect();
-                        state_update_tx2.send(PlayerStateUpdate::SongEnd).unwrap();
                         println!("{:?}", t);
+
+                        let new_queue = queue3.clone();
+                        println!("Sending queue with SongEnd event");
+                        state_update_tx2.send(PlayerStateUpdate::SongEnd(Box::new(new_queue))).unwrap();
+                        println!("Sent queue with SongEnd event");
+
+                        // Do we need to pull a new song into the sink from the
+                        // queue?
+                        if let Some(s) = queue3.get(2) {
+                            open_song_into_sink(&mut sink3, s, &end_event_tx2);
+                        }
+
                     }
                 };
             }
