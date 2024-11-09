@@ -1,10 +1,10 @@
 import { ChangeEvent, useMemo, useState } from "react";
-import { Pause, Play, SkipBack, SkipForward, Volume2 } from "react-feather";
+import { Pause, Play, SkipBack, SkipForward, Volume1, Volume2, VolumeX } from "react-feather";
 import { Song } from "../types";
+import { setVolumeBackend } from "../api/commands";
 
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
-  onUpdateVolume: (newVol: number) => void;
   isPaused: boolean;
   onClickSkip: () => void;
   currentSong: Song | null;
@@ -13,7 +13,11 @@ export interface MusicFooterProps {
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
 // the song
-export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUpdateVolume, currentSong }: MusicFooterProps) {
+export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, currentSong }: MusicFooterProps) {
+  // Volume stuff - move later
+  const [volume, setVolume] = useState<number>(1);
+
+
   const [seekPos, setSeekPos] = useState<number>(0);
   // FIXME
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
@@ -105,16 +109,19 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, onUp
             <p className="font-light">{currentSong ? currentSong.tags.artist : "~"}</p>
           </div>
           <div id="volume" className="flex flex-row gap-2 items-center">
-            <Volume2 color="white"/>
+            {volume >= 50 && <Volume2 color="white"/>}
+            {volume < 50 && volume > 0 && <Volume1 color="white"/>}
+            {volume === 0 && <VolumeX color="white"/>}
             <input
               id="volume-slider"
               type="range"
-              defaultValue={30}
+              defaultValue={volume}
               step={1}
               max={100}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const newVol = parseFloat(e.target.value);
-                onUpdateVolume(newVol);
+                setVolume(newVol);
+                setVolumeBackend(newVol);
               }}
             />
           </div>

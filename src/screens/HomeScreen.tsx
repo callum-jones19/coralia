@@ -8,7 +8,6 @@ import MusicFooter from "../components/MusicFooter";
 export interface HomeScreenProps {
   isPaused: boolean;
   onUpdatePause: (isPaused: boolean) => void;
-  onUpdateVolume: (newVol: number) => void;
   onClickSkip: () => void;
   onChangeSong: (song: Song) => void;
   onEnqueueSong: (song: Song) => void;
@@ -16,7 +15,7 @@ export interface HomeScreenProps {
   queue: Song[];
 }
 
-export default function HomeScreen({ onChangeSong, queue ,isPaused, onUpdatePause, onClickSkip, currentSong, onUpdateVolume, onEnqueueSong }: HomeScreenProps) {
+export default function HomeScreen({ onChangeSong, queue ,isPaused, onUpdatePause, onClickSkip, currentSong, onEnqueueSong }: HomeScreenProps) {
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
@@ -42,7 +41,6 @@ export default function HomeScreen({ onChangeSong, queue ,isPaused, onUpdatePaus
         isPaused={isPaused}
         onUpdatePause={onUpdatePause}
         onClickSkip={onClickSkip}
-        onUpdateVolume={onUpdateVolume}
         currentSong={currentSong}
       />
     </div>
