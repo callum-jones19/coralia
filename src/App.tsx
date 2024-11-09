@@ -20,20 +20,6 @@ export default function App() {
     queue
   } = useAudio();
 
-  useEffect(() => {
-    listen('song-end', () => {
-      console.log('Song ended!');
-    }).catch(e => console.error(e));
-
-    listen('is-paused', (event) => {
-      console.log(event);
-    }).catch(e => console.error(e));
-
-    listen('volume-change', (event) => {
-      console.log(event);
-    }).catch(e => console.error(e));
-  }, []);
-
   return (
     <>
       <BrowserRouter>
