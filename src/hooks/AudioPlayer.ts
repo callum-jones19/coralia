@@ -29,6 +29,7 @@ export const useAudio = () => {
 
     const unlistenPause = listen<boolean>('is-paused', (e) => {
       const isPaused = e.payload;
+      console.log(`pause state changed to ${isPaused}`)
       setIsPaused(isPaused);
     }).catch(e => console.error(e));
 

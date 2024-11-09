@@ -32,7 +32,7 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("C:/Users/Callum/Music/music");
+    let root_lib_str = String::from("C:/Users/Callum/Music/music/Jus");
     let root_lib = Path::new(&root_lib_str);
 
     println!("Setting up music library...");
@@ -56,9 +56,11 @@ fn main() {
                             player.add_to_queue(&song);
                         }
                         PlayerCommand::Play => {
+                            println!("Resuming playback");
                             player.play();
                         }
                         PlayerCommand::Pause => {
+                            println!("Pausing playback");
                             player.pause();
                         }
                         PlayerCommand::SetVolume(vol) => {
@@ -92,7 +94,7 @@ fn main() {
                             handle.emit_all("is-paused", false).unwrap();
                         }
                         PlayerStateUpdate::SongPause => {
-                            handle.emit_all("is-paused", false).unwrap();
+                            handle.emit_all("is-paused", true).unwrap();
                         },
                         PlayerStateUpdate::QueueUpdate(updated_queue) => {
                             handle.emit_all("queue-change", updated_queue).unwrap();
