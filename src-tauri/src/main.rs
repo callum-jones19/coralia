@@ -6,7 +6,7 @@ use std::{
     sync::{
         mpsc::{channel, Sender},
         Mutex,
-    },
+    }, time::Duration,
 };
 
 use data::{album::Album, library::Library, song::Song};
@@ -23,6 +23,7 @@ enum PlayerCommand {
     Pause,
     SetVolume(u8),
     SkipOne,
+    TrySeek(Duration),
 }
 
 struct AppState {
@@ -32,7 +33,7 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("C:/Users/Callum/Music/music/Jus");
+    let root_lib_str = String::from("C:/Users/Callum/Music/music/Justice");
     let root_lib = Path::new(&root_lib_str);
 
     println!("Setting up music library...");
@@ -77,6 +78,9 @@ fn main() {
                             player.clear();
                             player.add_to_queue(&song);
                         },
+                        PlayerCommand::TrySeek(duration) => {
+                            player.seek_current_song(duration);
+                        },
                     }
                 }
             });
@@ -118,6 +122,7 @@ fn main() {
             skip_current_song,
             get_library_songs,
             get_library_albums,
+            seek_current_song
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -184,6 +189,15 @@ async fn skip_current_song(state_mutex: State<'_, Mutex<AppState>>) -> Result<()
 
     let state = state_mutex.lock().unwrap();
     state.command_tx.send(PlayerCommand::SkipOne).unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn seek_current_song(state_mutex: State<'_, Mutex<AppState>>, seek_duration: Duration) -> Result<(), ()> {
+    println!("Received tauri command: seek song");
+
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::TrySeek(seek_duration)).unwrap();
     Ok(())
 }
 

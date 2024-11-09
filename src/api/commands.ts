@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api"
-import { Song } from "../types"
+import { Duration, Song } from "../types"
 
 export const enqueueSongBackend = (song: Song) => {
   invoke('enqueue_song', { song: song })
@@ -32,5 +32,10 @@ export const setVolumeBackend = (newVolume: number) => {
 export const clearAndPlayBackend = (song: Song) => {
   invoke('clear_queue_and_play', { song: song })
     .then(() => playPlayer())
+    .catch(e => console.error(e));
+}
+
+export const seekCurrentSong = (seekAmount: Duration) => {
+  invoke('seek_current_song', { seekDuration: seekAmount })
     .catch(e => console.error(e));
 }

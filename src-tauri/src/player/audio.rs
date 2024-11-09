@@ -6,7 +6,7 @@ use std::{
         mpsc::{channel, Sender},
         Arc, Mutex,
     },
-    thread,
+    thread, time::Duration,
 };
 
 use rodio::{queue, source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink};
@@ -161,6 +161,7 @@ impl Player {
         let queue_to_send = self.songs_queue.lock().unwrap().clone();
         let queue_change_state = PlayerStateUpdate::QueueUpdate(Box::new(queue_to_send));
         self.state_update_tx.send(queue_change_state).unwrap();
+        self.play();
     }
 
     pub fn change_vol(&mut self, vol: f32) {
@@ -188,5 +189,13 @@ impl Player {
 
     pub fn skip_current_song(&mut self) {
         self.audio_sink.lock().unwrap().skip_one();
+    }
+
+    pub fn seek_current_song(&mut self, seek_amount: Duration) {
+        let unlocked_sink = self.audio_sink.lock().unwrap();
+        match unlocked_sink.try_seek(seek_amount) {
+            Ok(_) => {},
+            Err(e) => todo!(),
+        }
     }
 }
