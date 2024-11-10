@@ -1,6 +1,6 @@
-use std::{fs::File, path::Path, time::Duration};
+use std::{fs::File, path::{Path, PathBuf}, time::Duration};
 
-use lofty::{file::AudioFile, read_from};
+use lofty::{file::AudioFile, read_from, read_from_path};
 use serde::{Deserialize, Serialize};
 
 use super::{artwork::Artwork, music_tags::MusicTags};
@@ -13,8 +13,8 @@ pub struct SongProperties {
 }
 
 impl SongProperties {
-    pub fn new_from_file(music_file: &mut File) -> Result<Self, String> {
-        let tagged_file = match read_from(music_file) {
+    pub fn new_from_file(music_file_path: PathBuf) -> Result<Self, String> {
+        let tagged_file = match read_from_path(music_file_path) {
             Ok(t) => t,
             Err(e) => return Err(format!("Could not read tags from file. Error: {}", e)),
         };
@@ -42,12 +42,8 @@ pub struct Song {
 
 impl Song {
     pub fn new_from_file(song_path: &Path) -> Result<Self, String> {
-        let mut music_file = match File::open(song_path) {
-            Ok(f) => f,
-            Err(e) => return Err(format!("Failed to open file {:?}. Error {}", song_path, e)),
-        };
-        let music_tags = MusicTags::new_from_file(&mut music_file)?;
-        let music_props = SongProperties::new_from_file(&mut music_file)?;
+        let music_tags = MusicTags::new_from_file(song_path.to_path_buf())?;
+        let music_props = SongProperties::new_from_file(song_path.to_path_buf())?;
 
         // TODO get potentially embedded artwork
         let artwork = Artwork::art_from_song_folder(&mut song_path.to_path_buf());
