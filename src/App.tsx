@@ -9,7 +9,6 @@ export default function App() {
   const {
     isPaused,
     updateIsPaused,
-    skipSong,
     currentSong,
     changeCurrentSong,
     enqueueSong,
@@ -26,7 +25,6 @@ export default function App() {
               <HomeScreen
                 isPaused={isPaused}
                 onUpdatePause={updateIsPaused}
-                onClickSkip={skipSong}
                 onEnqueueSong={enqueueSong}
                 queue={queue}
                 currentSong={currentSong}

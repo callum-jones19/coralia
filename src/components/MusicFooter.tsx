@@ -1,19 +1,18 @@
 import { ChangeEvent, useMemo, useState } from "react";
 import { Pause, Play, SkipBack, SkipForward, Volume1, Volume2, VolumeX } from "react-feather";
 import { Song } from "../types";
-import { setVolumeBackend } from "../api/commands";
+import { setVolumeBackend, skipOneSong } from "../api/commands";
 
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
   isPaused: boolean;
-  onClickSkip: () => void;
   currentSong: Song | null;
 }
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
 // the song
-export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, currentSong }: MusicFooterProps) {
+export default function MusicFooter({ isPaused, onUpdatePause, currentSong }: MusicFooterProps) {
   // Volume stuff - move later
   const [volume, setVolume] = useState<number>(1);
 
@@ -99,7 +98,7 @@ export default function MusicFooter({ isPaused, onUpdatePause, onClickSkip, curr
             </button>
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={onClickSkip}
+              onClick={() => skipOneSong()}
             >
               <SkipForward className="m-auto h-1/2 w-1/2" />
             </button>

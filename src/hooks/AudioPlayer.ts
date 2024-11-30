@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { clearAndPlayBackend, enqueueSongBackend, pausePlayer, playPlayer, skipOneSong } from "../api/commands";
+import { clearAndPlayBackend, enqueueSongBackend, pausePlayer, playPlayer } from "../api/commands";
 import { Song } from "../types";
 import { listen } from "@tauri-apps/api/event";
 
@@ -45,11 +45,6 @@ export const useAudio = () => {
     };
   }, []);
 
-
-  const skipSong = () => {
-    skipOneSong();
-  }
-
   const updateIsPaused = (paused: boolean) => {
     if (paused) {
       pausePlayer();
@@ -69,7 +64,6 @@ export const useAudio = () => {
   return {
     isPaused,
     updateIsPaused,
-    skipSong,
     currentSong,
     changeCurrentSong,
     enqueueSong,
