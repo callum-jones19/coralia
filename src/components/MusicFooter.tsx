@@ -1,7 +1,7 @@
 import { ChangeEvent, useMemo, useState } from "react";
 import { Pause, Play, SkipBack, SkipForward, Volume1, Volume2, VolumeX } from "react-feather";
 import { Song } from "../types";
-import { setVolumeBackend, skipOneSong } from "../api/commands";
+import { removeFromQueue, setVolumeBackend, skipOneSong } from "../api/commands";
 
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
@@ -79,7 +79,9 @@ export default function MusicFooter({ isPaused, onUpdatePause, currentSong }: Mu
           <div id="play-controls" className="flex flex-row items-center">
             <button
               className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={() => console.log("todo")}
+              onClick={() => {
+                removeFromQueue(2);
+              }}
             >
               <SkipBack className="m-auto h-1/2 w-1/2" />
             </button>

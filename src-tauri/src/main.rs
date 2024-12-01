@@ -23,6 +23,7 @@ enum PlayerCommand {
     Pause,
     SetVolume(u8),
     SkipOne,
+    RemoveAtIndex(usize),
     TrySeek(Duration),
 }
 
@@ -81,6 +82,9 @@ fn main() {
                         PlayerCommand::TrySeek(duration) => {
                             player.seek_current_song(duration);
                         },
+                        PlayerCommand::RemoveAtIndex(skip_index) => {
+                            let skipped_song = player.remove_song_from_queue(skip_index);
+                        },
                     }
                 }
             });
@@ -122,7 +126,8 @@ fn main() {
             skip_current_song,
             get_library_songs,
             get_library_albums,
-            seek_current_song
+            seek_current_song,
+            remove_song_from_queue,
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -189,6 +194,15 @@ async fn skip_current_song(state_mutex: State<'_, Mutex<AppState>>) -> Result<()
 
     let state = state_mutex.lock().unwrap();
     state.command_tx.send(PlayerCommand::SkipOne).unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn remove_song_from_queue(state_mutex: State<'_, Mutex<AppState>>, skip_index: usize) -> Result<(), ()> {
+    println!("Received tauri command: remove song from queue");
+
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::RemoveAtIndex(skip_index)).unwrap();
     Ok(())
 }
 
