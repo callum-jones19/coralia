@@ -21,10 +21,6 @@ export default function SideBar(
         <li className="flex flex-col gap-3 text-white flex-grow overflow-auto">
           {queueSongs.length === 0 && <ul>Empty queue</ul>}
           {queueSongs.map((song, index) => {
-            const tmp = song.tags.encodedCoverArt
-              ? convertFileSrc(song.tags.encodedCoverArt)
-              : undefined;
-
             return (
               <ul
                 key={`${song.filePath}-${index}`}
