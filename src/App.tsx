@@ -5,8 +5,6 @@ import SettingsScreen from "./screens/SettingsScreen";
 
 export default function App() {
   const {
-    isPaused,
-    updateIsPaused,
     currentSong,
     changeCurrentSong,
     enqueueSong,
@@ -21,8 +19,6 @@ export default function App() {
             path="/"
             element={
               <HomeScreen
-                isPaused={isPaused}
-                onUpdatePause={updateIsPaused}
                 onEnqueueSong={enqueueSong}
                 queue={queue}
                 currentSong={currentSong}

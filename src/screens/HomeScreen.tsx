@@ -6,8 +6,6 @@ import SongList from "../components/SongList";
 import { Song } from "../types";
 
 export interface HomeScreenProps {
-  isPaused: boolean;
-  onUpdatePause: (isPaused: boolean) => void;
   onChangeSong: (song: Song) => void;
   onEnqueueSong: (song: Song) => void;
   currentSong: Song | null;
@@ -15,7 +13,7 @@ export interface HomeScreenProps {
 }
 
 export default function HomeScreen(
-  { onChangeSong, queue, isPaused, onUpdatePause, currentSong, onEnqueueSong }:
+  { onChangeSong, queue, currentSong, onEnqueueSong }:
     HomeScreenProps,
 ) {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -40,8 +38,6 @@ export default function HomeScreen(
         </div>
       </div>
       <MusicFooter
-        isPaused={isPaused}
-        onUpdatePause={onUpdatePause}
         currentSong={currentSong}
       />
     </div>

@@ -3,13 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import {
   clearAndPlayBackend,
   enqueueSongBackend,
-  pausePlayer,
-  playPlayer,
 } from "../api/commands";
 import { Song } from "../types";
 
 export const useAudio = () => {
-  const [isPaused, setIsPaused] = useState<boolean>(true);
   const [queue, setQueue] = useState<Song[]>([]);
 
   const currentSong = useMemo(() => queue.length !== 0 ? queue[0] : null, [
@@ -33,31 +30,16 @@ export const useAudio = () => {
       setQueue(newQueue);
     });
 
-    const unlistenPause = listen<boolean>("is-paused", (e) => {
-      const isPaused = e.payload;
-      console.log(`pause state changed to ${isPaused}`);
-      setIsPaused(isPaused);
-    }).catch(e => console.error(e));
-
     const unlistenVolume = listen("volume-change", (event) => {
       console.log(event);
     }).catch(e => console.error(e));
 
     return () => {
       unlistenEnd.then(f => f).catch(e => console.log(e));
-      unlistenPause.then(f => f).catch(e => console.log(e));
       unlistenVolume.then(f => f).catch(e => console.log(e));
       unlistenQueue.then(f => f).catch(e => console.log(e));
     };
   }, []);
-
-  const updateIsPaused = (paused: boolean) => {
-    if (paused) {
-      pausePlayer();
-    } else {
-      playPlayer();
-    }
-  };
 
   const enqueueSong = (newSong: Song) => {
     enqueueSongBackend(newSong);
@@ -68,8 +50,6 @@ export const useAudio = () => {
   };
 
   return {
-    isPaused,
-    updateIsPaused,
     currentSong,
     changeCurrentSong,
     enqueueSong,

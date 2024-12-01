@@ -1,23 +1,16 @@
 import { ChangeEvent, useMemo, useState } from "react";
 import {
-  Pause,
-  Play,
-  SkipBack,
-  SkipForward,
   Volume1,
   Volume2,
   VolumeX,
 } from "react-feather";
 import {
-  removeFromQueue,
   setVolumeBackend,
-  skipOneSong,
 } from "../api/commands";
 import { Song } from "../types";
+import PlayButtons from "./PlayButtons";
 
 export interface MusicFooterProps {
-  onUpdatePause: (isPaused: boolean) => void;
-  isPaused: boolean;
   currentSong: Song | null;
 }
 
@@ -25,7 +18,7 @@ export interface MusicFooterProps {
 // duration variable change only when the new data has been loaded in from
 // the song
 export default function MusicFooter(
-  { isPaused, onUpdatePause, currentSong }: MusicFooterProps,
+  { currentSong }: MusicFooterProps,
 ) {
   // Volume stuff - move later
   const [volume, setVolume] = useState<number>(1);
@@ -89,35 +82,7 @@ export default function MusicFooter(
     <div className="bg-gray-950 basis-16 flex-shrink-0 pt-3 pb-3">
       <div className="flex flex-col justify-center h-full gap-2">
         <div className="flex flex-row mr-10 ml-10 justify-between">
-          <div id="play-controls" className="flex flex-row items-center">
-            <button
-              className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={() => {
-                removeFromQueue(2);
-              }}
-            >
-              <SkipBack className="m-auto h-1/2 w-1/2" />
-            </button>
-            <button
-              className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={() => {
-                if (isPaused) {
-                  onUpdatePause(false);
-                } else {
-                  onUpdatePause(true);
-                }
-              }}
-            >
-              {isPaused && <Play className="m-auto h-1/2 w-1/2" />}
-              {!isPaused && <Pause className="m-auto h-1/2 w-1/2" />}
-            </button>
-            <button
-              className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
-              onClick={() => skipOneSong()}
-            >
-              <SkipForward className="m-auto h-1/2 w-1/2" />
-            </button>
-          </div>
+          <PlayButtons />
           <div id="music-info" className="flex flex-col text-white text-center">
             <p className="font-bold">
               {currentSong ? currentSong.tags.title : "~"}
@@ -180,7 +145,11 @@ export default function MusicFooter(
               setSeekPos(0);
             }}
           />
-          <p className="text-white">{durationMins}:{durationSecs}</p>
+          <p className="text-white">
+            {durationMins ? durationMins : "00"}:{durationSecs
+              ? durationSecs
+              : "00"}
+          </p>
         </div>
       </div>
     </div>
