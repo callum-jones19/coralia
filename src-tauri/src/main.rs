@@ -84,7 +84,7 @@ fn main() {
                             player.seek_current_song(duration);
                         }
                         PlayerCommand::RemoveAtIndex(skip_index) => {
-                            let skipped_song = player.remove_song_from_queue(skip_index);
+                            let _ = player.remove_song_from_queue(skip_index);
                         }
                     }
                 }

@@ -1,10 +1,9 @@
 use std::{
-    fs::File,
     path::{Path, PathBuf},
     time::Duration,
 };
 
-use lofty::{file::AudioFile, read_from, read_from_path};
+use lofty::{file::AudioFile, read_from_path};
 use serde::{Deserialize, Serialize};
 
 use super::{artwork::Artwork, music_tags::MusicTags};

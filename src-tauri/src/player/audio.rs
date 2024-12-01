@@ -4,8 +4,8 @@ use std::{
     io::BufReader,
     sync::{
         atomic::{AtomicBool, Ordering},
-        mpsc::{channel, Receiver, Sender},
-        Arc, Mutex, MutexGuard,
+        mpsc::{channel, Sender},
+        Arc, Mutex,
     },
     thread,
     time::Duration,
