@@ -9,6 +9,7 @@ import {
 } from "../api/commands";
 import { Song } from "../types";
 import PlayButtons from "./PlayButtons";
+import VolumeController from "./VolumeController";
 
 export interface MusicFooterProps {
   currentSong: Song | null;
@@ -86,23 +87,7 @@ export default function MusicFooter(
               {currentSong ? currentSong.tags.artist : "~"}
             </p>
           </div>
-          <div id="volume" className="flex flex-row gap-2 items-center">
-            {volume >= 50 && <Volume2 color="white" />}
-            {volume < 50 && volume > 0 && <Volume1 color="white" />}
-            {volume === 0 && <VolumeX color="white" />}
-            <input
-              id="volume-slider"
-              type="range"
-              defaultValue={volume}
-              step={1}
-              max={100}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                const newVol = parseFloat(e.target.value);
-                setVolume(newVol);
-                setVolumeBackend(newVol);
-              }}
-            />
-          </div>
+          <VolumeController />
         </div>
         <div className="flex flex-row mr-10 ml-10">
           {!isSeeking && (
