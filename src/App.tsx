@@ -1,18 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useAudio } from "./hooks/AudioPlayer";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import { useAudio } from "./hooks/AudioPlayer";
-
 
 export default function App() {
-
   const {
     isPaused,
     updateIsPaused,
     currentSong,
     changeCurrentSong,
     enqueueSong,
-    queue
+    queue,
   } = useAudio();
 
   return (

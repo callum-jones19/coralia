@@ -1,6 +1,6 @@
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { Song } from "../types";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export interface SongListItemProps {
   song: Song;
@@ -10,11 +10,12 @@ export interface SongListItemProps {
 }
 
 export default function SongListItem(
-  { song, onClick, isPlaying, onDoubleClick }:
-    SongListItemProps,
+  { song, onClick, isPlaying, onDoubleClick }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
-  const tmpSrc = song.artwork['folder_album_art'] ? convertFileSrc(song.artwork['folder_album_art']) : undefined;
+  const tmpSrc = song.artwork["folder_album_art"]
+    ? convertFileSrc(song.artwork["folder_album_art"])
+    : undefined;
 
   return (
     <div

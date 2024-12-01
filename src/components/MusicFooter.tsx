@@ -1,7 +1,19 @@
 import { ChangeEvent, useMemo, useState } from "react";
-import { Pause, Play, SkipBack, SkipForward, Volume1, Volume2, VolumeX } from "react-feather";
+import {
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+  Volume1,
+  Volume2,
+  VolumeX,
+} from "react-feather";
+import {
+  removeFromQueue,
+  setVolumeBackend,
+  skipOneSong,
+} from "../api/commands";
 import { Song } from "../types";
-import { removeFromQueue, setVolumeBackend, skipOneSong } from "../api/commands";
 
 export interface MusicFooterProps {
   onUpdatePause: (isPaused: boolean) => void;
@@ -12,10 +24,11 @@ export interface MusicFooterProps {
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
 // the song
-export default function MusicFooter({ isPaused, onUpdatePause, currentSong }: MusicFooterProps) {
+export default function MusicFooter(
+  { isPaused, onUpdatePause, currentSong }: MusicFooterProps,
+) {
   // Volume stuff - move later
   const [volume, setVolume] = useState<number>(1);
-
 
   const [seekPos, setSeekPos] = useState<number>(0);
   // FIXME
@@ -106,13 +119,17 @@ export default function MusicFooter({ isPaused, onUpdatePause, currentSong }: Mu
             </button>
           </div>
           <div id="music-info" className="flex flex-col text-white text-center">
-            <p className="font-bold">{currentSong ? currentSong.tags.title : "~"}</p>
-            <p className="font-light">{currentSong ? currentSong.tags.artist : "~"}</p>
+            <p className="font-bold">
+              {currentSong ? currentSong.tags.title : "~"}
+            </p>
+            <p className="font-light">
+              {currentSong ? currentSong.tags.artist : "~"}
+            </p>
           </div>
           <div id="volume" className="flex flex-row gap-2 items-center">
-            {volume >= 50 && <Volume2 color="white"/>}
-            {volume < 50 && volume > 0 && <Volume1 color="white"/>}
-            {volume === 0 && <VolumeX color="white"/>}
+            {volume >= 50 && <Volume2 color="white" />}
+            {volume < 50 && volume > 0 && <Volume1 color="white" />}
+            {volume === 0 && <VolumeX color="white" />}
             <input
               id="volume-slider"
               type="range"
@@ -129,10 +146,18 @@ export default function MusicFooter({ isPaused, onUpdatePause, currentSong }: Mu
         </div>
         <div className="flex flex-row mr-10 ml-10">
           {!isSeeking && (
-            <p className="text-white">{songPosMins ? songPosMins : "00"}:{songPosSecs ? songPosSecs : "00"}</p>
+            <p className="text-white">
+              {songPosMins ? songPosMins : "00"}:{songPosSecs
+                ? songPosSecs
+                : "00"}
+            </p>
           )}
           {isSeeking && (
-            <p className="text-white">{seekPosMins ? seekPosMins : "00"}:{seekPosSecs ? seekPosSecs : "00"}</p>
+            <p className="text-white">
+              {seekPosMins ? seekPosMins : "00"}:{seekPosSecs
+                ? seekPosSecs
+                : "00"}
+            </p>
           )}
           <input
             id="seekbar-range"

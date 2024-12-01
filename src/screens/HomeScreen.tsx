@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { get_library_songs } from "../api/importer";
+import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
 import { Song } from "../types";
-import { get_library_songs } from "../api/importer";
-import MusicFooter from "../components/MusicFooter";
 
 export interface HomeScreenProps {
   isPaused: boolean;
@@ -14,7 +14,10 @@ export interface HomeScreenProps {
   queue: Song[];
 }
 
-export default function HomeScreen({ onChangeSong, queue ,isPaused, onUpdatePause, currentSong, onEnqueueSong }: HomeScreenProps) {
+export default function HomeScreen(
+  { onChangeSong, queue, isPaused, onUpdatePause, currentSong, onEnqueueSong }:
+    HomeScreenProps,
+) {
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
