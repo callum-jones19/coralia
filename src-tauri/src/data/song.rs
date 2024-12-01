@@ -1,10 +1,13 @@
-use std::{fs::File, path::{Path, PathBuf}, time::Duration};
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
+    time::Duration,
+};
 
 use lofty::{file::AudioFile, read_from, read_from_path};
 use serde::{Deserialize, Serialize};
 
 use super::{artwork::Artwork, music_tags::MusicTags};
-
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -21,13 +24,11 @@ impl SongProperties {
 
         let music_file_properties = tagged_file.properties();
 
-        let duration=  music_file_properties.duration();
+        let duration = music_file_properties.duration();
 
         // TODO other props.
 
-        Ok(SongProperties {
-            duration,
-        })
+        Ok(SongProperties { duration })
     }
 }
 

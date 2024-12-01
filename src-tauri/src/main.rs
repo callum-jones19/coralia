@@ -6,7 +6,8 @@ use std::{
     sync::{
         mpsc::{channel, Sender},
         Mutex,
-    }, time::Duration,
+    },
+    time::Duration,
 };
 
 use data::{album::Album, library::Library, song::Song};
@@ -78,13 +79,13 @@ fn main() {
                         PlayerCommand::EmptyAndPlay(song) => {
                             player.clear();
                             player.add_to_queue(&song);
-                        },
+                        }
                         PlayerCommand::TrySeek(duration) => {
                             player.seek_current_song(duration);
-                        },
+                        }
                         PlayerCommand::RemoveAtIndex(skip_index) => {
                             let skipped_song = player.remove_song_from_queue(skip_index);
-                        },
+                        }
                     }
                 }
             });
@@ -103,10 +104,10 @@ fn main() {
                         }
                         PlayerStateUpdate::SongPause => {
                             handle.emit_all("is-paused", true).unwrap();
-                        },
+                        }
                         PlayerStateUpdate::QueueUpdate(updated_queue) => {
                             handle.emit_all("queue-change", updated_queue).unwrap();
-                        },
+                        }
                     }
                 }
             });
@@ -147,7 +148,10 @@ async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Re
 }
 
 #[tauri::command]
-async fn clear_queue_and_play(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
+async fn clear_queue_and_play(
+    state_mutex: State<'_, Mutex<AppState>>,
+    song: Song,
+) -> Result<(), ()> {
     println!("Received tauri command: enqueue_song");
 
     let state = state_mutex.lock().unwrap();
@@ -198,20 +202,32 @@ async fn skip_current_song(state_mutex: State<'_, Mutex<AppState>>) -> Result<()
 }
 
 #[tauri::command]
-async fn remove_song_from_queue(state_mutex: State<'_, Mutex<AppState>>, skip_index: usize) -> Result<(), ()> {
+async fn remove_song_from_queue(
+    state_mutex: State<'_, Mutex<AppState>>,
+    skip_index: usize,
+) -> Result<(), ()> {
     println!("Received tauri command: remove song from queue");
 
     let state = state_mutex.lock().unwrap();
-    state.command_tx.send(PlayerCommand::RemoveAtIndex(skip_index)).unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::RemoveAtIndex(skip_index))
+        .unwrap();
     Ok(())
 }
 
 #[tauri::command]
-async fn seek_current_song(state_mutex: State<'_, Mutex<AppState>>, seek_duration: Duration) -> Result<(), ()> {
+async fn seek_current_song(
+    state_mutex: State<'_, Mutex<AppState>>,
+    seek_duration: Duration,
+) -> Result<(), ()> {
     println!("Received tauri command: seek song");
 
     let state = state_mutex.lock().unwrap();
-    state.command_tx.send(PlayerCommand::TrySeek(seek_duration)).unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::TrySeek(seek_duration))
+        .unwrap();
     Ok(())
 }
 

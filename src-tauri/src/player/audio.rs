@@ -3,19 +3,26 @@ use std::{
     fs::File,
     io::BufReader,
     sync::{
-        atomic::{AtomicBool, Ordering}, mpsc::{channel, Receiver, Sender}, Arc, Mutex, MutexGuard
+        atomic::{AtomicBool, Ordering},
+        mpsc::{channel, Receiver, Sender},
+        Arc, Mutex, MutexGuard,
     },
-    thread, time::Duration,
+    thread,
+    time::Duration,
 };
 
 use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 
 use crate::data::song::Song;
 
-
 /// Place a new song into the sink. This returns the control for whether the
 /// song should be removed from the sink early or not
-fn open_song_into_sink(sink: &mut Sink, sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>, song: &Song, song_end_tx: &Sender<PlayerEvent>) {
+fn open_song_into_sink(
+    sink: &mut Sink,
+    sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
+    song: &Song,
+    song_end_tx: &Sender<PlayerEvent>,
+) {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
     let song_source = Decoder::new(song_file).unwrap();
@@ -52,7 +59,7 @@ pub enum PlayerStateUpdate {
     SongEnd(Box<VecDeque<Song>>),
     SongPlay,
     SongPause,
-    QueueUpdate(Box<VecDeque<Song>>)
+    QueueUpdate(Box<VecDeque<Song>>),
 }
 
 pub struct Player {
@@ -86,13 +93,13 @@ impl Player {
         let queue2 = Arc::clone(&songs_queue_wrapped);
         let end_event_tx2 = player_event_tx.clone();
 
-        let sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>> = Arc::new(Mutex::new(VecDeque::new()));
+        let sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>> =
+            Arc::new(Mutex::new(VecDeque::new()));
 
         // This is also good because it means the callback won't accidentally
         // delay playback. Don't forget that the callback must execute to
         // completion before the next song in the sink plays.
         let state_update_tx2 = state_update_tx.clone();
-
 
         let inner_sink_songs_ctrls = Arc::clone(&sink_songs_controls);
         thread::spawn(move || {
@@ -126,18 +133,15 @@ impl Player {
 
                         let new_queue = queue3.clone();
                         println!("Sending queue with SongEnd event");
-                        state_update_tx2.send(PlayerStateUpdate::SongEnd(Box::new(new_queue))).unwrap();
+                        state_update_tx2
+                            .send(PlayerStateUpdate::SongEnd(Box::new(new_queue)))
+                            .unwrap();
                         println!("Sent queue with SongEnd event");
 
                         // Do we need to pull a new song into the sink from the
                         // queue?
                         if let Some(s) = queue3.get(2) {
-                            open_song_into_sink(
-                                &mut sink3,
-                                ctrls,
-                                s,
-                                &end_event_tx2
-                            );
+                            open_song_into_sink(&mut sink3, ctrls, s, &end_event_tx2);
                         } else if queue3.len() == 0 {
                             sink3.pause();
                             state_update_tx2.send(PlayerStateUpdate::SongPause).unwrap();
@@ -162,7 +166,12 @@ impl Player {
     fn song_into_sink(&mut self, song: &Song) {
         let mut sink = self.audio_sink.lock().unwrap();
         let sink_songs_ctrls_2 = Arc::clone(&self.sink_songs_controls);
-        open_song_into_sink(&mut sink, sink_songs_ctrls_2, &song, &self.player_event_tx.clone());
+        open_song_into_sink(
+            &mut sink,
+            sink_songs_ctrls_2,
+            &song,
+            &self.player_event_tx.clone(),
+        );
     }
 
     ///
@@ -219,7 +228,6 @@ impl Player {
         self.audio_sink.lock().unwrap().skip_one();
         println!("Finished Skipping inside player");
     }
-
 
     /// Remove a song from the queue given its index.
     /// If a song does not exist at this index, return None.
