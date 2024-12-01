@@ -5,6 +5,7 @@ import { pausePlayer, playPlayer, skipOneSong } from "../api/commands";
 
 export default function PlayButtons() {
   const [isPaused, setIsPaused] = useState<boolean>(true);
+  const [queueLen, setQueueLen] = useState<number>(0);
 
   useEffect(() => {
     const unlistenPause = listen<boolean>("is-paused", (e) => {
@@ -13,7 +14,23 @@ export default function PlayButtons() {
       setIsPaused(isPaused);
     }).catch(e => console.error(e));
 
-    unlistenPause.then(f => f).catch(e => console.log(e));
+    const unlistenQueueLen = listen<number>("queue-length-change", (e) => {
+      const newQueueLen = e.payload;
+      console.log(`New queue length: ${newQueueLen}`);
+      setQueueLen(newQueueLen);
+    }).catch(e => console.error(e));
+
+    const unlistenSongEnd = listen<number>("song-end-queue-length", e => {
+      const newQueueLen = e.payload;
+      console.log(`New queue length: ${newQueueLen}`);
+      setQueueLen(newQueueLen);
+    })
+
+    return () => {
+      unlistenPause.then(f => f).catch(e => console.log(e));
+      unlistenQueueLen.then(f => f).catch(e => console.log(e));
+      unlistenSongEnd.then(f => f).catch(e => console.log(e));
+    };
   }, []);
 
   return (
@@ -29,7 +46,8 @@ export default function PlayButtons() {
           <SkipBack className="m-auto h-1/2 w-1/2" />
         </button>
         <button
-          className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
+          className="bg-white mr-3 font-bold rounded-full aspect-square h-10 disabled:bg-gray-500"
+          disabled={queueLen === 0 ? true : false}
           onClick={() => {
             if (isPaused) {
               playPlayer();
@@ -42,7 +60,8 @@ export default function PlayButtons() {
           {!isPaused && <Pause className="m-auto h-1/2 w-1/2" />}
         </button>
         <button
-          className="bg-white mr-3 font-bold rounded-full aspect-square h-10"
+          className="bg-white mr-3 font-bold rounded-full aspect-square h-10 disabled:bg-gray-500"
+          disabled={queueLen <= 0 ? true : false}
           onClick={() => skipOneSong()}
         >
           <SkipForward className="m-auto h-1/2 w-1/2" />

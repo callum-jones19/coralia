@@ -97,6 +97,7 @@ fn main() {
                     let state_update = state_update_rx.recv().unwrap();
                     match state_update {
                         PlayerStateUpdate::SongEnd(new_queue) => {
+                            handle.emit_all("song-end-queue-length", &new_queue.len()).unwrap();
                             handle.emit_all("song-end", new_queue).unwrap();
                         }
                         PlayerStateUpdate::SongPlay => {
@@ -106,6 +107,7 @@ fn main() {
                             handle.emit_all("is-paused", true).unwrap();
                         }
                         PlayerStateUpdate::QueueUpdate(updated_queue) => {
+                            handle.emit_all("queue-length-change", &updated_queue.len()).unwrap();
                             handle.emit_all("queue-change", updated_queue).unwrap();
                         }
                     }

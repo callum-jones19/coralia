@@ -20,15 +20,10 @@ export interface MusicFooterProps {
 export default function MusicFooter(
   { currentSong }: MusicFooterProps,
 ) {
-  // Volume stuff - move later
   const [volume, setVolume] = useState<number>(1);
-
   const [seekPos, setSeekPos] = useState<number>(0);
-  // FIXME
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
   const [songPos, setSongPos] = useState<number | null>(null);
-
-  console.log(currentSong);
 
   const songDuration = currentSong?.properties.duration.secs;
 
