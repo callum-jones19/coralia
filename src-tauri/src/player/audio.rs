@@ -191,6 +191,19 @@ impl Player {
         self.audio_sink.lock().unwrap().skip_one();
     }
 
+    pub fn remove_song_from_queue(&mut self, song_index: usize) -> Option<Song> {
+        if song_index < 3 {
+            // todo
+            return None
+        } else {
+            let t = self.songs_queue.lock().unwrap().remove(song_index);
+            match t {
+                Some(s) => return Some(s),
+                None => return None,
+            }
+        }
+    }
+
     pub fn seek_current_song(&mut self, seek_amount: Duration) {
         let unlocked_sink = self.audio_sink.lock().unwrap();
         unlocked_sink.try_seek(seek_amount).unwrap();
