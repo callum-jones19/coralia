@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
 import { Song } from "../types";
 import PlayButtons from "./PlayButtons";
 import VolumeController from "./VolumeController";
+import Seekbar from "./Seekbar";
 
 export interface MusicFooterProps {
   currentSong: Song | null;
@@ -13,58 +13,6 @@ export interface MusicFooterProps {
 export default function MusicFooter(
   { currentSong }: MusicFooterProps,
 ) {
-  const [seekPos, setSeekPos] = useState<number>(0);
-  const [isSeeking, setIsSeeking] = useState<boolean>(false);
-  const [songPos, setSongPos] = useState<number | null>(null);
-
-  const songDuration = currentSong?.properties.duration.secs;
-
-  const songPosMins = useMemo(() => {
-    if (songPos) {
-      const mins = Math.floor(songPos / 60).toString().padStart(2, "0");
-      return mins;
-    } else {
-      return null;
-    }
-  }, [songPos]);
-
-  const songPosSecs = useMemo(() => {
-    if (songPos) {
-      const secs = Math.floor(songPos % 60).toString().padStart(2, "0");
-      return secs;
-    } else {
-      return null;
-    }
-  }, [songPos]);
-
-  const seekPosMins = useMemo(() => {
-    const mins = Math.floor(seekPos / 60).toString().padStart(2, "0");
-    return mins;
-  }, [seekPos]);
-
-  const seekPosSecs = useMemo(() => {
-    const secs = Math.floor(seekPos % 60).toString().padStart(2, "0");
-    return secs;
-  }, [seekPos]);
-
-  const durationMins = useMemo(() => {
-    if (songDuration) {
-      const mins = Math.floor(songDuration / 60).toString().padStart(2, "0");
-      return mins;
-    } else {
-      return null;
-    }
-  }, [songDuration]);
-
-  const durationSecs = useMemo(() => {
-    if (songDuration) {
-      const secs = Math.floor(songDuration % 60).toString().padStart(2, "0");
-      return secs;
-    } else {
-      return null;
-    }
-  }, [songDuration]);
-
   return (
     <div className="bg-gray-950 basis-16 flex-shrink-0 pt-3 pb-3">
       <div className="flex flex-col justify-center h-full gap-2">
@@ -80,48 +28,7 @@ export default function MusicFooter(
           </div>
           <VolumeController />
         </div>
-        <div className="flex flex-row mr-10 ml-10">
-          {!isSeeking && (
-            <p className="text-white">
-              {songPosMins ? songPosMins : "00"}:{songPosSecs
-                ? songPosSecs
-                : "00"}
-            </p>
-          )}
-          {isSeeking && (
-            <p className="text-white">
-              {seekPosMins ? seekPosMins : "00"}:{seekPosSecs
-                ? seekPosSecs
-                : "00"}
-            </p>
-          )}
-          <input
-            id="seekbar-range"
-            className="w-full ml-5 mr-5 bg-transparent"
-            type="range"
-            disabled={!songDuration || Number.isNaN(songDuration)}
-            readOnly
-            value={!songPos ? 0 : (seekPos && isSeeking) ? seekPos : songPos}
-            max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
-            onMouseDown={() => setIsSeeking(true)}
-            onChange={(e) => {
-              const tmp = parseFloat(e.target.value);
-              setSeekPos(tmp);
-            }}
-            onMouseUp={() => {
-              if (seekPos !== null) {
-                setSongPos(seekPos);
-              }
-              setIsSeeking(false);
-              setSeekPos(0);
-            }}
-          />
-          <p className="text-white">
-            {durationMins ? durationMins : "00"}:{durationSecs
-              ? durationSecs
-              : "00"}
-          </p>
-        </div>
+        <Seekbar />
       </div>
     </div>
   );
