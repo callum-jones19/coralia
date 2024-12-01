@@ -1,12 +1,4 @@
-import { ChangeEvent, useMemo, useState } from "react";
-import {
-  Volume1,
-  Volume2,
-  VolumeX,
-} from "react-feather";
-import {
-  setVolumeBackend,
-} from "../api/commands";
+import { useMemo, useState } from "react";
 import { Song } from "../types";
 import PlayButtons from "./PlayButtons";
 import VolumeController from "./VolumeController";
@@ -21,7 +13,6 @@ export interface MusicFooterProps {
 export default function MusicFooter(
   { currentSong }: MusicFooterProps,
 ) {
-  const [volume, setVolume] = useState<number>(1);
   const [seekPos, setSeekPos] = useState<number>(0);
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
   const [songPos, setSongPos] = useState<number | null>(null);
