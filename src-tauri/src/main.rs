@@ -1,157 +1,256 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod music;
-
 use std::{
-    fs::File,
-    io::{BufReader, BufWriter, Write},
     path::Path,
+    sync::{
+        mpsc::{channel, Sender},
+        Mutex,
+    },
+    time::Duration,
 };
 
-use glob::glob;
-use lofty::prelude::*;
-use lofty::probe::Probe;
-use music::{Collection, MusicTags, Song};
-use serde_json::Error;
+use data::{album::Album, library::Library, song::Song};
+use player::audio::{Player, PlayerStateUpdate};
+use tauri::{Manager, State};
+
+mod data;
+mod player;
+
+enum PlayerCommand {
+    EmptyAndPlay(Box<Song>),
+    Enqueue(Box<Song>),
+    Play,
+    Pause,
+    SetVolume(u8),
+    SkipOne,
+    RemoveAtIndex(usize),
+    TrySeek(Duration),
+}
+
+struct AppState {
+    command_tx: Sender<PlayerCommand>,
+    library: Library,
+}
 
 fn main() {
+    let tauri_context = tauri::generate_context!();
+    let root_lib_str = String::from("C:/Users/Callum/Music/music/Justice");
+    let root_lib = Path::new(&root_lib_str);
+
+    println!("Setting up music library...");
+    let music_library = Library::new(root_lib);
+    println!("Scanned music library...");
+    let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
+    let (state_update_tx, state_update_rx) = channel::<PlayerStateUpdate>();
+
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![read_music_metadata,
-            get_files_in_folder_recursive,
-            scan_folder,
-            create_collection,
-            read_collection,
-            load_or_create_collection]
-        )
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
+        .setup(move |app| {
+            let handle = app.app_handle();
 
-#[tauri::command(async)]
-fn read_music_metadata(filepath: &str) -> Result<MusicTags, String> {
-    let path = Path::new(filepath);
+            tauri::async_runtime::spawn(async move {
+                println!("Starting player command handler loop");
+                let mut player = Player::new(state_update_tx);
 
-    let tagged_file = match Probe::open(path) {
-        Ok(t) => match t.read() {
-            Ok(f) => f,
-            Err(e) => {
-                return Err(format!(
-                    "ERROR {:?}: Unregistered file type was encountered while reading file {}",
-                    e.kind(),
-                    path.display()
-                ))
-            }
-        },
-        Err(e) => {
-            return Err(format!(
-                "ERROR {:?}: Given path {} does not exist",
-                e.kind(),
-                path.display()
-            ))
-        }
-    };
-
-    let tag = match tagged_file.primary_tag() {
-        Some(primary_tag) => primary_tag,
-        None => match tagged_file.first_tag() {
-            Some(t) => t,
-            None => return Err("ERROR: Failed to grab any tags off the provided file".into()),
-        },
-    };
-
-    Ok(MusicTags {
-        title: tag.title().as_deref().unwrap_or("None").to_string(),
-        album: tag.album().as_deref().unwrap_or("None").to_string(),
-        artist: tag.artist().as_deref().unwrap_or("None").to_string(),
-        genre: tag.genre().as_deref().unwrap_or("None").to_string(),
-        cached_artwork_uri: String::from("tmp"),
-    })
-}
-
-///
-/// Recursively list every file inside this path and every sub-directory
-#[tauri::command(async)]
-fn get_files_in_folder_recursive(root_dir: &str) -> Vec<String> {
-    let path = String::from(root_dir) + "/**/*";
-
-    let pattern = match glob(&path) {
-        Ok(paths) => paths,
-        Err(err) => return vec![],
-    };
-
-    let mut res: Vec<String> = Vec::new();
-
-    for entry in pattern {
-        match entry {
-            Ok(path_buf) => {
-                if path_buf.is_file() {
-                    let tmp = String::from(path_buf.to_str().unwrap());
-                    res.push(tmp);
+                loop {
+                    let command = player_cmd_rx.recv().unwrap();
+                    match command {
+                        PlayerCommand::Enqueue(song) => {
+                            player.add_to_queue(&song);
+                        }
+                        PlayerCommand::Play => {
+                            println!("Resuming playback");
+                            player.play();
+                        }
+                        PlayerCommand::Pause => {
+                            println!("Pausing playback");
+                            player.pause();
+                        }
+                        PlayerCommand::SetVolume(vol) => {
+                            let clamped_vol = if vol > 100 { 100 } else { vol };
+                            let parsed_vol = f32::from(clamped_vol) / 100.0;
+                            println!("{}", parsed_vol);
+                            player.change_vol(parsed_vol);
+                        }
+                        PlayerCommand::SkipOne => {
+                            println!("skipping");
+                            player.skip_current_song();
+                        }
+                        PlayerCommand::EmptyAndPlay(song) => {
+                            player.clear();
+                            player.add_to_queue(&song);
+                        }
+                        PlayerCommand::TrySeek(duration) => {
+                            player.seek_current_song(duration);
+                        }
+                        PlayerCommand::RemoveAtIndex(skip_index) => {
+                            let _ = player.remove_song_from_queue(skip_index);
+                        }
+                    }
                 }
-            }
-            Err(err) => return vec![],
-        }
-    }
-    return res;
-}
+            });
 
-#[tauri::command(async)]
-fn scan_folder(root_dir: &str) -> Vec<Song> {
-    let tagged_songs: Vec<Song> = get_files_in_folder_recursive(root_dir)
-        .iter()
-        .map(|file_path| (read_music_metadata(file_path), file_path))
-        .filter(|tags_and_path| tags_and_path.0.is_ok())
-        .map(|tags_and_path| Song {
-            file_path: tags_and_path.1.to_owned(),
-            tags: tags_and_path.0.unwrap(),
+            tauri::async_runtime::spawn(async move {
+                println!("Starting player state update handler loop");
+                loop {
+                    println!("State updated!");
+                    let state_update = state_update_rx.recv().unwrap();
+                    match state_update {
+                        PlayerStateUpdate::SongEnd(new_queue) => {
+                            handle.emit_all("currently-playing-update", &new_queue.get(0)).unwrap();
+                            handle.emit_all("song-end-queue-length", &new_queue.len()).unwrap();
+                            handle.emit_all("song-end", new_queue).unwrap();
+                        }
+                        PlayerStateUpdate::SongPlay => {
+                            handle.emit_all("is-paused", false).unwrap();
+                        }
+                        PlayerStateUpdate::SongPause => {
+                            handle.emit_all("is-paused", true).unwrap();
+                        }
+                        PlayerStateUpdate::QueueUpdate(updated_queue) => {
+                            if updated_queue.len() == 1 {
+                                handle.emit_all("currently-playing-update", &updated_queue.get(0)).unwrap();
+                            }
+                            handle.emit_all("queue-length-change", &updated_queue.len()).unwrap();
+                            handle.emit_all("queue-change", updated_queue).unwrap();
+                        }
+                    }
+                }
+            });
+
+            Ok(())
         })
-        .collect();
-
-    tagged_songs
+        .manage(Mutex::new(AppState {
+            command_tx: player_cmd_tx,
+            library: music_library,
+        }))
+        .invoke_handler(tauri::generate_handler![
+            enqueue_song,
+            clear_queue_and_play,
+            play,
+            pause,
+            set_volume,
+            skip_current_song,
+            get_library_songs,
+            get_library_albums,
+            seek_current_song,
+            remove_song_from_queue,
+        ])
+        .run(tauri_context)
+        .expect("Error while running tauri application!");
 }
 
+// ============================== Commands =====================================
+#[tauri::command]
+async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
+    println!("Received tauri command: enqueue_song");
 
-#[tauri::command(async)]
-fn create_collection(collection_path: &str, music_path_root: &str) -> Collection {
-    let tagged_songs = scan_folder(music_path_root);
-    let collection = Collection::new(tagged_songs);
-
-    println!("{}", collection_path);
-    let collection_file = File::create(collection_path).expect("Couldn't create file");
-    let mut writer = BufWriter::new(collection_file);
-    serde_json::to_writer(&mut writer, &collection).expect("Could not write collection to file");
-
-    collection
+    let state = state_mutex.lock().unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::Enqueue(Box::new(song)))
+        .unwrap();
+    Ok(())
 }
 
-#[tauri::command(async)]
-fn read_collection(collection_path: &str) -> Collection {
-    let collection_file =
-        File::open(collection_path).expect("Failed to open given collection path");
-    let reader = BufReader::new(collection_file);
+#[tauri::command]
+async fn clear_queue_and_play(
+    state_mutex: State<'_, Mutex<AppState>>,
+    song: Song,
+) -> Result<(), ()> {
+    println!("Received tauri command: enqueue_song");
 
-    let collection_res: Result<Collection, Error> = serde_json::from_reader(reader);
-
-    collection_res.expect("Failed to deserialize the given collection")
+    let state = state_mutex.lock().unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::EmptyAndPlay(Box::new(song)))
+        .unwrap();
+    Ok(())
 }
 
-#[tauri::command(async)]
-fn load_or_create_collection(root_dir: &str) -> Collection {
-    let p = Path::new("collection.json");
-    let path_exists = match p.try_exists() {
-        Ok(does_exist) => does_exist,
-        Err(err) => panic!("ERROR: {}", err),
-    };
+#[tauri::command]
+async fn play(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+    println!("Received tauri command: play");
 
-    let collection_path_str = p.as_os_str().to_str().unwrap();
-    let collection = if path_exists {
-        println!("Loading existing collection file");
-        read_collection(collection_path_str)
-    } else {
-        println!("Scanning folders and generating new collection");
-        create_collection(collection_path_str, root_dir)
-    };
-
-    collection
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::Play).unwrap();
+    Ok(())
 }
+
+#[tauri::command]
+async fn pause(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+    println!("Received tauri command: pause");
+
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::Pause).unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn set_volume(state_mutex: State<'_, Mutex<AppState>>, new_volume: u8) -> Result<(), ()> {
+    println!("Received tauri command: set_volume, {}", new_volume);
+
+    let state = state_mutex.lock().unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::SetVolume(new_volume))
+        .unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn skip_current_song(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+    println!("Received tauri command: skip song");
+
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::SkipOne).unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn remove_song_from_queue(
+    state_mutex: State<'_, Mutex<AppState>>,
+    skip_index: usize,
+) -> Result<(), ()> {
+    println!("Received tauri command: remove song from queue");
+
+    let state = state_mutex.lock().unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::RemoveAtIndex(skip_index))
+        .unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn seek_current_song(
+    state_mutex: State<'_, Mutex<AppState>>,
+    seek_duration: Duration,
+) -> Result<(), ()> {
+    println!("Received tauri command: seek song");
+
+    let state = state_mutex.lock().unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::TrySeek(seek_duration))
+        .unwrap();
+    Ok(())
+}
+
+// ============================= Senders =======================================
+#[tauri::command]
+async fn get_library_songs(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Song>, ()> {
+    let state = state_mutex.lock().unwrap();
+    Ok(state.library.get_all_songs())
+}
+
+#[tauri::command]
+async fn get_library_albums(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Album>, ()> {
+    let state = state_mutex.lock().unwrap();
+    Ok(state.library.get_all_albums())
+}
+
+// async fn is_player_playing(state_mutex: State<'_, Mutex<AppState>>) -> Result<bool, ()> {
+//     let state = state_mutex.lock().unwrap();
+//     Ok(state.player_state.is_playing)
+// }

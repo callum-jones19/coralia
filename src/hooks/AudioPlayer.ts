@@ -1,140 +1,55 @@
-import {
-  MutableRefObject,
-  SyntheticEvent,
-  useCallback,
-  useRef,
-  useState,
-} from "react";
-import { MusicTags } from "../data/types";
+import { listen } from "@tauri-apps/api/event";
+import { useEffect, useMemo, useState } from "react";
+import { clearAndPlayBackend, enqueueSongBackend } from "../api/commands";
+import { Song } from "../types";
 
-export const useAudio = (
-  soundRef: MutableRefObject<HTMLAudioElement | null>,
-) => {
-  const INIT_VOL = 0.3;
+export const useAudio = () => {
+  const [queue, setQueue] = useState<Song[]>([]);
 
-  const intervalRef = useRef<number | null>(null);
+  const currentSong = useMemo(() => queue.length !== 0 ? queue[0] : null, [
+    queue,
+  ]);
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [songPos, setSongPos] = useState<number>(0);
-  const [songDuration, setSongDuration] = useState<number>(0);
-  const [volume, setVolume] = useState<number>(INIT_VOL);
-  const [musicTags, setMusicTags] = useState<MusicTags | null>(null);
+  useEffect(() => {
+    const unlistenEnd = listen<Song[]>("song-end", (e) => {
+      console.log("Song ended!");
 
-  const updateMetadata = (newMusicTags: MusicTags) => {
-    setMusicTags(newMusicTags);
+      // When a song ends, the backend send through the new queue, with the
+      // currently playing song at the head.
+      const newQueue = e.payload;
+      setQueue(newQueue);
+    }).catch(e => console.error(e));
+
+    const unlistenQueue = listen<Song[]>("queue-change", e => {
+      console.log("queue changed");
+
+      const newQueue = e.payload;
+      setQueue(newQueue);
+    });
+
+    const unlistenVolume = listen("volume-change", (event) => {
+      console.log(event);
+    }).catch(e => console.error(e));
+
+    return () => {
+      unlistenEnd.then(f => f).catch(e => console.log(e));
+      unlistenVolume.then(f => f).catch(e => console.log(e));
+      unlistenQueue.then(f => f).catch(e => console.log(e));
+    };
+  }, []);
+
+  const enqueueSong = (newSong: Song) => {
+    enqueueSongBackend(newSong);
   };
 
-  const handleDurationChange = (e: SyntheticEvent<HTMLAudioElement>) => {
-    setSongDuration(e.currentTarget.duration);
-  };
-
-  const handleLoadedData = () => {
-    if (!soundRef.current) return;
-    soundRef.current.volume = volume;
-  };
-
-  const startPlaying = () => {
-    if (!soundRef.current) return;
-
-    soundRef.current.play()
-      .then(() => {
-        setIsPlaying(true);
-        if (intervalRef.current === null) {
-          intervalRef.current = window.setInterval(() => {
-            if (!soundRef.current) return;
-            setSongPos(soundRef.current.currentTime);
-          }, 100);
-        }
-      })
-      .catch(err => {
-        console.log("Failed to play current media. More info:");
-        console.log(err);
-      });
-  };
-
-  const stopPlaying = () => {
-    if (!soundRef.current) return;
-
-    soundRef.current.pause();
-    setIsPlaying(false);
-    if (intervalRef.current !== null) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-  const toggleAudioPlaying = useCallback(() => {
-    if (!soundRef.current) return;
-    if (soundRef.current.paused) {
-      soundRef.current.play()
-        .then(() => {
-          setIsPlaying(true);
-
-          intervalRef.current = window.setInterval(() => {
-            if (!soundRef.current) return;
-            setSongPos(soundRef.current.currentTime);
-          }, 100);
-        })
-        .catch(err => {
-          console.log(
-            "Failed to play currently loaded audio media. More info:",
-          );
-          console.log(err);
-        });
-    } else {
-      soundRef.current.pause();
-      setIsPlaying(false);
-
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
-  }, [soundRef]);
-
-  const updateVolume = (newVol: number) => {
-    if (!soundRef.current) return;
-
-    soundRef.current.volume = newVol;
-    setVolume(newVol);
-  };
-
-  const updateProgress = (newProgress: number) => {
-    if (!soundRef.current) return;
-
-    soundRef.current.currentTime = newProgress;
-    setSongPos(newProgress);
-  };
-
-  const changeAudioSrc = (newSrc: string) => {
-    if (!soundRef.current) return;
-
-    soundRef.current.src = newSrc;
-    soundRef.current.load();
-    setSongPos(0);
-    setSongDuration(soundRef.current.duration);
-
-    if (isPlaying) {
-      startPlaying();
-    } else {
-      stopPlaying();
-    }
+  const changeCurrentSong = (newSong: Song) => {
+    clearAndPlayBackend(newSong);
   };
 
   return {
-    updateMetadata,
-    musicTags,
-    toggleAudioPlaying,
-    updateVolume,
-    updateProgress,
-    changeAudioSrc,
-    isPlaying,
-    songDuration,
-    songPos,
-    volume,
-    handleDurationChange,
-    handleLoadedData,
-    startPlaying,
-    stopPlaying,
+    currentSong,
+    changeCurrentSong,
+    enqueueSong,
+    queue,
   };
 };
