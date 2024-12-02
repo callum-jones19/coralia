@@ -13,8 +13,7 @@ export interface HomeScreenProps {
 }
 
 export default function HomeScreen(
-  { onChangeSong, queue, currentSong, onEnqueueSong }:
-    HomeScreenProps,
+  { onChangeSong, queue, currentSong, onEnqueueSong }: HomeScreenProps,
 ) {
   const [songs, setSongs] = useState<Song[]>([]);
 

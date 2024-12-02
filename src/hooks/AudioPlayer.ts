@@ -1,9 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useMemo, useState } from "react";
-import {
-  clearAndPlayBackend,
-  enqueueSongBackend,
-} from "../api/commands";
+import { clearAndPlayBackend, enqueueSongBackend } from "../api/commands";
 import { Song } from "../types";
 
 export const useAudio = () => {

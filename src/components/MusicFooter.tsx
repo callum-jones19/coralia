@@ -1,7 +1,7 @@
 import { Song } from "../types";
 import PlayButtons from "./PlayButtons";
-import VolumeController from "./VolumeController";
 import Seekbar from "./Seekbar";
+import VolumeController from "./VolumeController";
 
 export interface MusicFooterProps {
   currentSong: Song | null;

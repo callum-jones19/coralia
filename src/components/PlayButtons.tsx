@@ -10,21 +10,18 @@ export default function PlayButtons() {
   useEffect(() => {
     const unlistenPause = listen<boolean>("is-paused", (e) => {
       const isPaused = e.payload;
-      console.log(`pause state changed to ${isPaused}`);
       setIsPaused(isPaused);
     }).catch(e => console.error(e));
 
     const unlistenQueueLen = listen<number>("queue-length-change", (e) => {
       const newQueueLen = e.payload;
-      console.log(`New queue length: ${newQueueLen}`);
       setQueueLen(newQueueLen);
     }).catch(e => console.error(e));
 
     const unlistenSongEnd = listen<number>("song-end-queue-length", e => {
       const newQueueLen = e.payload;
-      console.log(`New queue length: ${newQueueLen}`);
       setQueueLen(newQueueLen);
-    })
+    });
 
     return () => {
       unlistenPause.then(f => f).catch(e => console.log(e));

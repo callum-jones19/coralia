@@ -185,6 +185,10 @@ impl Player {
 
     /// Add to our queue of paths that we want to play.
     pub fn add_to_queue(&mut self, song: &Song) {
+        // TODO FIXME look into whether a source marked as Stoppable is
+        // instantly removed from the sink, or if it waits until it gets to
+        // it and then does it. This will influence the size calculation.
+
         self.songs_queue.lock().unwrap().push_back(song.clone());
 
         // The sink should have at most 3 song files open in it at any given time.

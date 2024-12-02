@@ -3,27 +3,50 @@ import { useEffect, useMemo, useState } from "react";
 import { Song } from "../types";
 
 export default function Seekbar() {
+  const [isPaused, setIsPaused] = useState<boolean>(true);
   const [seekPos, setSeekPos] = useState<number>(0);
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
   const [songPos, setSongPos] = useState<number | null>(null);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
 
   useEffect(() => {
-    const unlistenSongChange = listen<Song | undefined>("currently-playing-update", e => {
-      const newCurrentSong = e.payload;
-      if (newCurrentSong) {
-        console.log(`New song playing: ${newCurrentSong.tags.title}`);
-        setCurrentSong(newCurrentSong);
-      } else {
-        console.log(`New song playing: none`);
-        setCurrentSong(null);
-      }
-    });
+    const unlistenSongChange = listen<Song | undefined>(
+      "currently-playing-update",
+      e => {
+        const newCurrentSong = e.payload;
+        if (newCurrentSong) {
+          setCurrentSong(newCurrentSong);
+        } else {
+          setCurrentSong(null);
+        }
+      },
+    );
+
+    const unlistenPause = listen<boolean>("is-paused", (e) => {
+      const isPaused = e.payload;
+      setIsPaused(isPaused);
+    })
+      .then(unlistenFn => {
+        const songPosIntervalId = window.setInterval(() => {
+          setSongPos(oldPos => {
+            if (oldPos) {
+              return oldPos + 1;
+            } else {
+              return 1;
+            }
+          });
+        }, 1000);
+
+        return songPosIntervalId;
+        console.log(unlistenFn);
+      })
+      .catch(e => console.error(e));
 
     return () => {
       unlistenSongChange.then(f => f).catch(e => console.log(e));
-    }
-  }, []);
+      unlistenPause.then(f => f).catch(e => console.log(e));
+    };
+  }, [songPos]);
 
   const songDuration = currentSong?.properties.duration.secs;
 
@@ -116,5 +139,5 @@ export default function Seekbar() {
           : "00"}
       </p>
     </div>
-  )
+  );
 }
