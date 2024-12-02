@@ -1,9 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Song } from "../types";
 
 export default function Seekbar() {
-  const [isPaused, setIsPaused] = useState<boolean>(true);
+  const songPosIntervalId = useRef<number | null>(null);
+
   const [seekPos, setSeekPos] = useState<number>(0);
   const [isSeeking, setIsSeeking] = useState<boolean>(false);
   const [songPos, setSongPos] = useState<number | null>(null);
@@ -19,34 +20,45 @@ export default function Seekbar() {
         } else {
           setCurrentSong(null);
         }
+        setSongPos(0);
       },
     );
 
-    const unlistenPause = listen<boolean>("is-paused", (e) => {
-      const isPaused = e.payload;
-      setIsPaused(isPaused);
-    })
-      .then(unlistenFn => {
-        const songPosIntervalId = window.setInterval(() => {
-          setSongPos(oldPos => {
-            if (oldPos) {
-              return oldPos + 1;
-            } else {
-              return 1;
-            }
-          });
-        }, 1000);
+    const eventPauseRes = listen<boolean>("is-paused", (e) => {
+      console.log('AAAAAAAAAAAAAAAAAAAAA')
 
-        return songPosIntervalId;
-        console.log(unlistenFn);
-      })
+      const isPaused = e.payload;
+      // Remove an interval that already existed.
+      if (songPosIntervalId.current) {
+        window.clearInterval(songPosIntervalId.current);
+      }
+
+      if (isPaused) {
+        // Stop the seekbar interval
+        if (songPosIntervalId.current) {
+          console.log('clear interval');
+          window.clearInterval(songPosIntervalId.current);
+        }
+      } else {
+        // Start the seekbar interval
+        songPosIntervalId.current = window.setInterval(() => {
+          setSongPos(oldPos => {
+            return oldPos ? oldPos + 1 : 1
+        });
+        }, 1000);
+      }
+    })
       .catch(e => console.error(e));
 
     return () => {
-      unlistenSongChange.then(f => f).catch(e => console.log(e));
-      unlistenPause.then(f => f).catch(e => console.log(e));
+      unlistenSongChange
+        .then(f => f)
+        .catch(e => console.log(e));
+      eventPauseRes
+        .then(f => f)
+        .catch(e => console.log(e));
     };
-  }, [songPos]);
+  }, []);
 
   const songDuration = currentSong?.properties.duration.secs;
 
@@ -116,7 +128,8 @@ export default function Seekbar() {
         id="seekbar-range"
         className="w-full ml-5 mr-5 bg-transparent"
         type="range"
-        disabled={!songDuration || Number.isNaN(songDuration)}
+        // disabled={!songDuration || Number.isNaN(songDuration)}
+        disabled
         readOnly
         value={!songPos ? 0 : (seekPos && isSeeking) ? seekPos : songPos}
         max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
