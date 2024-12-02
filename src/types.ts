@@ -20,6 +20,11 @@ export interface Song {
   properties: SongProperties;
 }
 
+export interface SongInfo {
+  paused: boolean;
+  position: Duration;
+}
+
 export interface MusicTags {
   title: string;
   artist: string | undefined;

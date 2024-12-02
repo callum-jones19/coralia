@@ -57,8 +57,8 @@ pub enum PlayerEvent {
 
 pub enum PlayerStateUpdate {
     SongEnd(Box<VecDeque<Song>>),
-    SongPlay,
-    SongPause,
+    SongPlay(Duration),
+    SongPause(Duration),
     QueueUpdate(Box<VecDeque<Song>>),
 }
 
@@ -144,7 +144,8 @@ impl Player {
                             open_song_into_sink(&mut sink3, ctrls, s, &end_event_tx2);
                         } else if queue3.len() == 0 {
                             sink3.pause();
-                            state_update_tx2.send(PlayerStateUpdate::SongPause).unwrap();
+                            let pos = sink3.get_pos();
+                            state_update_tx2.send(PlayerStateUpdate::SongPause(pos)).unwrap();
                         }
                     }
                 };
@@ -209,9 +210,11 @@ impl Player {
     }
 
     pub fn play(&mut self) {
-        self.audio_sink.lock().unwrap().play();
+        let sink = self.audio_sink.lock().unwrap();
+        sink.play();
+        let curr_pos = sink.get_pos();
         self.state_update_tx
-            .send(PlayerStateUpdate::SongPlay)
+            .send(PlayerStateUpdate::SongPlay(curr_pos))
             .unwrap();
     }
 
@@ -221,9 +224,11 @@ impl Player {
     }
 
     pub fn pause(&mut self) {
-        self.audio_sink.lock().unwrap().pause();
+        let sink = self.audio_sink.lock().unwrap();
+        sink.pause();
+        let curr_pos = sink.get_pos();
         self.state_update_tx
-            .send(PlayerStateUpdate::SongPause)
+            .send(PlayerStateUpdate::SongPause(curr_pos))
             .unwrap();
     }
 

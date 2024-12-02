@@ -1,6 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Song } from "../types";
+import { Song, SongInfo } from "../types";
 
 export default function Seekbar() {
   const songPosIntervalId = useRef<number | null>(null);
@@ -24,23 +24,26 @@ export default function Seekbar() {
       },
     );
 
-    const eventPauseRes = listen<boolean>("is-paused", (e) => {
-      console.log('AAAAAAAAAAAAAAAAAAAAA')
-
-      const isPaused = e.payload;
+    const eventPauseRes = listen<SongInfo>("is-paused", (e) => {
+      const { paused, position } = e.payload;
       // Remove an interval that already existed.
       if (songPosIntervalId.current) {
         window.clearInterval(songPosIntervalId.current);
       }
 
-      if (isPaused) {
+      const posInFractionSeconds = position.secs + (position.nanos / 1000000000)
+      setSongPos(posInFractionSeconds);
+
+      if (paused) {
         // Stop the seekbar interval
         if (songPosIntervalId.current) {
           console.log('clear interval');
           window.clearInterval(songPosIntervalId.current);
         }
+        setSongPos(posInFractionSeconds);
       } else {
         // Start the seekbar interval
+        setSongPos(() => posInFractionSeconds);
         songPosIntervalId.current = window.setInterval(() => {
           setSongPos(oldPos => {
             return oldPos ? oldPos + 1 : 1

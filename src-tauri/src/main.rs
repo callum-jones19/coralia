@@ -12,6 +12,7 @@ use std::{
 
 use data::{album::Album, library::Library, song::Song};
 use player::audio::{Player, PlayerStateUpdate};
+use serde::Serialize;
 use tauri::{Manager, State};
 
 mod data;
@@ -26,6 +27,12 @@ enum PlayerCommand {
     SkipOne,
     RemoveAtIndex(usize),
     TrySeek(Duration),
+}
+
+#[derive(Debug, Serialize, Clone)]
+struct PlayInfo {
+    paused: bool,
+    position: Duration,
 }
 
 struct AppState {
@@ -101,11 +108,13 @@ fn main() {
                             handle.emit_all("song-end-queue-length", &new_queue.len()).unwrap();
                             handle.emit_all("song-end", new_queue).unwrap();
                         }
-                        PlayerStateUpdate::SongPlay => {
-                            handle.emit_all("is-paused", false).unwrap();
+                        PlayerStateUpdate::SongPlay(song_pos) => {
+                            let payload = PlayInfo {paused: false, position: song_pos};
+                            handle.emit_all("is-paused", payload).unwrap();
                         }
-                        PlayerStateUpdate::SongPause => {
-                            handle.emit_all("is-paused", true).unwrap();
+                        PlayerStateUpdate::SongPause(song_pos) => {
+                            let payload = PlayInfo {paused: true, position: song_pos};
+                            handle.emit_all("is-paused", payload).unwrap();
                         }
                         PlayerStateUpdate::QueueUpdate(updated_queue) => {
                             if updated_queue.len() == 1 {
