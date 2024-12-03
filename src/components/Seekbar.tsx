@@ -134,7 +134,7 @@ export default function Seekbar() {
         type="range"
         // disabled={!songDuration || Number.isNaN(songDuration)}
         readOnly
-        value={!songPos ? 0 : (seekPos && isSeeking) ? seekPos : songPos}
+        value={!songPos ? 0 : isSeeking ? seekPos : songPos}
         max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
         onMouseDown={() => setIsSeeking(true)}
         onChange={(e) => {
