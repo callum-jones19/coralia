@@ -1,6 +1,7 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Song, SongInfo } from "../types";
+import { Duration, Song, SongInfo } from "../types";
+import { seekCurrentSong } from "../api/commands";
 
 export default function Seekbar() {
   const songPosIntervalId = useRef<number | null>(null);
@@ -132,7 +133,6 @@ export default function Seekbar() {
         className="w-full ml-5 mr-5 bg-transparent"
         type="range"
         // disabled={!songDuration || Number.isNaN(songDuration)}
-        disabled
         readOnly
         value={!songPos ? 0 : (seekPos && isSeeking) ? seekPos : songPos}
         max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
@@ -143,6 +143,15 @@ export default function Seekbar() {
         }}
         onMouseUp={() => {
           if (seekPos !== null) {
+            const seekSecs = Math.floor(seekPos);
+            const seekNanoseconds = Math.floor((seekPos - seekSecs) * 1000000000);
+
+            const seekDuration: Duration = {
+              nanos: seekNanoseconds,
+              secs: seekSecs,
+            };
+
+            seekCurrentSong(seekDuration);
             setSongPos(seekPos);
           }
           setIsSeeking(false);
