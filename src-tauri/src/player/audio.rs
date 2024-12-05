@@ -11,7 +11,7 @@ use std::{
     time::Duration,
 };
 
-use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
+use rodio::{source::{EmptyCallback, SeekError}, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 use serde::{Deserialize, Serialize};
 
 use crate::data::song::Song;
@@ -291,9 +291,10 @@ impl Player {
         skipped_song
     }
 
-    pub fn seek_current_song(&mut self, seek_amount: Duration) {
+    pub fn seek_current_song(&mut self, seek_amount: Duration) -> Result<(), SeekError> {
         let unlocked_sink = self.audio_sink.lock().unwrap();
-        unlocked_sink.try_seek(seek_amount).unwrap();
+        unlocked_sink.try_seek(seek_amount)?;
+        Ok(())
     }
 
     pub fn get_current_state(&self) -> CachedPlayerState {

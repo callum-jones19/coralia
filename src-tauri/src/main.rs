@@ -264,6 +264,7 @@ async fn seek_current_song(
         .command_tx
         .send(PlayerCommand::TrySeek(seek_duration))
         .unwrap();
+
     Ok(())
 }
 

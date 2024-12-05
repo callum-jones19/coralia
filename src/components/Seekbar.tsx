@@ -12,6 +12,35 @@ export default function Seekbar() {
   const [songPos, setSongPos] = useState<number | null>(null);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
 
+  const updateTimeoutMs = 100;
+
+  const updateSeekbarPos = (position: Duration, paused: boolean) => {
+    if (songPosIntervalId.current) {
+      window.clearInterval(songPosIntervalId.current);
+    }
+
+    const posInFractionSeconds = position.secs
+      + (position.nanos / 1000000000);
+    setSongPos(posInFractionSeconds);
+
+    if (paused) {
+      // Stop the seekbar interval
+      if (songPosIntervalId.current) {
+        console.log("clear interval");
+        window.clearInterval(songPosIntervalId.current);
+      }
+      setSongPos(posInFractionSeconds);
+    } else {
+      // Start the seekbar interval
+      setSongPos(() => posInFractionSeconds);
+      songPosIntervalId.current = window.setInterval(() => {
+        setSongPos(oldPos => {
+          return oldPos !== null ? oldPos + (updateTimeoutMs / 1000) : (updateTimeoutMs / 1000);
+        });
+      }, updateTimeoutMs);
+    }
+  }
+
   useEffect(() => {
     const unlistenSongChange = listen<Song | undefined>(
       "currently-playing-update",
@@ -36,61 +65,14 @@ export default function Seekbar() {
           setCurrentSong(playerState.songsQueue[0]);
         }
 
-        if (songPosIntervalId.current) {
-          window.clearInterval(songPosIntervalId.current);
-        }
-
-        const position = playerState.currentSongPos;
-        const posInFractionSeconds = position.secs
-          + (position.nanos / 1000000000);
-        setSongPos(posInFractionSeconds);
-
-        if (playerState.isPaused) {
-          // Stop the seekbar interval
-          if (songPosIntervalId.current) {
-            console.log("clear interval");
-            window.clearInterval(songPosIntervalId.current);
-          }
-          setSongPos(posInFractionSeconds);
-        } else {
-          // Start the seekbar interval
-          setSongPos(() => posInFractionSeconds);
-          songPosIntervalId.current = window.setInterval(() => {
-            setSongPos(oldPos => {
-              return oldPos ? oldPos + 1 : 1;
-            });
-          }, 1000);
-        }
+        updateSeekbarPos(playerState.currentSongPos, playerState.isPaused);
       })
       .catch(e => console.error(e));
 
     const eventPauseRes = listen<SongInfo>("is-paused", (e) => {
       const { paused, position } = e.payload;
       // Remove an interval that already existed.
-      if (songPosIntervalId.current) {
-        window.clearInterval(songPosIntervalId.current);
-      }
-
-      const posInFractionSeconds = position.secs
-        + (position.nanos / 1000000000);
-      setSongPos(posInFractionSeconds);
-
-      if (paused) {
-        // Stop the seekbar interval
-        if (songPosIntervalId.current) {
-          console.log("clear interval");
-          window.clearInterval(songPosIntervalId.current);
-        }
-        setSongPos(posInFractionSeconds);
-      } else {
-        // Start the seekbar interval
-        setSongPos(() => posInFractionSeconds);
-        songPosIntervalId.current = window.setInterval(() => {
-          setSongPos(oldPos => {
-            return oldPos ? oldPos + 1 : 1;
-          });
-        }, 1000);
-      }
+      updateSeekbarPos(position, paused);
     })
       .catch(e => console.error(e));
 
