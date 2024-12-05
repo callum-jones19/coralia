@@ -69,6 +69,7 @@ pub struct CachedPlayerState {
     songs_queue: VecDeque<Song>,
     current_song_pos: Duration,
     current_volume: f32,
+    is_paused: bool,
 }
 
 impl CachedPlayerState {
@@ -80,6 +81,7 @@ impl CachedPlayerState {
             songs_queue: locked_songs.clone(),
             current_song_pos: locked_sink.get_pos().clone(),
             current_volume: locked_sink.volume().clone(),
+            is_paused: locked_sink.is_paused().clone(),
         };
 
         new_state

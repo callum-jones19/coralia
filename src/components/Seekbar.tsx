@@ -30,8 +30,37 @@ export default function Seekbar() {
       .then(playerState => {
         setSongPos(
           playerState.currentSongPos.secs
-            + (playerState.currentSongPos.nanos / 1000000000),
+          + (playerState.currentSongPos.nanos / 1000000000),
         );
+        if (playerState.songsQueue.length > 0) {
+          setCurrentSong(playerState.songsQueue[0]);
+        }
+
+        if (songPosIntervalId.current) {
+          window.clearInterval(songPosIntervalId.current);
+        }
+
+        const position = playerState.currentSongPos;
+        const posInFractionSeconds = position.secs
+          + (position.nanos / 1000000000);
+        setSongPos(posInFractionSeconds);
+
+        if (playerState.isPaused) {
+          // Stop the seekbar interval
+          if (songPosIntervalId.current) {
+            console.log("clear interval");
+            window.clearInterval(songPosIntervalId.current);
+          }
+          setSongPos(posInFractionSeconds);
+        } else {
+          // Start the seekbar interval
+          setSongPos(() => posInFractionSeconds);
+          songPosIntervalId.current = window.setInterval(() => {
+            setSongPos(oldPos => {
+              return oldPos ? oldPos + 1 : 1;
+            });
+          }, 1000);
+        }
       })
       .catch(e => console.error(e));
 

@@ -53,4 +53,5 @@ export interface CachedPlayerState {
   songsQueue: Song[];
   currentSongPos: Duration;
   currentVolume: number;
+  isPaused: boolean;
 }
