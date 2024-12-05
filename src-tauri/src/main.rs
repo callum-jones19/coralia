@@ -2,9 +2,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    collections::VecDeque, path::Path, sync::{
-        mpsc::{channel, Receiver, Sender}, Arc, Mutex
-    }, time::Duration
+    collections::VecDeque,
+    path::Path,
+    sync::{
+        mpsc::{channel, Receiver, Sender},
+        Arc, Mutex,
+    },
+    time::Duration,
 };
 
 use data::{album::Album, library::Library, song::Song};
@@ -32,8 +36,6 @@ struct PlayInfo {
     paused: bool,
     position: Duration,
 }
-
-
 
 struct AppState {
     command_tx: Sender<PlayerCommand>,
@@ -92,11 +94,11 @@ fn main() {
                         }
                         PlayerCommand::RemoveAtIndex(skip_index) => {
                             let _ = player.remove_song_from_queue(skip_index);
-                        },
+                        }
                         PlayerCommand::GetPlayerState(state_rx) => {
                             let cached_state = player.get_current_state();
                             state_rx.send(cached_state).unwrap();
-                        },
+                        }
                     }
                 }
             });
@@ -108,23 +110,37 @@ fn main() {
                     let state_update = state_update_rx.recv().unwrap();
                     match state_update {
                         PlayerStateUpdate::SongEnd(new_queue) => {
-                            handle.emit_all("currently-playing-update", &new_queue.get(0)).unwrap();
-                            handle.emit_all("song-end-queue-length", &new_queue.len()).unwrap();
+                            handle
+                                .emit_all("currently-playing-update", &new_queue.get(0))
+                                .unwrap();
+                            handle
+                                .emit_all("song-end-queue-length", &new_queue.len())
+                                .unwrap();
                             handle.emit_all("song-end", new_queue).unwrap();
                         }
                         PlayerStateUpdate::SongPlay(song_pos) => {
-                            let payload = PlayInfo {paused: false, position: song_pos};
+                            let payload = PlayInfo {
+                                paused: false,
+                                position: song_pos,
+                            };
                             handle.emit_all("is-paused", payload).unwrap();
                         }
                         PlayerStateUpdate::SongPause(song_pos) => {
-                            let payload = PlayInfo {paused: true, position: song_pos};
+                            let payload = PlayInfo {
+                                paused: true,
+                                position: song_pos,
+                            };
                             handle.emit_all("is-paused", payload).unwrap();
                         }
                         PlayerStateUpdate::QueueUpdate(updated_queue) => {
                             if updated_queue.len() == 1 {
-                                handle.emit_all("currently-playing-update", &updated_queue.get(0)).unwrap();
+                                handle
+                                    .emit_all("currently-playing-update", &updated_queue.get(0))
+                                    .unwrap();
                             }
-                            handle.emit_all("queue-length-change", &updated_queue.len()).unwrap();
+                            handle
+                                .emit_all("queue-length-change", &updated_queue.len())
+                                .unwrap();
                             handle.emit_all("queue-change", updated_queue).unwrap();
                         }
                     }
@@ -265,7 +281,9 @@ async fn get_library_albums(state_mutex: State<'_, Mutex<AppState>>) -> Result<V
 }
 
 #[tauri::command]
-async fn get_player_state(state_mutex: State<'_, Mutex<AppState>>) -> Result<CachedPlayerState, ()> {
+async fn get_player_state(
+    state_mutex: State<'_, Mutex<AppState>>,
+) -> Result<CachedPlayerState, ()> {
     let state = state_mutex.lock().unwrap();
 
     let (rx, tx): (Sender<CachedPlayerState>, Receiver<CachedPlayerState>) = channel();

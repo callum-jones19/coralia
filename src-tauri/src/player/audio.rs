@@ -77,9 +77,9 @@ impl CachedPlayerState {
         let locked_sink = player.audio_sink.lock().unwrap();
 
         let new_state = CachedPlayerState {
-             songs_queue: locked_songs.clone(),
-             current_song_pos: locked_sink.get_pos().clone(),
-             current_volume: locked_sink.volume().clone()
+            songs_queue: locked_songs.clone(),
+            current_song_pos: locked_sink.get_pos().clone(),
+            current_volume: locked_sink.volume().clone(),
         };
 
         new_state
@@ -169,7 +169,9 @@ impl Player {
                         } else if queue3.len() == 0 {
                             sink3.pause();
                             let pos = sink3.get_pos();
-                            state_update_tx2.send(PlayerStateUpdate::SongPause(pos)).unwrap();
+                            state_update_tx2
+                                .send(PlayerStateUpdate::SongPause(pos))
+                                .unwrap();
                         }
                     }
                 };

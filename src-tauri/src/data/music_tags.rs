@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 
 use lofty::{
-    file::TaggedFileExt, read_from_path,
+    file::TaggedFileExt,
+    read_from_path,
     tag::{Accessor, ItemKey},
 };
 use serde::{Deserialize, Serialize};
