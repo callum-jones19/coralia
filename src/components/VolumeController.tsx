@@ -7,10 +7,10 @@ export default function VolumeController() {
   const [volume, setVolume] = useState<number>(23);
 
   useEffect(() => {
-    console.log("Loading volume elem")
+    console.log("Loading volume elem");
     getPlayerState()
       .then(playerState => {
-        console.log("getting init state for volume")
+        console.log("getting init state for volume");
         console.log(playerState.currentVolume);
         const initVol = Math.floor(playerState.currentVolume * 100);
         console.log(initVol);

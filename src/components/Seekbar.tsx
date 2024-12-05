@@ -1,8 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Duration, Song, SongInfo } from "../types";
 import { seekCurrentSong } from "../api/commands";
 import { getPlayerState } from "../api/importer";
+import { Duration, Song, SongInfo } from "../types";
 
 export default function Seekbar() {
   const songPosIntervalId = useRef<number | null>(null);
@@ -28,7 +28,10 @@ export default function Seekbar() {
 
     getPlayerState()
       .then(playerState => {
-        setSongPos(playerState.currentSongPos.secs + (playerState.currentSongPos.nanos / 1000000000))
+        setSongPos(
+          playerState.currentSongPos.secs
+            + (playerState.currentSongPos.nanos / 1000000000),
+        );
       })
       .catch(e => console.error(e));
 
@@ -39,13 +42,14 @@ export default function Seekbar() {
         window.clearInterval(songPosIntervalId.current);
       }
 
-      const posInFractionSeconds = position.secs + (position.nanos / 1000000000)
+      const posInFractionSeconds = position.secs
+        + (position.nanos / 1000000000);
       setSongPos(posInFractionSeconds);
 
       if (paused) {
         // Stop the seekbar interval
         if (songPosIntervalId.current) {
-          console.log('clear interval');
+          console.log("clear interval");
           window.clearInterval(songPosIntervalId.current);
         }
         setSongPos(posInFractionSeconds);
@@ -54,8 +58,8 @@ export default function Seekbar() {
         setSongPos(() => posInFractionSeconds);
         songPosIntervalId.current = window.setInterval(() => {
           setSongPos(oldPos => {
-            return oldPos ? oldPos + 1 : 1
-        });
+            return oldPos ? oldPos + 1 : 1;
+          });
         }, 1000);
       }
     })
@@ -151,7 +155,9 @@ export default function Seekbar() {
         onMouseUp={() => {
           if (seekPos !== null) {
             const seekSecs = Math.floor(seekPos);
-            const seekNanoseconds = Math.floor((seekPos - seekSecs) * 1000000000);
+            const seekNanoseconds = Math.floor(
+              (seekPos - seekSecs) * 1000000000,
+            );
 
             const seekDuration: Duration = {
               nanos: seekNanoseconds,
