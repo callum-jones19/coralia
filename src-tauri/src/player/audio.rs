@@ -12,6 +12,7 @@ use std::{
 };
 
 use rodio::{source::EmptyCallback, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
+use serde::{Deserialize, Serialize};
 
 use crate::data::song::Song;
 
@@ -60,6 +61,29 @@ pub enum PlayerStateUpdate {
     SongPlay(Duration),
     SongPause(Duration),
     QueueUpdate(Box<VecDeque<Song>>),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CachedPlayerState {
+    songs_queue: VecDeque<Song>,
+    current_song_pos: Duration,
+    current_volume: f32,
+}
+
+impl CachedPlayerState {
+    pub fn new(player: &Player) -> Self {
+        let locked_songs = player.songs_queue.lock().unwrap();
+        let locked_sink = player.audio_sink.lock().unwrap();
+
+        let new_state = CachedPlayerState {
+             songs_queue: locked_songs.clone(),
+             current_song_pos: locked_sink.get_pos().clone(),
+             current_volume: locked_sink.volume().clone()
+        };
+
+        new_state
+    }
 }
 
 pub struct Player {
@@ -266,5 +290,11 @@ impl Player {
     pub fn seek_current_song(&mut self, seek_amount: Duration) {
         let unlocked_sink = self.audio_sink.lock().unwrap();
         unlocked_sink.try_seek(seek_amount).unwrap();
+    }
+
+    pub fn get_current_state(&self) -> CachedPlayerState {
+        let res = CachedPlayerState::new(&self);
+
+        res
     }
 }

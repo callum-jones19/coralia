@@ -2,6 +2,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Duration, Song, SongInfo } from "../types";
 import { seekCurrentSong } from "../api/commands";
+import { getPlayerState } from "../api/importer";
 
 export default function Seekbar() {
   const songPosIntervalId = useRef<number | null>(null);
@@ -24,6 +25,12 @@ export default function Seekbar() {
         setSongPos(0);
       },
     );
+
+    getPlayerState()
+      .then(playerState => {
+        setSongPos(playerState.currentSongPos.secs + (playerState.currentSongPos.nanos / 1000000000))
+      })
+      .catch(e => console.error(e));
 
     const eventPauseRes = listen<SongInfo>("is-paused", (e) => {
       const { paused, position } = e.payload;

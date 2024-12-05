@@ -2,16 +2,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    path::Path,
-    sync::{
-        mpsc::{channel, Sender},
-        Mutex,
-    },
-    time::Duration,
+    collections::VecDeque, path::Path, sync::{
+        mpsc::{channel, Receiver, Sender}, Arc, Mutex
+    }, time::Duration
 };
 
 use data::{album::Album, library::Library, song::Song};
-use player::audio::{Player, PlayerStateUpdate};
+use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
 use serde::Serialize;
 use tauri::{Manager, State};
 
@@ -27,6 +24,7 @@ enum PlayerCommand {
     SkipOne,
     RemoveAtIndex(usize),
     TrySeek(Duration),
+    GetPlayerState(Sender<CachedPlayerState>),
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -34,6 +32,8 @@ struct PlayInfo {
     paused: bool,
     position: Duration,
 }
+
+
 
 struct AppState {
     command_tx: Sender<PlayerCommand>,
@@ -92,7 +92,11 @@ fn main() {
                         }
                         PlayerCommand::RemoveAtIndex(skip_index) => {
                             let _ = player.remove_song_from_queue(skip_index);
-                        }
+                        },
+                        PlayerCommand::GetPlayerState(state_rx) => {
+                            let cached_state = player.get_current_state();
+                            state_rx.send(cached_state).unwrap();
+                        },
                     }
                 }
             });
@@ -144,6 +148,7 @@ fn main() {
             get_library_albums,
             seek_current_song,
             remove_song_from_queue,
+            get_player_state,
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -259,7 +264,15 @@ async fn get_library_albums(state_mutex: State<'_, Mutex<AppState>>) -> Result<V
     Ok(state.library.get_all_albums())
 }
 
-// async fn is_player_playing(state_mutex: State<'_, Mutex<AppState>>) -> Result<bool, ()> {
-//     let state = state_mutex.lock().unwrap();
-//     Ok(state.player_state.is_playing)
-// }
+#[tauri::command]
+async fn get_player_state(state_mutex: State<'_, Mutex<AppState>>) -> Result<CachedPlayerState, ()> {
+    let state = state_mutex.lock().unwrap();
+
+    let (rx, tx): (Sender<CachedPlayerState>, Receiver<CachedPlayerState>) = channel();
+    let _ = state.command_tx.send(PlayerCommand::GetPlayerState(rx));
+
+    // Sleep on the response
+    let updated_state = tx.recv().unwrap();
+
+    Ok(updated_state)
+}

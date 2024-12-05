@@ -44,3 +44,4 @@ export const seekCurrentSong = (seekAmount: Duration) => {
   invoke("seek_current_song", { seekDuration: seekAmount })
     .catch(e => console.error(e));
 };
+

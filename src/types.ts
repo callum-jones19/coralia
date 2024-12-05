@@ -48,3 +48,9 @@ export interface Album {
   albumSongs: Song[];
   artwork: Artwork;
 }
+
+export interface CachedPlayerState {
+  songsQueue: Song[];
+  currentSongPos: Duration;
+  currentVolume: number;
+}

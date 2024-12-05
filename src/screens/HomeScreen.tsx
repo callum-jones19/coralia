@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { get_library_songs } from "../api/importer";
+import { getLibrarySongs } from "../api/importer";
 import MusicFooter from "../components/MusicFooter";
 import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
@@ -18,7 +18,7 @@ export default function HomeScreen(
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
-    get_library_songs()
+    getLibrarySongs()
       .then(songs => setSongs(songs))
       .catch(e => console.log(e));
   }, []);
