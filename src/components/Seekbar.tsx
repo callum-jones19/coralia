@@ -14,6 +14,8 @@ export default function Seekbar() {
 
   const updateTimeoutMs = 100;
 
+  console.log(songPos);
+
   const updateSeekbarPos = (position: Duration, paused: boolean) => {
     if (songPosIntervalId.current) {
       window.clearInterval(songPosIntervalId.current);
