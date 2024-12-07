@@ -35,6 +35,8 @@ export interface MusicTags {
   publisher: string | undefined;
   composer: string | undefined;
   originalYear: string | undefined;
+  diskNumber: number | undefined;
+  trackNumber: number | undefined;
 }
 
 export interface Artwork {

@@ -24,6 +24,8 @@ pub struct MusicTags {
     pub publisher: Option<String>,
     pub composer: Option<String>,
     pub original_year: Option<String>,
+    pub disk_number: Option<u32>,
+    pub track_number: Option<u32>,
 }
 
 impl MusicTags {
@@ -38,6 +40,8 @@ impl MusicTags {
             publisher: None,
             composer: None,
             original_year: None,
+            disk_number: None,
+            track_number: None,
         }
     }
 
@@ -71,6 +75,8 @@ impl MusicTags {
         base_tags.original_year = tags
             .get_string(&ItemKey::OriginalReleaseDate)
             .map(str::to_string);
+        base_tags.disk_number = tags.disk().or(None);
+        base_tags.track_number = tags.track().or(None);
 
         Ok(base_tags)
     }

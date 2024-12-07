@@ -38,7 +38,7 @@ export default function MusicFooter() {
   }, []);
 
   return (
-    <div className="bg-gray-950 basis-16 flex-shrink-0 pt-3 pb-3">
+    <div className="bg-neutral-900 basis-16 flex-shrink-0 pt-3 pb-3">
       <div className="flex flex-col justify-center h-full gap-2">
         <div className="flex flex-row mr-10 ml-10 justify-between">
           <PlayButtons />
