@@ -35,11 +35,13 @@ export default function Seekbar() {
       setSongPos(() => posInFractionSeconds);
       songPosIntervalId.current = window.setInterval(() => {
         setSongPos(oldPos => {
-          return oldPos !== null ? oldPos + (updateTimeoutMs / 1000) : (updateTimeoutMs / 1000);
+          return oldPos !== null
+            ? oldPos + (updateTimeoutMs / 1000)
+            : (updateTimeoutMs / 1000);
         });
       }, updateTimeoutMs);
     }
-  }
+  };
 
   useEffect(() => {
     const unlistenSongChange = listen<Song | undefined>(
@@ -59,14 +61,14 @@ export default function Seekbar() {
       .then(playerState => {
         setSongPos(
           playerState.currentSongPos.secs
-          + (playerState.currentSongPos.nanos / 1000000000),
+            + (playerState.currentSongPos.nanos / 1000000000),
         );
         if (playerState.songsQueue.length > 0) {
           setCurrentSong(playerState.songsQueue[0]);
         }
 
         if (!playerState.isPaused && playerState.songsQueue.length > 0) {
-          console.log('test');
+          console.log("test");
           updateSeekbarPos(playerState.currentSongPos, playerState.isPaused);
         }
       })

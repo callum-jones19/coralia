@@ -9,9 +9,7 @@ export default function App() {
         <Routes>
           <Route
             path="/"
-            element={
-              <HomeScreen />
-            }
+            element={<HomeScreen />}
           />
           <Route
             path="/settings"
