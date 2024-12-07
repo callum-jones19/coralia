@@ -20,13 +20,15 @@ const Row = memo(({ data, index, style }: RowProps) => {
     </div>
   );
 }, areEqual);
+Row.displayName = 'SongRow';
 
 export default function SongList() {
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
     getLibrarySongs()
-      .then(libSongs => setSongs(libSongs));
+      .then(libSongs => setSongs(libSongs))
+      .catch(e => console.error(e));
   });
 
   return (

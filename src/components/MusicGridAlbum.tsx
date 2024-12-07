@@ -1,5 +1,7 @@
+import { Artwork } from "../types";
+
 export interface MusicGridAlbumProps {
-  artSrc: string;
+  artSrc: Artwork;
   title: string;
   artist: string;
 }
@@ -11,7 +13,7 @@ export default function MusicGridAlbum(
     <>
       <div className="p-2 h-full shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0">
         <img
-          src={artSrc}
+          src={artSrc.cachedEmbeddedArt}
           alt="album-cover-image"
           className="mb-3 rounded-m basis-1 rounded-md"
         />
