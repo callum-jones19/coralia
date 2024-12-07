@@ -50,7 +50,8 @@ export default function PlayButtons() {
             // todo
           }}
         >
-          <SkipBack fill={`${queueLen === 0 ? 'gray' : 'white'}`} color={`${queueLen === 0 ? 'gray' : 'white'}`} size='1em' />
+          {/* <SkipBack fill={`${queueLen === 0 || ? 'gray' : 'white'}`} color={`${queueLen === 0 ? 'gray' : 'white'}`} size='1em' /> */}
+          <SkipBack fill='gray' color='gray' size='1em' />
         </button>
         <button
           className="bg-white flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-gray-500"

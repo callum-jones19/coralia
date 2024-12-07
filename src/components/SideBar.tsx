@@ -2,7 +2,6 @@ import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Volume1 } from "react-feather";
-import { Link } from "react-router-dom";
 import { Song } from "../types";
 
 export default function SideBar() {

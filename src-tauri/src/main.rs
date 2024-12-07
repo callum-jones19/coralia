@@ -120,7 +120,8 @@ fn main() {
                             handle
                                 .emit_all("song-end-queue-length", &new_queue.len())
                                 .unwrap();
-                            handle.emit_all("song-end", new_queue).unwrap();
+                            handle.emit_all("song-end", new_queue.clone()).unwrap();
+                            handle.emit_all("queue-change", new_queue).unwrap();
                         }
                         PlayerStateUpdate::SongPlay(song_pos) => {
                             let payload = PlayInfo {
