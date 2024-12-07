@@ -44,7 +44,7 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("/home/callum/Music/music/");
+    let root_lib_str = String::from("C:/Users/Callum/Music/music");
     let root_lib = Path::new(&root_lib_str);
 
     println!("Setting up music library...");
@@ -84,13 +84,17 @@ fn main() {
                         PlayerCommand::SkipOne => {
                             println!("skipping");
                             player.skip_current_song();
+                            player.play();
                         }
                         PlayerCommand::EmptyAndPlay(song) => {
                             player.clear();
                             player.add_to_queue(&song);
                         }
                         PlayerCommand::TrySeek(duration) => {
-                            player.seek_current_song(duration).unwrap();
+                            match player.seek_current_song(duration) {
+                                Ok(_) => println!("Seeking song"),
+                                Err(_) => println!("Unable to seek current song"),
+                            };
                         }
                         PlayerCommand::RemoveAtIndex(skip_index) => {
                             let _ = player.remove_song_from_queue(skip_index);
