@@ -14,8 +14,6 @@ export default function Seekbar() {
 
   const updateTimeoutMs = 100;
 
-  console.log(songPos);
-
   const updateSeekbarPos = (position: Duration, paused: boolean) => {
     if (songPosIntervalId.current) {
       window.clearInterval(songPosIntervalId.current);
@@ -67,7 +65,10 @@ export default function Seekbar() {
           setCurrentSong(playerState.songsQueue[0]);
         }
 
-        updateSeekbarPos(playerState.currentSongPos, playerState.isPaused);
+        if (!playerState.isPaused && playerState.songsQueue.length > 0) {
+          console.log('test');
+          updateSeekbarPos(playerState.currentSongPos, playerState.isPaused);
+        }
       })
       .catch(e => console.error(e));
 

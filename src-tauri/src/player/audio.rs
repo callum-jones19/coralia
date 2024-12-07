@@ -11,7 +11,10 @@ use std::{
     time::Duration,
 };
 
-use rodio::{source::{EmptyCallback, SeekError}, Decoder, OutputStream, OutputStreamHandle, Sink, Source};
+use rodio::{
+    source::{EmptyCallback, SeekError},
+    Decoder, OutputStream, OutputStreamHandle, Sink, Source,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::data::song::Song;
@@ -107,8 +110,9 @@ impl Player {
     pub fn new(state_update_tx: Sender<PlayerStateUpdate>) -> Self {
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
+        sink.set_volume(0.5);
+        sink.pause();
         let (player_event_tx, player_event_rx) = channel::<PlayerEvent>();
-        sink.set_volume(0.2);
 
         let sink_wrapped = Arc::new(Mutex::new(sink));
         let songs_queue_wrapped = Arc::new(Mutex::new(VecDeque::<Song>::new()));
