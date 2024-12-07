@@ -164,7 +164,7 @@ export default function Seekbar() {
         id="seekbar-range"
         className="w-full ml-5 mr-5 bg-transparent"
         type="range"
-        // disabled={!songDuration || Number.isNaN(songDuration)}
+        disabled={currentSong === null}
         readOnly
         value={!songPos ? 0 : seekPos ? seekPos : songPos}
         max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
