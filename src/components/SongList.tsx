@@ -37,7 +37,7 @@ export default function SongList() {
           <FixedSizeList
             height={height}
             itemCount={songs.length}
-            itemSize={100}
+            itemSize={55}
             width={width}
             itemData={songs}
           >
