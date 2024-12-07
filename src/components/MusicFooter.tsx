@@ -5,6 +5,7 @@ import Seekbar from "./Seekbar";
 import VolumeController from "./VolumeController";
 import { listen } from "@tauri-apps/api/event";
 import { getPlayerState } from "../api/importer";
+import SongInfoFooter from "./SongInfoFooter";
 
 
 // TODO send down the isReady variable, so we can make things like the song
@@ -42,14 +43,7 @@ export default function MusicFooter() {
       <div className="flex flex-col justify-center h-full gap-2">
         <div className="flex flex-row mr-10 ml-10 justify-between">
           <PlayButtons />
-          <div id="music-info" className="flex flex-col text-white text-center">
-            <p className="font-bold">
-              {currentSong ? currentSong.tags.title : "~"}
-            </p>
-            <p className="font-light">
-              {currentSong ? currentSong.tags.artist : "~"}
-            </p>
-          </div>
+          <SongInfoFooter currentSong={currentSong} />
           <VolumeController />
         </div>
         <Seekbar />
