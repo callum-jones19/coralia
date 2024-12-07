@@ -7,8 +7,7 @@ import { Duration, Song, SongInfo } from "../types";
 export default function Seekbar() {
   const songPosIntervalId = useRef<number | null>(null);
 
-  const [seekPos, setSeekPos] = useState<number>(0);
-  const [isSeeking, setIsSeeking] = useState<boolean>(false);
+  const [seekPos, setSeekPos] = useState<number | null>(null);
   const [songPos, setSongPos] = useState<number | null>(null);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
 
@@ -112,13 +111,21 @@ export default function Seekbar() {
   }, [songPos]);
 
   const seekPosMins = useMemo(() => {
-    const mins = Math.floor(seekPos / 60).toString().padStart(2, "0");
-    return mins;
+    if (seekPos) {
+      const mins = Math.floor(seekPos / 60).toString().padStart(2, "0");
+      return mins;
+    } else {
+      return null;
+    }
   }, [seekPos]);
 
   const seekPosSecs = useMemo(() => {
-    const secs = Math.floor(seekPos % 60).toString().padStart(2, "0");
-    return secs;
+    if (seekPos) {
+      const secs = Math.floor(seekPos % 60).toString().padStart(2, "0");
+      return secs;
+    } else {
+      return null;
+    }
   }, [seekPos]);
 
   const durationMins = useMemo(() => {
@@ -141,18 +148,16 @@ export default function Seekbar() {
 
   return (
     <div className="flex flex-row">
-      {!isSeeking && (
+      {!(seekPosMins && seekPosSecs) && (
         <p className="text-white w-16">
           {songPosMins ? songPosMins : "00"}:{songPosSecs
             ? songPosSecs
             : "00"}
         </p>
       )}
-      {isSeeking && (
+      {seekPosMins && seekPosSecs && (
         <p className="text-white w-16">
-          {seekPosMins ? seekPosMins : "00"}:{seekPosSecs
-            ? seekPosSecs
-            : "00"}
+          {seekPosMins}:{seekPosSecs}
         </p>
       )}
       <input
@@ -161,9 +166,8 @@ export default function Seekbar() {
         type="range"
         // disabled={!songDuration || Number.isNaN(songDuration)}
         readOnly
-        value={!songPos ? 0 : isSeeking ? seekPos : songPos}
+        value={!songPos ? 0 : seekPos ? seekPos : songPos}
         max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
-        onMouseDown={() => setIsSeeking(true)}
         onChange={(e) => {
           const tmp = parseFloat(e.target.value);
           setSeekPos(tmp);
@@ -183,8 +187,7 @@ export default function Seekbar() {
             seekCurrentSong(seekDuration);
             setSongPos(seekPos);
           }
-          setIsSeeking(false);
-          setSeekPos(0);
+          setSeekPos(null);
         }}
       />
       <p className="text-white">
