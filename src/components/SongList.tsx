@@ -39,7 +39,7 @@ export default function SongList() {
             <FixedSizeList
               height={height}
               itemCount={songs.length}
-              itemSize={55}
+              itemSize={53}
               width={width}
               itemData={songs}
               overscanCount={5}

@@ -140,7 +140,7 @@ export default function Seekbar() {
   }, [songDuration]);
 
   return (
-    <div className="flex flex-row mr-10 ml-10">
+    <div className="flex flex-row">
       {!isSeeking && (
         <p className="text-white w-16">
           {songPosMins ? songPosMins : "00"}:{songPosSecs

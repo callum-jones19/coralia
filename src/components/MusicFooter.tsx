@@ -38,9 +38,9 @@ export default function MusicFooter() {
   }, []);
 
   return (
-    <div className="bg-neutral-900 basis-16 flex-shrink-0 pt-3 pb-3">
+    <div className="bg-neutral-900 basis-16 pt-3 pb-3 pr-10 pl-10">
       <div className="flex flex-col justify-center h-full gap-2">
-        <div className="flex flex-row mr-10 ml-10 justify-between">
+        <div className="flex flex-row justify-between">
           <PlayButtons />
           <SongInfoFooter currentSong={currentSong} />
           <VolumeController />

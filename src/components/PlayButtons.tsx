@@ -42,19 +42,19 @@ export default function PlayButtons() {
 
   return (
     <>
-      <div id="play-controls" className="flex flex-row items-center">
+      <div className="flex flex-row items-center gap-1">
         <button
-          className="bg-white mr-3 font-bold rounded-full aspect-square h-10 disabled:bg-gray-500"
+          className="flex rounded-full flex-row justify-center items-center w-8 h-8"
           disabled
           onClick={() => {
             // todo
           }}
         >
-          <SkipBack className="m-auto h-1/2 w-1/2" />
+          <SkipBack fill={`${queueLen === 0 ? 'gray' : 'white'}`} color={`${queueLen === 0 ? 'gray' : 'white'}`} size='1em' />
         </button>
         <button
-          className="bg-white mr-3 font-bold rounded-full aspect-square h-10 disabled:bg-gray-500"
-          disabled={queueLen === 0 ? true : false}
+          className="bg-white flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-gray-500"
+          disabled={queueLen === 0}
           onClick={() => {
             if (isPaused) {
               playPlayer();
@@ -63,15 +63,15 @@ export default function PlayButtons() {
             }
           }}
         >
-          {isPaused && <Play className="m-auto h-1/2 w-1/2" />}
-          {!isPaused && <Pause className="m-auto h-1/2 w-1/2" />}
+          {isPaused && <Play fill="black" size='1em' />}
+          {!isPaused && <Pause size='1em' fill="black" />}
         </button>
         <button
-          className="bg-white mr-3 font-bold rounded-full aspect-square h-10 disabled:bg-gray-500"
-          disabled={queueLen <= 0 ? true : false}
+          className="flex rounded-full flex-row justify-center items-center w-8 h-8"
+          disabled={queueLen <= 0}
           onClick={() => skipOneSong()}
         >
-          <SkipForward className="m-auto h-1/2 w-1/2" />
+          <SkipForward fill={`${queueLen === 0 ? 'gray' : 'white'}`} color={`${queueLen === 0 ? 'gray' : 'white'}`} size='1em' />
         </button>
       </div>
     </>
