@@ -60,10 +60,10 @@ pub enum PlayerEvent {
 }
 
 pub enum PlayerStateUpdate {
-    SongEnd(Box<VecDeque<Song>>),
+    SongEnd(VecDeque<Song>),
     SongPlay(Duration),
     SongPause(Duration),
-    QueueUpdate(Box<VecDeque<Song>>),
+    QueueUpdate(VecDeque<Song>),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -80,14 +80,12 @@ impl CachedPlayerState {
         let locked_songs = player.songs_queue.lock().unwrap();
         let locked_sink = player.audio_sink.lock().unwrap();
 
-        let new_state = CachedPlayerState {
+        CachedPlayerState {
             songs_queue: locked_songs.clone(),
-            current_song_pos: locked_sink.get_pos().clone(),
-            current_volume: locked_sink.volume().clone(),
-            is_paused: locked_sink.is_paused().clone(),
-        };
-
-        new_state
+            current_song_pos: locked_sink.get_pos(),
+            current_volume: locked_sink.volume(),
+            is_paused: locked_sink.is_paused(),
+        }
     }
 }
 
@@ -164,7 +162,7 @@ impl Player {
                         let new_queue = queue3.clone();
                         println!("Sending queue with SongEnd event");
                         state_update_tx2
-                            .send(PlayerStateUpdate::SongEnd(Box::new(new_queue)))
+                            .send(PlayerStateUpdate::SongEnd(new_queue))
                             .unwrap();
                         println!("Sent queue with SongEnd event");
 
@@ -202,7 +200,7 @@ impl Player {
         open_song_into_sink(
             &mut sink,
             sink_songs_ctrls_2,
-            &song,
+            song,
             &self.player_event_tx.clone(),
         );
     }
@@ -212,8 +210,7 @@ impl Player {
     /// double counting empty signalling sources as songs.
     fn number_songs_in_sink(&self) -> usize {
         let num_srcs_in_sink = self.audio_sink.lock().unwrap().len();
-        let num_songs = num_srcs_in_sink / 2;
-        num_songs
+        num_srcs_in_sink / 2
     }
 
     /// Add to our queue of paths that we want to play.
@@ -228,11 +225,11 @@ impl Player {
         // If it is full, we just leave the song in the file queue, and then
         // will pull more into the sink as other songs finish playing.
         if self.number_songs_in_sink() < 3 {
-            self.song_into_sink(&song);
+            self.song_into_sink(song);
         }
 
         let queue_to_send = self.songs_queue.lock().unwrap().clone();
-        let queue_change_state = PlayerStateUpdate::QueueUpdate(Box::new(queue_to_send));
+        let queue_change_state = PlayerStateUpdate::QueueUpdate(queue_to_send);
         self.state_update_tx.send(queue_change_state).unwrap();
         self.play();
     }
@@ -287,8 +284,8 @@ impl Player {
             }
         }
 
-        if let Some(_) = skipped_song {
-            let queue_change_state = PlayerStateUpdate::QueueUpdate(Box::new(song_queue.clone()));
+        if skipped_song.is_some() {
+            let queue_change_state = PlayerStateUpdate::QueueUpdate(song_queue.clone());
             self.state_update_tx.send(queue_change_state).unwrap();
         }
 
@@ -302,8 +299,6 @@ impl Player {
     }
 
     pub fn get_current_state(&self) -> CachedPlayerState {
-        let res = CachedPlayerState::new(&self);
-
-        res
+        CachedPlayerState::new(self)
     }
 }

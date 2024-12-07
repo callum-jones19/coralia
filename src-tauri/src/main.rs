@@ -2,11 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    collections::VecDeque,
     path::Path,
     sync::{
         mpsc::{channel, Receiver, Sender},
-        Arc, Mutex,
+        Mutex,
     },
     time::Duration,
 };
@@ -91,7 +90,7 @@ fn main() {
                             player.add_to_queue(&song);
                         }
                         PlayerCommand::TrySeek(duration) => {
-                            player.seek_current_song(duration);
+                            player.seek_current_song(duration).unwrap();
                         }
                         PlayerCommand::RemoveAtIndex(skip_index) => {
                             let _ = player.remove_song_from_queue(skip_index);
@@ -112,7 +111,7 @@ fn main() {
                     match state_update {
                         PlayerStateUpdate::SongEnd(new_queue) => {
                             handle
-                                .emit_all("currently-playing-update", &new_queue.get(0))
+                                .emit_all("currently-playing-update", &new_queue.front())
                                 .unwrap();
                             handle
                                 .emit_all("song-end-queue-length", &new_queue.len())
@@ -136,7 +135,7 @@ fn main() {
                         PlayerStateUpdate::QueueUpdate(updated_queue) => {
                             if updated_queue.len() == 1 {
                                 handle
-                                    .emit_all("currently-playing-update", &updated_queue.get(0))
+                                    .emit_all("currently-playing-update", &updated_queue.front())
                                     .unwrap();
                             }
                             handle
