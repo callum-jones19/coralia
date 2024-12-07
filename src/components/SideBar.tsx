@@ -3,6 +3,7 @@ import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Volume1 } from "react-feather";
 import { Song } from "../types";
+import { useImage } from "react-image";
 
 export default function SideBar() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -24,6 +25,11 @@ export default function SideBar() {
       unlistenQueue.then(f => f).catch(e => console.log(e));
     }
   }, []);
+
+  const { src } = useImage({
+    srcList: artworkUrl ? artworkUrl : '',
+    useSuspense: false
+  });
 
   return (
     <div className="w-72 bg-neutral-800 h-full flex-grow-0 flex-shrink-0 pr-2 pl-2">
@@ -49,7 +55,7 @@ export default function SideBar() {
             && (
               <img
                 alt="Currently playing song album art"
-                src={artworkUrl}
+                src={src}
                 className="w-full aspect-square rounded-lg"
               />
             )}

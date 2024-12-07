@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Song } from "../types";
-import { Play, PlayCircle } from "react-feather";
+import { Play } from "react-feather";
 import { clearAndPlayBackend } from "../api/commands";
+import { useImage } from "react-image";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 export interface SongListItemProps {
   song: Song;
@@ -14,6 +16,13 @@ export default function SongListItem(
 
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
+  const artworkUrl = song.artwork.folderAlbumArt ? convertFileSrc(song.artwork.folderAlbumArt) : '';
+
+  const { src } = useImage({
+    srcList: artworkUrl,
+    useSuspense: false
+  });
+
   return (
     <div
       className={`flex flex-col h-full ${colored ? 'bg-neutral-100' : 'bg-white'}`}
@@ -21,6 +30,7 @@ export default function SongListItem(
       onMouseLeave={() => setIsHovering(false)}
     >
       <div className="hover:bg-neutral-300 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow">
+        <img src={src} width={40} height={40} className="rounded-md" />
         <div
           className="basis-1/12 flex flex-row justify-center flex-shrink-[2]"
         >
@@ -31,7 +41,7 @@ export default function SongListItem(
           }
           {isHovering &&
             <button
-              className="p-2 bg-neutral-800 rounded-full "
+              className="p-2 bg-neutral-800 rounded-full"
               onClick={() => clearAndPlayBackend(song)}
             >
               <Play size='1em' color="white" />
