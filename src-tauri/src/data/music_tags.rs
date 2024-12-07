@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 /// it doesn't even have a title, there's probably not much point including
 /// it in the collection at all.
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct MusicTags {
     pub title: String,
     pub artist: Option<String>,

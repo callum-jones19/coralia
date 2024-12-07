@@ -1,44 +1,18 @@
 import { useEffect, useState } from "react";
 import { getLibrarySongs } from "../api/importer";
 import MusicFooter from "../components/MusicFooter";
-import SideBar from "../components/SideBar";
 import SongList from "../components/SongList";
-import { Song } from "../types";
 
-export interface HomeScreenProps {
-  onChangeSong: (song: Song) => void;
-  onEnqueueSong: (song: Song) => void;
-  currentSong: Song | null;
-  queue: Song[];
-}
-
-export default function HomeScreen(
-  { onChangeSong, queue, currentSong, onEnqueueSong }: HomeScreenProps,
-) {
-  const [songs, setSongs] = useState<Song[]>([]);
-
-  useEffect(() => {
-    getLibrarySongs()
-      .then(songs => setSongs(songs))
-      .catch(e => console.log(e));
-  }, []);
-
+export default function HomeScreen() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
-        <SideBar queueSongs={queue} currSongAlbumUri={undefined} />
+        {/*<SideBar queueSongs={queue} currSongAlbumUri={undefined} />*/}
         <div className="basis-full flex-grow-0 min-w-0 relative overflow-auto">
-          <SongList
-            songList={songs}
-            onSongClick={s => onChangeSong(s)}
-            currPlayingSong={currentSong}
-            onAddToQueue={s => onEnqueueSong(s)}
-          />
+          <SongList />
         </div>
       </div>
-      <MusicFooter
-        currentSong={currentSong}
-      />
+      <MusicFooter />
     </div>
   );
 }

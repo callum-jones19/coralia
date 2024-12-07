@@ -32,6 +32,7 @@ enum PlayerCommand {
 }
 
 #[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
 struct PlayInfo {
     paused: bool,
     position: Duration,
@@ -44,7 +45,7 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("/home/callum/Music");
+    let root_lib_str = String::from("/home/callum/Music/music/");
     let root_lib = Path::new(&root_lib_str);
 
     println!("Setting up music library...");

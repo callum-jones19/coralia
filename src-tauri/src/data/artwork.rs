@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 /// TODO In future, we will have the user define which artwork they would prefer
 /// to use as the default
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Artwork {
     cached_embedded_art: Option<PathBuf>,
     folder_album_art: Option<PathBuf>,

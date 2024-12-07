@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use super::{artwork::Artwork, song::Song};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Album {
     pub title: String,
     pub album_artist: String,
