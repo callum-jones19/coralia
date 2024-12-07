@@ -15,8 +15,8 @@ const Row = memo(({ data, index, style }: RowProps) => {
   const song = data[index];
 
   return (
-    <div className={index % 2 ? "ListItemOdd" : "ListItemEven"} style={style}>
-      <SongListItem song={song} />
+    <div style={style}>
+      <SongListItem song={song} colored={index % 2 === 0} />
     </div>
   );
 }, areEqual);
@@ -42,6 +42,7 @@ export default function SongList() {
               itemSize={55}
               width={width}
               itemData={songs}
+              overscanCount={5}
             >
               {Row}
             </FixedSizeList>
