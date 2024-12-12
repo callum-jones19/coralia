@@ -44,7 +44,7 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("C:/Users/Callum/Music/music");
+    let root_lib_str = String::from("/home/callumjones/Music");
     let root_lib = Path::new(&root_lib_str);
 
     println!("Setting up music library...");

@@ -8,10 +8,10 @@ export default function App() {
     <>
       <BrowserRouter>
         <Routes>
-          {/* <Route
-            path="/"
+          <Route
+            path="/home"
             element={<HomeScreen />}
-          /> */}
+          />
           <Route
             path="/"
             element={<OnboardingScreen />}
