@@ -1,6 +1,9 @@
 import { dialog } from "@tauri-apps/api";
 import { FormEvent, useState } from "react";
 import { CheckSquare, Plus, Square, X } from "react-feather";
+import { addLibraryFolders } from "../api/commands";
+import path from "path";
+import { useNavigate } from "react-router";
 
 interface DirectoryListItemProps {
   path: string;
@@ -49,10 +52,16 @@ function DirectoryListItem({ path, onClickRemove }: DirectoryListItemProps) {
 
 export default function OnboardingScreen() {
   const [paths, setPaths] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Submitted onboarding form');
+    addLibraryFolders(paths);
+    const t = navigate("/home");
+    if (t) {
+      t.catch(e => console.error(e));
+    }
   };
 
   const handleAddDir = () => {
@@ -92,6 +101,7 @@ export default function OnboardingScreen() {
           <button
             className="rounded-lg flex flex-row gap-2 justify-center items-center hover:bg-neutral-300 p-2"
             onClick={handleAddDir}
+            type="button"
           >
             <Plus />
           </button>

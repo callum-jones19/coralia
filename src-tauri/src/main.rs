@@ -159,7 +159,7 @@ fn main() {
             library: music_library,
         }))
         .invoke_handler(tauri::generate_handler![
-            set_library_directories,
+            add_library_directories,
             enqueue_song,
             clear_queue_and_play,
             play,
