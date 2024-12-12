@@ -1,7 +1,7 @@
 use core::panic;
 use std::{
     fs::{self, read_dir},
-    path::Path,
+    path::{Path, PathBuf},
 };
 
 use serde::{Deserialize, Serialize};
@@ -36,17 +36,29 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Library {
-    pub root_dir: Box<Path>,
+    pub root_dirs: Vec<PathBuf>,
     songs: Vec<Song>,
     pub albums: Vec<Album>,
 }
 
 impl Library {
+    pub fn new_empty() -> Self {
+        let empty_songs: Vec<Song> = Vec::new();
+        let empty_albums: Vec<Album> = Vec::new();
+        let new_lib = Library {
+            root_dirs: Vec::new(),
+            songs: empty_songs,
+            albums: empty_albums,
+        };
+
+        new_lib
+    }
+
     pub fn new(root_dir: &Path) -> Self {
         let empty_songs: Vec<Song> = Vec::new();
         let empty_albums: Vec<Album> = Vec::new();
         let mut new_lib = Library {
-            root_dir: root_dir.into(),
+            root_dirs: vec![root_dir.into()],
             songs: empty_songs,
             albums: empty_albums,
         };
@@ -57,22 +69,36 @@ impl Library {
         new_lib
     }
 
+    pub fn add_new_folder(&mut self, folder_dir: PathBuf) {
+        self.root_dirs.push(folder_dir);
+    }
+
+    pub fn add_new_folders(&mut self, mut folders: Vec<PathBuf>) {
+        self.root_dirs.append(&mut folders);
+    }
+
     /// Given the root directory of this library, scan it recursively for songs,
     // and then update the library's song vec to reflect this.
     pub fn scan_library_songs(&mut self) {
-        // Get all paths in this directory
-        let paths_try = read_dir(&self.root_dir);
-        let paths = match paths_try {
-            Ok(p) => p,
-            Err(e) => panic!(
-                "Encountered error while scanning root library directory. Error: {}",
-                e
-            ),
-        };
+        let mut all_lib_songs = Vec::new();
 
-        // Loop over every file in this directory
-        let lib_songs = scan_songs_recursively(paths);
-        self.songs = lib_songs;
+        for d in &self.root_dirs {
+            // Get all paths in this directory
+            let paths_try = read_dir(d);
+            let paths = match paths_try {
+                Ok(p) => p,
+                Err(e) => panic!(
+                    "Encountered error while scanning root library directory. Error: {}",
+                    e
+                ),
+            };
+
+            // Loop over every file in this directory
+            let mut dir_songs = scan_songs_recursively(paths);
+            all_lib_songs.append(&mut dir_songs);
+        }
+
+        self.songs = all_lib_songs;
     }
 
     pub fn scan_library_albums(&mut self) {

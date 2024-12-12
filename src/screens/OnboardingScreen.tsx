@@ -1,7 +1,6 @@
 import { dialog } from "@tauri-apps/api";
 import { FormEvent, useState } from "react";
-import { CheckSquare, Plus, Square, Trash, X } from "react-feather";
-import { useNavigate } from "react-router";
+import { CheckSquare, Plus, Square, X } from "react-feather";
 
 interface DirectoryListItemProps {
   path: string;
