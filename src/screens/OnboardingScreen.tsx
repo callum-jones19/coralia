@@ -84,7 +84,7 @@ export default function OnboardingScreen() {
 
   return (
     <div className="h-screen flex flex-col justify-center bg-neutral-400">
-      <form className="bg-white shadow-md text-neutral-950 w-2/3 m-auto h-5/6 p-10 rounded-xl flex flex-col gap-3 justify-between"
+      <form className="bg-white shadow-md text-neutral-950 w-2/3 m-auto h-1/2 p-10 rounded-xl flex flex-col gap-3 justify-between"
         onSubmit={handleFormSubmit}
       >
         <div className="border-b-2 border-solid border-neutral-300">
@@ -106,9 +106,9 @@ export default function OnboardingScreen() {
                 />
               </div>
             ))}
-            {false &&
-              <p className="mt-2">
-                No folders added...
+            {paths.length === 0 &&
+              <p className="text-center mt-auto mb-auto italic">
+                No folders added to library
               </p>
             }
           </div>
