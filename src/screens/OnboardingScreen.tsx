@@ -111,24 +111,26 @@ export default function OnboardingScreen() {
                 No folders added...
               </p>
             }
-            <button
-              className="rounded-lg flex flex-row gap-2 hover:bg-neutral-300 text-sm p-2 bg-neutral-700 w-fit text-white shadow-md"
-              onClick={handleAddDir}
-              type="button"
-            >
-              <Plus size={20} />
-              {/* <p>New directory...</p> */}
-            </button>
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={paths.length === 0}
-          className="disabled:bg-neutral-200 disabled:text-neutral-500 rounded-lg bg-neutral-700 pl-3 pr-3 text-white shadow-md p-2 w-fit hover:bg-neutral-200 self-end"
-        >
-          Submit
-        </button>
+        <div className="flex flex-row w-full justify-between">
+          <button
+            className="rounded-lg flex flex-row gap-2 hover:bg-neutral-300 text-sm p-2 pl-3 pr-4 bg-neutral-700 w-fit text-white shadow-md"
+            onClick={handleAddDir}
+            type="button"
+          >
+            <Plus size={20} />
+            <p>New directory</p>
+          </button>
+          <button
+            type="submit"
+            disabled={paths.length === 0}
+            className="disabled:bg-neutral-200 disabled:text-neutral-500 rounded-lg bg-neutral-700 pl-3 pr-3 text-white shadow-md p-2 w-fit hover:bg-neutral-200 self-end"
+          >
+            Submit
+          </button>
+        </div>
       </form>
     </div>
   )
