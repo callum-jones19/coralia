@@ -84,17 +84,17 @@ export default function OnboardingScreen() {
 
   return (
     <div className="h-screen flex flex-col justify-center bg-neutral-400">
-      <form className="bg-neutral-50 text-neutral-950 shadow-md w-2/3 m-auto h-5/6 p-10 rounded-xl flex flex-col gap-3 justify-between"
+      <form className="bg-white shadow-md text-neutral-950 w-2/3 m-auto h-5/6 p-10 rounded-xl flex flex-col gap-3 justify-between"
         onSubmit={handleFormSubmit}
       >
-        <div>
+        <div className="border-b-2 border-solid border-neutral-300">
           <p className="text-2xl font-bold">Library Folders</p>
-          <p>Music will be scanned into the library from the following folders:</p>
+          <p className="mb-1">Music will be scanned into the library from the following folders:</p>
         </div>
-        <div className="bg-white text-neutral-950 p-4 rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center shadow-md">
-          <div className="overflow-auto basis-full ">
+        <div className="bg-white text-neutral-950 rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center ">
+          <div className="overflow-auto basis-full flex flex-col gap-3">
             {paths.map((path, index) => (
-              <div key={path} className="ml-4 mr-4">
+              <div key={path} className="mr-4">
                 <DirectoryListItem
                   path={path}
                   index={index + 1}
@@ -106,21 +106,22 @@ export default function OnboardingScreen() {
                 />
               </div>
             ))}
-            {paths.length === 0 &&
-              <p className="text-center mt-2">
+            {false &&
+              <p className="mt-2">
                 No folders added...
               </p>
             }
+            <button
+              className="rounded-lg flex flex-row gap-2 hover:bg-neutral-300 text-sm p-2 bg-neutral-700 w-fit text-white shadow-md"
+              onClick={handleAddDir}
+              type="button"
+            >
+              <Plus size={20} />
+              {/* <p>New directory...</p> */}
+            </button>
           </div>
-          <button
-            className="rounded-lg flex flex-row gap-2 justify-center items-center hover:bg-neutral-300 text-sm p-1 w-1/2 self-center bg-neutral-700 text-white shadow-md"
-            onClick={handleAddDir}
-            type="button"
-          >
-            <Plus size={20}/>
-            <p>Add new directory...</p>
-          </button>
         </div>
+
         <button
           type="submit"
           disabled={paths.length === 0}
