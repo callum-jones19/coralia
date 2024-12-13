@@ -33,7 +33,7 @@ function DirectoryListItem({ path, onClickRemove, index }: DirectoryListItemProp
               {!isChecked && <Square size='1.5rem' />}
             </button>
           }
-          <p title={path} className="ml-2 text-nowrap overflow-hidden text-ellipsis"><b>{index}.</b> {path}</p>
+          <p title={path} className="text-nowrap overflow-hidden text-ellipsis"><b>{index}.</b> {path}</p>
         </div>
         {true &&
           <button
@@ -84,35 +84,36 @@ export default function OnboardingScreen() {
 
   return (
     <div className="h-screen flex flex-col justify-center bg-neutral-400">
-      <form className="bg-neutral-50 text-neutral-950 shadow-md w-2/3 m-auto h-5/6 p-10 rounded-xl flex flex-col gap-4 justify-between"
+      <form className="bg-neutral-50 text-neutral-950 shadow-md w-2/3 m-auto h-5/6 p-10 rounded-xl flex flex-col gap-3 justify-between"
         onSubmit={handleFormSubmit}
       >
         <div>
           <p className="text-2xl font-bold">Library Folders</p>
           <p>Music will be scanned into the library from the following folders:</p>
         </div>
-        <div className="bg-neutral-50 text-neutral-950 p-2 rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center shadow-md">
-          <div className="overflow-auto basis-full">
+        <div className="bg-white text-neutral-950 p-4 rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center shadow-md">
+          <div className="overflow-auto basis-full ">
             {paths.map((path, index) => (
-              <DirectoryListItem
-                key={path}
-                path={path}
-                index={index + 1}
-                onClickRemove={() => {
-                  const tmp = [...paths];
-                  tmp.splice(index, 1);
-                  setPaths(tmp);
-                }}
-              />
+              <div key={path} className="ml-4 mr-4">
+                <DirectoryListItem
+                  path={path}
+                  index={index + 1}
+                  onClickRemove={() => {
+                    const tmp = [...paths];
+                    tmp.splice(index, 1);
+                    setPaths(tmp);
+                  }}
+                />
+              </div>
             ))}
             {paths.length === 0 &&
-              <p className="text-center">
+              <p className="text-center mt-2">
                 No folders added...
               </p>
             }
           </div>
           <button
-            className="rounded-lg flex flex-row gap-2 justify-center items-center hover:bg-neutral-300 p-1"
+            className="rounded-lg flex flex-row gap-2 justify-center items-center hover:bg-neutral-300 text-sm p-1 w-1/2 self-center bg-neutral-700 text-white shadow-md"
             onClick={handleAddDir}
             type="button"
           >
@@ -120,7 +121,13 @@ export default function OnboardingScreen() {
             <p>Add new directory...</p>
           </button>
         </div>
-        <button type="submit" disabled={paths.length === 0} className="disabled:bg-neutral-200 disabled:text-neutral-500 rounded-lg bg-neutral-50 text-black font-bold p-2 w-fit hover:bg-neutral-200 self-end">Submit</button>
+        <button
+          type="submit"
+          disabled={paths.length === 0}
+          className="disabled:bg-neutral-200 disabled:text-neutral-500 rounded-lg bg-neutral-700 pl-3 pr-3 text-white shadow-md p-2 w-fit hover:bg-neutral-200 self-end"
+        >
+          Submit
+        </button>
       </form>
     </div>
   )

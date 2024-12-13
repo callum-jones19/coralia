@@ -44,12 +44,8 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("/home/callumjones/Music");
-    let root_lib = Path::new(&root_lib_str);
 
-    println!("Setting up music library...");
     let music_library = Library::new_empty();
-    println!("Scanned music library...");
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
     let (state_update_tx, state_update_rx) = channel::<PlayerStateUpdate>();
 
