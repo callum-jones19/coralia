@@ -2,8 +2,8 @@ import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Volume1 } from "react-feather";
-import { Song } from "../types";
 import { useImage } from "react-image";
+import { Song } from "../types";
 
 export default function SideBar() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -11,7 +11,7 @@ export default function SideBar() {
 
   useEffect(() => {
     const unlistenQueue = listen<Song[]>("queue-change", e => {
-      console.log('help');
+      console.log("help");
       const newQueue = e.payload;
       setQueue(newQueue);
       if (newQueue.length > 0 && newQueue[0].artwork.folderAlbumArt) {
@@ -23,12 +23,12 @@ export default function SideBar() {
 
     return () => {
       unlistenQueue.then(f => f).catch(e => console.log(e));
-    }
+    };
   }, []);
 
   const { src } = useImage({
-    srcList: artworkUrl ? artworkUrl : '',
-    useSuspense: false
+    srcList: artworkUrl ? artworkUrl : "",
+    useSuspense: false,
   });
 
   return (
@@ -42,7 +42,7 @@ export default function SideBar() {
                 key={`${song.filePath}-${index}`}
                 className="flex flex-row gap-2 w-full items-center"
               >
-                {index === 0 && <Volume1 size='1em' />}
+                {index === 0 && <Volume1 size="1em" />}
                 {index !== 0 && <p>{index}.</p>}
                 {/* <img alt="album art" src={tmp} className="w-6 aspect-square" /> */}
                 <p>{song.tags.title}</p>

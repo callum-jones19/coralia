@@ -7,7 +7,6 @@ export const addLibraryFolders = (folders: string[]) => {
     .catch(e => console.error(e));
 };
 
-
 export const enqueueSongBackend = (song: Song) => {
   invoke("enqueue_song", { song: song })
     .then(() => console.log("queued new song"))

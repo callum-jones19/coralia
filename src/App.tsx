@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import HomeScreen from "./screens/HomeScreen";
-import SettingsScreen from "./screens/SettingsScreen";
 import OnboardingScreen from "./screens/OnboardingScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 
 export default function App() {
   return (

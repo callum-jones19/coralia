@@ -20,7 +20,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
     </div>
   );
 }, areEqual);
-Row.displayName = 'SongRow';
+Row.displayName = "SongRow";
 
 export default function SongList() {
   const [songs, setSongs] = useState<Song[]>([]);
