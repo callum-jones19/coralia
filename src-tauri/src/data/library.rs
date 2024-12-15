@@ -1,7 +1,7 @@
 use core::panic;
 use std::{
     fs::{self, read_dir},
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 use serde::{Deserialize, Serialize};
