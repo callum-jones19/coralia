@@ -2,7 +2,6 @@ import { dialog } from "@tauri-apps/api";
 import { FormEvent, useState } from "react";
 import { CheckSquare, Plus, Square, X } from "react-feather";
 import { addLibraryFolders } from "../api/commands";
-import path from "path";
 import { useNavigate } from "react-router";
 
 interface DirectoryListItemProps {
@@ -14,6 +13,8 @@ interface DirectoryListItemProps {
 function DirectoryListItem({ path, onClickRemove, index }: DirectoryListItemProps) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(true);
+
+  console.log(isHovering);
 
   return (
     <>
