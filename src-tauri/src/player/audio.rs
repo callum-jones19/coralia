@@ -25,7 +25,7 @@ fn open_song_into_sink(
     sink: &mut Sink,
     sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
     song: &Song,
-    song_end_tx: &Sender<PlayerEvent>,
+    song_end_tx: &Sender<()>,
 ) {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
@@ -44,7 +44,7 @@ fn open_song_into_sink(
     let song_end_tx = song_end_tx.clone();
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
         println!("Callback running");
-        match song_end_tx.send(PlayerEvent::SongEnd) {
+        match song_end_tx.send(()) {
             Ok(_) => println!("Successfully sent song end event"),
             Err(e) => println!("{:?}", e),
         }
@@ -53,10 +53,6 @@ fn open_song_into_sink(
     // Append the song and its end callback signaler into the queue
     sink.append(controlled);
     sink.append(callback_source);
-}
-
-enum PlayerEvent {
-    SongEnd,
 }
 
 pub enum PlayerStateUpdate {
@@ -100,7 +96,7 @@ pub struct Player {
     // as the sink gives us no info about the sources inside it.
     sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
     songs_queue: Arc<Mutex<VecDeque<Song>>>,
-    player_event_tx: Sender<PlayerEvent>,
+    player_event_tx: Sender<()>,
     state_update_tx: Sender<PlayerStateUpdate>,
 }
 
@@ -110,7 +106,7 @@ impl Player {
         let sink = Sink::try_new(&stream_handle).unwrap();
         sink.set_volume(0.5);
         sink.pause();
-        let (player_event_tx, player_event_rx) = channel::<PlayerEvent>();
+        let (player_event_tx, player_event_rx) = channel::<()>();
 
         let sink_wrapped = Arc::new(Mutex::new(sink));
         let songs_queue_wrapped = Arc::new(Mutex::new(VecDeque::<Song>::new()));
@@ -135,50 +131,39 @@ impl Player {
                 // Sleep this thread until a song ends
                 let ctrls = Arc::clone(&inner_sink_songs_ctrls);
                 println!("Sleeping");
-                let player_evt = match player_event_rx.recv() {
-                    Ok(e) => e,
-                    Err(err) => {
-                        println!("Error receiving message");
-                        println!("{:?}", err);
-                        continue;
-                    }
-                };
+                player_event_rx.recv().unwrap();
                 println!("Awake");
-                match player_evt {
-                    PlayerEvent::SongEnd => {
-                        println!("Song finished!");
+                println!("Song finished!");
 
-                        let mut sink3 = sink2.lock().unwrap();
-                        println!("Sink length: {}", sink3.len());
+                let mut sink3 = sink2.lock().unwrap();
+                println!("Sink length: {}", sink3.len());
 
-                        // Pop the old song out of the queue
-                        let mut queue3 = queue2.lock().unwrap();
-                        queue3.pop_front();
-                        {
-                            let mut ctrls_unlocked = ctrls.lock().unwrap();
-                            ctrls_unlocked.pop_front();
-                        }
+                // Pop the old song out of the queue
+                let mut queue3 = queue2.lock().unwrap();
+                queue3.pop_front();
+                {
+                    let mut ctrls_unlocked = ctrls.lock().unwrap();
+                    ctrls_unlocked.pop_front();
+                }
 
-                        let new_queue = queue3.clone();
-                        println!("Sending queue with SongEnd event");
-                        state_update_tx2
-                            .send(PlayerStateUpdate::SongEnd(new_queue))
-                            .unwrap();
-                        println!("Sent queue with SongEnd event");
+                let new_queue = queue3.clone();
+                println!("Sending queue with SongEnd event");
+                state_update_tx2
+                    .send(PlayerStateUpdate::SongEnd(new_queue))
+                    .unwrap();
+                println!("Sent queue with SongEnd event");
 
-                        // Do we need to pull a new song into the sink from the
-                        // queue?
-                        if let Some(s) = queue3.get(2) {
-                            open_song_into_sink(&mut sink3, ctrls, s, &end_event_tx2);
-                        } else if queue3.len() == 0 {
-                            sink3.pause();
-                            let pos = sink3.get_pos();
-                            state_update_tx2
-                                .send(PlayerStateUpdate::SongPause(pos))
-                                .unwrap();
-                        }
-                    }
-                };
+                // Do we need to pull a new song into the sink from the
+                // queue?
+                if let Some(s) = queue3.get(2) {
+                    open_song_into_sink(&mut sink3, ctrls, s, &end_event_tx2);
+                } else if queue3.len() == 0 {
+                    sink3.pause();
+                    let pos = sink3.get_pos();
+                    state_update_tx2
+                        .send(PlayerStateUpdate::SongPause(pos))
+                        .unwrap();
+                }
             }
         });
         // ======================================================================
