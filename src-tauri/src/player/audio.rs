@@ -55,7 +55,7 @@ fn open_song_into_sink(
     sink.append(callback_source);
 }
 
-pub enum PlayerEvent {
+enum PlayerEvent {
     SongEnd,
 }
 

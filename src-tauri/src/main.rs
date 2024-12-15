@@ -13,7 +13,7 @@ use std::{
 use data::{album::Album, library::Library, song::Song};
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
 use serde::Serialize;
-use tauri::{Manager, State};
+use tauri::{AppHandle, Manager, State};
 
 mod data;
 mod player;
@@ -42,110 +42,123 @@ struct AppState {
     library: Library,
 }
 
+fn run_audio_player(
+    state_update_tx: Sender<PlayerStateUpdate>,
+    player_cmd_rx: Receiver<PlayerCommand>,
+) {
+    println!("Starting player command handler loop");
+    let mut player = Player::new(state_update_tx);
+
+    loop {
+        let command = player_cmd_rx.recv().unwrap();
+        match command {
+            PlayerCommand::Enqueue(song) => {
+                player.add_to_queue(&song);
+            }
+            PlayerCommand::Play => {
+                println!("Resuming playback");
+                player.play();
+            }
+            PlayerCommand::Pause => {
+                println!("Pausing playback");
+                player.pause();
+            }
+            PlayerCommand::SetVolume(vol) => {
+                let clamped_vol = if vol > 100 { 100 } else { vol };
+                let parsed_vol = f32::from(clamped_vol) / 100.0;
+                println!("{}", parsed_vol);
+                player.change_vol(parsed_vol);
+            }
+            PlayerCommand::SkipOne => {
+                println!("skipping");
+                player.skip_current_song();
+                player.play();
+            }
+            PlayerCommand::EmptyAndPlay(song) => {
+                player.clear();
+                player.add_to_queue(&song);
+            }
+            PlayerCommand::TrySeek(duration) => {
+                match player.seek_current_song(duration) {
+                    Ok(_) => println!("Seeking song"),
+                    Err(_) => println!("Unable to seek current song"),
+                };
+            }
+            PlayerCommand::RemoveAtIndex(skip_index) => {
+                let _ = player.remove_song_from_queue(skip_index);
+            }
+            PlayerCommand::GetPlayerState(state_rx) => {
+                let cached_state = player.get_current_state();
+                state_rx.send(cached_state).unwrap();
+            }
+        }
+    }
+}
+
+fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerStateUpdate>) {
+    println!("Starting player state update handler loop");
+    loop {
+        println!("State updated!");
+        let state_update = player_event_rx.recv().unwrap();
+        match state_update {
+            PlayerStateUpdate::SongEnd(new_queue) => {
+                handle
+                    .emit_all("currently-playing-update", &new_queue.front())
+                    .unwrap();
+                handle
+                    .emit_all("song-end-queue-length", &new_queue.len())
+                    .unwrap();
+                handle.emit_all("song-end", new_queue.clone()).unwrap();
+                handle.emit_all("queue-change", new_queue).unwrap();
+            }
+            PlayerStateUpdate::SongPlay(song_pos) => {
+                let payload = PlayInfo {
+                    paused: false,
+                    position: song_pos,
+                };
+                handle.emit_all("is-paused", payload).unwrap();
+            }
+            PlayerStateUpdate::SongPause(song_pos) => {
+                let payload = PlayInfo {
+                    paused: true,
+                    position: song_pos,
+                };
+                handle.emit_all("is-paused", payload).unwrap();
+            }
+            PlayerStateUpdate::QueueUpdate(updated_queue) => {
+                if updated_queue.len() == 1 {
+                    handle
+                        .emit_all("currently-playing-update", &updated_queue.front())
+                        .unwrap();
+                }
+                handle
+                    .emit_all("queue-length-change", &updated_queue.len())
+                    .unwrap();
+                handle.emit_all("queue-change", updated_queue).unwrap();
+            }
+        }
+    }
+}
+
 fn main() {
     let tauri_context = tauri::generate_context!();
 
+    // Initialise an empty music library, and setup the player command and the
+    // the player events system.
     let music_library = Library::new_empty();
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
-    let (state_update_tx, state_update_rx) = channel::<PlayerStateUpdate>();
+    let (player_event_tx, player_event_rx) = channel::<PlayerStateUpdate>();
 
     tauri::Builder::default()
         .setup(move |app| {
             let handle = app.app_handle();
 
             tauri::async_runtime::spawn(async move {
-                println!("Starting player command handler loop");
-                let mut player = Player::new(state_update_tx);
-
-                loop {
-                    let command = player_cmd_rx.recv().unwrap();
-                    match command {
-                        PlayerCommand::Enqueue(song) => {
-                            player.add_to_queue(&song);
-                        }
-                        PlayerCommand::Play => {
-                            println!("Resuming playback");
-                            player.play();
-                        }
-                        PlayerCommand::Pause => {
-                            println!("Pausing playback");
-                            player.pause();
-                        }
-                        PlayerCommand::SetVolume(vol) => {
-                            let clamped_vol = if vol > 100 { 100 } else { vol };
-                            let parsed_vol = f32::from(clamped_vol) / 100.0;
-                            println!("{}", parsed_vol);
-                            player.change_vol(parsed_vol);
-                        }
-                        PlayerCommand::SkipOne => {
-                            println!("skipping");
-                            player.skip_current_song();
-                            player.play();
-                        }
-                        PlayerCommand::EmptyAndPlay(song) => {
-                            player.clear();
-                            player.add_to_queue(&song);
-                        }
-                        PlayerCommand::TrySeek(duration) => {
-                            match player.seek_current_song(duration) {
-                                Ok(_) => println!("Seeking song"),
-                                Err(_) => println!("Unable to seek current song"),
-                            };
-                        }
-                        PlayerCommand::RemoveAtIndex(skip_index) => {
-                            let _ = player.remove_song_from_queue(skip_index);
-                        }
-                        PlayerCommand::GetPlayerState(state_rx) => {
-                            let cached_state = player.get_current_state();
-                            state_rx.send(cached_state).unwrap();
-                        }
-                    }
-                }
+                run_audio_player(player_event_tx, player_cmd_rx);
             });
 
             tauri::async_runtime::spawn(async move {
-                println!("Starting player state update handler loop");
-                loop {
-                    println!("State updated!");
-                    let state_update = state_update_rx.recv().unwrap();
-                    match state_update {
-                        PlayerStateUpdate::SongEnd(new_queue) => {
-                            handle
-                                .emit_all("currently-playing-update", &new_queue.front())
-                                .unwrap();
-                            handle
-                                .emit_all("song-end-queue-length", &new_queue.len())
-                                .unwrap();
-                            handle.emit_all("song-end", new_queue.clone()).unwrap();
-                            handle.emit_all("queue-change", new_queue).unwrap();
-                        }
-                        PlayerStateUpdate::SongPlay(song_pos) => {
-                            let payload = PlayInfo {
-                                paused: false,
-                                position: song_pos,
-                            };
-                            handle.emit_all("is-paused", payload).unwrap();
-                        }
-                        PlayerStateUpdate::SongPause(song_pos) => {
-                            let payload = PlayInfo {
-                                paused: true,
-                                position: song_pos,
-                            };
-                            handle.emit_all("is-paused", payload).unwrap();
-                        }
-                        PlayerStateUpdate::QueueUpdate(updated_queue) => {
-                            if updated_queue.len() == 1 {
-                                handle
-                                    .emit_all("currently-playing-update", &updated_queue.front())
-                                    .unwrap();
-                            }
-                            handle
-                                .emit_all("queue-length-change", &updated_queue.len())
-                                .unwrap();
-                            handle.emit_all("queue-change", updated_queue).unwrap();
-                        }
-                    }
-                }
+                handle_player_events(handle, player_event_rx);
             });
 
             Ok(())
