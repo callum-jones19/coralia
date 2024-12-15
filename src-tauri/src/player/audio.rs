@@ -4,7 +4,7 @@ use std::{
     io::BufReader,
     sync::{
         atomic::{AtomicBool, Ordering},
-        mpsc::{channel, Sender},
+        mpsc::{channel, Receiver, Sender},
         Arc, Mutex,
     },
     thread,
@@ -17,7 +17,7 @@ use rodio::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::data::song::Song;
+use crate::data::song::{self, Song};
 
 /// Place a new song into the sink. This returns the control for whether the
 /// song should be removed from the sink early or not
@@ -53,6 +53,51 @@ fn open_song_into_sink(
     // Append the song and its end callback signaler into the queue
     sink.append(controlled);
     sink.append(callback_source);
+}
+
+fn handle_sink_song_end(
+    sink_song_end_rx: Receiver<()>,
+    sink: Arc<Mutex<Sink>>,
+    sink_songs_ctrl: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
+    song_queue: Arc<Mutex<VecDeque<Song>>>,
+    state_update_tx: Sender<PlayerStateUpdate>,
+    sink_song_end_tx: Sender<()>,
+) {
+    loop {
+        // Sleep this thread until a song ends
+        sink_song_end_rx.recv().unwrap();
+
+        {
+            let mut song_queue_locked = song_queue.lock().unwrap();
+            let mut sink_songs_ctrls_locked = sink_songs_ctrl.lock().unwrap();
+            let mut sink_locked = sink.lock().unwrap();
+
+            // Pop the old song out of the queue
+            song_queue_locked.pop_front();
+            sink_songs_ctrls_locked.pop_front();
+
+            // Signal to the Player Event System that a song has ended
+            let new_queue = song_queue_locked.clone();
+            state_update_tx
+                .send(PlayerStateUpdate::SongEnd(new_queue))
+                .unwrap();
+
+            // Do we need to pull a new song into the sink from the
+            // queue?
+            if let Some(s) = song_queue_locked.get(2) {
+                let sink_songs_ctrl2 = Arc::clone(&sink_songs_ctrl);
+                open_song_into_sink(&mut sink_locked, sink_songs_ctrl2, s, &sink_song_end_tx);
+            }
+
+            if song_queue_locked.len() == 0 {
+                sink_locked.pause();
+                let pos = sink_locked.get_pos();
+                state_update_tx
+                    .send(PlayerStateUpdate::SongPause(pos))
+                    .unwrap();
+            }
+        }
+    }
 }
 
 pub enum PlayerStateUpdate {
@@ -102,69 +147,42 @@ pub struct Player {
 
 impl Player {
     pub fn new(state_update_tx: Sender<PlayerStateUpdate>) -> Self {
+        // Setup rodio backend
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
-        sink.set_volume(0.5);
+
+        // Initialise default sink state
+        const INIT_VOLUME: f32 = 0.5;
+        sink.set_volume(INIT_VOLUME);
         sink.pause();
-        let (player_event_tx, player_event_rx) = channel::<()>();
 
+        // Setup channel messenger for when a song in the sink ends,
+        // on which we will wake up the thread that pulls a new song into the
+        // sink.
+        let (sink_song_end_tx, sink_song_end_rx) = channel::<()>();
+
+        // Setup multithreading types for the sink, songs queue, and the
+        // controls for the sources inside the sink.
         let sink_wrapped = Arc::new(Mutex::new(sink));
-        let songs_queue_wrapped = Arc::new(Mutex::new(VecDeque::<Song>::new()));
-
-        // ======================================================================
-        // God help me
-        let sink2 = Arc::clone(&sink_wrapped);
-        let queue2 = Arc::clone(&songs_queue_wrapped);
-        let end_event_tx2 = player_event_tx.clone();
-
+        let songs_queue = Arc::new(Mutex::new(VecDeque::<Song>::new()));
         let sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>> =
             Arc::new(Mutex::new(VecDeque::new()));
 
-        // This is also good because it means the callback won't accidentally
-        // delay playback. Don't forget that the callback must execute to
-        // completion before the next song in the sink plays.
+        // Spawn the thread that runs whenever a song source in the sink ends.
+        let sink_songs_ctrl_2 = Arc::clone(&sink_songs_controls);
+        let songs_queue_2 = Arc::clone(&songs_queue);
+        let sink2 = Arc::clone(&sink_wrapped);
         let state_update_tx2 = state_update_tx.clone();
-
-        let inner_sink_songs_ctrls = Arc::clone(&sink_songs_controls);
+        let sink_song_end_tx2 = sink_song_end_tx.clone();
         thread::spawn(move || {
-            loop {
-                // Sleep this thread until a song ends
-                let ctrls = Arc::clone(&inner_sink_songs_ctrls);
-                println!("Sleeping");
-                player_event_rx.recv().unwrap();
-                println!("Awake");
-                println!("Song finished!");
-
-                let mut sink3 = sink2.lock().unwrap();
-                println!("Sink length: {}", sink3.len());
-
-                // Pop the old song out of the queue
-                let mut queue3 = queue2.lock().unwrap();
-                queue3.pop_front();
-                {
-                    let mut ctrls_unlocked = ctrls.lock().unwrap();
-                    ctrls_unlocked.pop_front();
-                }
-
-                let new_queue = queue3.clone();
-                println!("Sending queue with SongEnd event");
-                state_update_tx2
-                    .send(PlayerStateUpdate::SongEnd(new_queue))
-                    .unwrap();
-                println!("Sent queue with SongEnd event");
-
-                // Do we need to pull a new song into the sink from the
-                // queue?
-                if let Some(s) = queue3.get(2) {
-                    open_song_into_sink(&mut sink3, ctrls, s, &end_event_tx2);
-                } else if queue3.len() == 0 {
-                    sink3.pause();
-                    let pos = sink3.get_pos();
-                    state_update_tx2
-                        .send(PlayerStateUpdate::SongPause(pos))
-                        .unwrap();
-                }
-            }
+            handle_sink_song_end(
+                sink_song_end_rx,
+                sink2,
+                sink_songs_ctrl_2,
+                songs_queue_2,
+                state_update_tx2,
+                sink_song_end_tx2,
+            );
         });
         // ======================================================================
 
@@ -172,9 +190,9 @@ impl Player {
             _stream,
             _stream_handle: stream_handle,
             audio_sink: sink_wrapped,
-            songs_queue: songs_queue_wrapped,
+            songs_queue,
             sink_songs_controls,
-            player_event_tx,
+            player_event_tx: sink_song_end_tx,
             state_update_tx,
         }
     }
