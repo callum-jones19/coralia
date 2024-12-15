@@ -174,7 +174,10 @@ fn main() {
 
 // ============================== Commands =====================================
 #[tauri::command]
-async fn add_library_directories(state_mutex: State<'_, Mutex<AppState>>, root_dirs: Vec<PathBuf>) -> Result<(), ()> {
+async fn add_library_directories(
+    state_mutex: State<'_, Mutex<AppState>>,
+    root_dirs: Vec<PathBuf>,
+) -> Result<(), ()> {
     let mut state = state_mutex.lock().unwrap();
     state.library.add_new_folders(root_dirs);
     state.library.scan_library_songs();
