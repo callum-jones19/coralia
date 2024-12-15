@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::{
         mpsc::{channel, Receiver, Sender},
         Mutex,
@@ -32,7 +32,7 @@ enum PlayerCommand {
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
-struct PlayInfo {
+struct PlayEventData {
     paused: bool,
     position: Duration,
 }
@@ -112,14 +112,14 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                 handle.emit_all("queue-change", new_queue).unwrap();
             }
             PlayerStateUpdate::SongPlay(song_pos) => {
-                let payload = PlayInfo {
+                let payload = PlayEventData {
                     paused: false,
                     position: song_pos,
                 };
                 handle.emit_all("is-paused", payload).unwrap();
             }
             PlayerStateUpdate::SongPause(song_pos) => {
-                let payload = PlayInfo {
+                let payload = PlayEventData {
                     paused: true,
                     position: song_pos,
                 };
