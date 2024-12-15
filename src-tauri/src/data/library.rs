@@ -54,24 +54,24 @@ impl Library {
         new_lib
     }
 
-    pub fn new(root_dir: &Path) -> Self {
-        let empty_songs: Vec<Song> = Vec::new();
-        let empty_albums: Vec<Album> = Vec::new();
-        let mut new_lib = Library {
-            root_dirs: vec![root_dir.into()],
-            songs: empty_songs,
-            albums: empty_albums,
-        };
+    // pub fn new(root_dir: &Path) -> Self {
+    //     let empty_songs: Vec<Song> = Vec::new();
+    //     let empty_albums: Vec<Album> = Vec::new();
+    //     let mut new_lib = Library {
+    //         root_dirs: vec![root_dir.into()],
+    //         songs: empty_songs,
+    //         albums: empty_albums,
+    //     };
 
-        new_lib.scan_library_songs();
-        new_lib.scan_library_albums();
+    //     new_lib.scan_library_songs();
+    //     new_lib.scan_library_albums();
 
-        new_lib
-    }
+    //     new_lib
+    // }
 
-    pub fn add_new_folder(&mut self, folder_dir: PathBuf) {
-        self.root_dirs.push(folder_dir);
-    }
+    // pub fn add_new_folder(&mut self, folder_dir: PathBuf) {
+    //     self.root_dirs.push(folder_dir);
+    // }
 
     pub fn add_new_folders(&mut self, mut folders: Vec<PathBuf>) {
         self.root_dirs.append(&mut folders);

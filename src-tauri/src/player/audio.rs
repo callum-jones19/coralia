@@ -17,7 +17,7 @@ use rodio::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::data::song::{self, Song};
+use crate::data::song::Song;
 
 /// Place a new song into the sink. This returns the control for whether the
 /// song should be removed from the sink early or not
