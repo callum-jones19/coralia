@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import OnboardingScreen from "./screens/OnboardingScreen";
 
 export default function App() {
   return (
@@ -8,8 +9,12 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route
-            path="/"
+            path="/home"
             element={<HomeScreen />}
+          />
+          <Route
+            path="/"
+            element={<OnboardingScreen />}
           />
           <Route
             path="/settings"

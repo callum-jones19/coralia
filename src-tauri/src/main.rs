@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    path::Path,
+    path::{Path, PathBuf},
     sync::{
         mpsc::{channel, Receiver, Sender},
         Mutex,
@@ -44,12 +44,8 @@ struct AppState {
 
 fn main() {
     let tauri_context = tauri::generate_context!();
-    let root_lib_str = String::from("C:/Users/Callum/Music/music");
-    let root_lib = Path::new(&root_lib_str);
 
-    println!("Setting up music library...");
-    let music_library = Library::new(root_lib);
-    println!("Scanned music library...");
+    let music_library = Library::new_empty();
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
     let (state_update_tx, state_update_rx) = channel::<PlayerStateUpdate>();
 
@@ -159,6 +155,7 @@ fn main() {
             library: music_library,
         }))
         .invoke_handler(tauri::generate_handler![
+            add_library_directories,
             enqueue_song,
             clear_queue_and_play,
             play,
@@ -176,6 +173,16 @@ fn main() {
 }
 
 // ============================== Commands =====================================
+#[tauri::command]
+async fn add_library_directories(state_mutex: State<'_, Mutex<AppState>>, root_dirs: Vec<PathBuf>) -> Result<(), ()> {
+    let mut state = state_mutex.lock().unwrap();
+    state.library.add_new_folders(root_dirs);
+    state.library.scan_library_songs();
+    state.library.scan_library_albums();
+
+    Ok(())
+}
+
 #[tauri::command]
 async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
     println!("Received tauri command: enqueue_song");

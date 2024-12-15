@@ -1,6 +1,13 @@
 import { invoke } from "@tauri-apps/api";
 import { Duration, Song } from "../types";
 
+export const addLibraryFolders = (folders: string[]) => {
+  invoke("add_library_directories", { rootDirs: folders })
+    .then(() => console.log("Added new folders to the library"))
+    .catch(e => console.error(e));
+};
+
+
 export const enqueueSongBackend = (song: Song) => {
   invoke("enqueue_song", { song: song })
     .then(() => console.log("queued new song"))
