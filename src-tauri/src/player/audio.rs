@@ -24,7 +24,8 @@ use crate::data::song::Song;
 /// At the same time, also place a control for this source in an index-aligned
 /// controls list. This allows us to control a Source that has not yet started
 /// in the sink.
-/// Also pass in a mspc Sender to signal to another sleeping thread when this
+///
+/// Also pass in a mcsp Sender to signal to another sleeping thread when this
 /// Source has ended, which gives us full control over what happens afterwards.
 /// This circumvents how the callback inside this function needs to place a new
 /// empty callback source that would also need to call this function.
@@ -62,7 +63,7 @@ fn open_song_into_sink(
     sink.append(callback_source);
 }
 
-/// Sleep on this function until woken up on the given mspc channel.
+/// Sleep on this function until woken up on the given mcsp channel.
 /// When awoken, this function will handle what to do when a source ends.
 /// It will pop finished songs out of the Song queue (not Sink - this is
 /// automatic).
@@ -115,7 +116,7 @@ fn handle_sink_song_end(
 }
 
 /// An enum of possible events that we may want to send out of the player
-/// thread for major events that could occur within this structure.
+/// thread for major events that could occur within the Player structure.
 pub enum PlayerStateUpdate {
     SongEnd(VecDeque<Song>),
     SongPlay(Duration),
@@ -165,6 +166,10 @@ pub struct Player {
 }
 
 impl Player {
+    /// Create a new player backend.
+    /// This takes a mcsp channel sender to communicate updates outside of
+    /// the player once initialised. This allows it to work in its own thread
+    /// but still communicate outside of this.
     pub fn new(state_update_tx: Sender<PlayerStateUpdate>) -> Self {
         // Setup rodio backend
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
@@ -203,8 +208,8 @@ impl Player {
                 sink_song_end_tx2,
             );
         });
-        // ======================================================================
 
+        // Create and return the player
         Player {
             _stream,
             _stream_handle: stream_handle,
@@ -318,12 +323,16 @@ impl Player {
         skipped_song
     }
 
+    /// Try to seek the currently playing sound in the sink to the given Duration
+    /// position. If this is greater than the duration of the currently playing
+    /// sound, it will just clamp to the max value.
     pub fn seek_current_song(&mut self, seek_amount: Duration) -> Result<(), SeekError> {
         let unlocked_sink = self.audio_sink.lock().unwrap();
         unlocked_sink.try_seek(seek_amount)?;
         Ok(())
     }
 
+    /// Return a snapshot of the player's current state
     pub fn get_current_state(&self) -> CachedPlayerState {
         CachedPlayerState::new(self)
     }
