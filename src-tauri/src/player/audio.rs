@@ -19,8 +19,15 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::song::Song;
 
-/// Place a new song into the sink. This returns the control for whether the
-/// song should be removed from the sink early or not
+/// Take a Song, and open its file path into a decoded Rodio Source.
+/// Place this source into the end of the sink.
+/// At the same time, also place a control for this source in an index-aligned
+/// controls list. This allows us to control a Source that has not yet started
+/// in the sink.
+/// Also pass in a mspc Sender to signal to another sleeping thread when this
+/// Source has ended, which gives us full control over what happens afterwards.
+/// This circumvents how the callback inside this function needs to place a new
+/// empty callback source that would also need to call this function.
 fn open_song_into_sink(
     sink: &mut Sink,
     sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
@@ -55,6 +62,13 @@ fn open_song_into_sink(
     sink.append(callback_source);
 }
 
+/// Sleep on this function until woken up on the given mspc channel.
+/// When awoken, this function will handle what to do when a source ends.
+/// It will pop finished songs out of the Song queue (not Sink - this is
+/// automatic).
+/// More importantly, it will check the sink to see if it is now below the
+/// buffer limit. If it is, it will trigger a new source to be added into the
+/// sink out of the current Song queue.
 fn handle_sink_song_end(
     sink_song_end_rx: Receiver<()>,
     sink: Arc<Mutex<Sink>>,
@@ -100,6 +114,8 @@ fn handle_sink_song_end(
     }
 }
 
+/// An enum of possible events that we may want to send out of the player
+/// thread for major events that could occur within this structure.
 pub enum PlayerStateUpdate {
     SongEnd(VecDeque<Song>),
     SongPlay(Duration),
@@ -107,6 +123,7 @@ pub enum PlayerStateUpdate {
     QueueUpdate(VecDeque<Song>),
 }
 
+/// Stores a snapshot of the player state at a given moment
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CachedPlayerState {
@@ -130,6 +147,8 @@ impl CachedPlayerState {
     }
 }
 
+/// The Player that handles all playback functionality that we might want in
+/// a music player.
 pub struct Player {
     // Need these to keep the player stream alive, but we don't
     // want to actually access it.
@@ -197,6 +216,7 @@ impl Player {
         }
     }
 
+    /// Take a Song struct and open it manually into the sink
     fn song_into_sink(&mut self, song: &Song) {
         let mut sink = self.audio_sink.lock().unwrap();
         let sink_songs_ctrls_2 = Arc::clone(&self.sink_songs_controls);
@@ -208,8 +228,8 @@ impl Player {
         );
     }
 
-    ///
-    /// Gets number of actual songs in the sink. This prevents us accidentally
+    /// Gets number of actual songs in the sink, ignoring non-song sources
+    /// such as `EmptyCallback`. This prevents us accidentally
     /// double counting empty signalling sources as songs.
     fn number_songs_in_sink(&self) -> usize {
         let num_srcs_in_sink = self.audio_sink.lock().unwrap().len();
@@ -237,10 +257,12 @@ impl Player {
         self.play();
     }
 
+    /// Change the sink volume.
     pub fn change_vol(&mut self, vol: f32) {
         self.audio_sink.lock().unwrap().set_volume(vol);
     }
 
+    /// Signal the sink to start playing.
     pub fn play(&mut self) {
         let sink = self.audio_sink.lock().unwrap();
         sink.play();
@@ -250,11 +272,13 @@ impl Player {
             .unwrap();
     }
 
+    /// Clear the sink and songs queue of every source and song
     pub fn clear(&mut self) {
         self.audio_sink.lock().unwrap().clear();
         self.songs_queue.lock().unwrap().clear();
     }
 
+    /// Signal the sink to pause
     pub fn pause(&mut self) {
         let sink = self.audio_sink.lock().unwrap();
         sink.pause();
@@ -264,10 +288,9 @@ impl Player {
             .unwrap();
     }
 
+    /// Skip the currently playing source in the sink
     pub fn skip_current_song(&mut self) {
-        println!("Skipping inside player");
         self.audio_sink.lock().unwrap().skip_one();
-        println!("Finished Skipping inside player");
     }
 
     /// Remove a song from the queue given its index.
