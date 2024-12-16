@@ -47,7 +47,11 @@ fn open_song_into_sink(
         }
     });
 
-    sink_songs_controls.lock().unwrap().push_back(skip);
+    // Add a control for this new source in the sink. It should be index-aligned
+    // (ignoring the EmptyCallback elements).
+    let mut sink_song_controls_locked = sink_songs_controls.lock().unwrap();
+    sink_song_controls_locked.push_back(skip);
+
     // Create a callback
     let song_end_tx = song_end_tx.clone();
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
@@ -247,7 +251,11 @@ impl Player {
         // instantly removed from the sink, or if it waits until it gets to
         // it and then does it. This will influence the size calculation.
 
-        self.songs_queue.lock().unwrap().push_back(song.clone());
+        let updated_song_queue = {
+            let mut songs_queue_locked = self.songs_queue.lock().unwrap();
+            songs_queue_locked.push_back(song.clone());
+            songs_queue_locked.clone()
+        };
 
         // The sink should have at most 3 song files open in it at any given time.
         // If it is full, we just leave the song in the file queue, and then
@@ -256,8 +264,7 @@ impl Player {
             self.song_into_sink(song);
         }
 
-        let queue_to_send = self.songs_queue.lock().unwrap().clone();
-        let queue_change_state = PlayerStateUpdate::QueueUpdate(queue_to_send);
+        let queue_change_state = PlayerStateUpdate::QueueUpdate(updated_song_queue);
         self.state_update_tx.send(queue_change_state).unwrap();
         self.play();
     }
@@ -279,8 +286,11 @@ impl Player {
 
     /// Clear the sink and songs queue of every source and song
     pub fn clear(&mut self) {
-        self.audio_sink.lock().unwrap().clear();
-        self.songs_queue.lock().unwrap().clear();
+        let sink_locked = self.audio_sink.lock().unwrap();
+        let mut songs_queue_locked = self.songs_queue.lock().unwrap();
+
+        sink_locked.clear();
+        songs_queue_locked.clear();
     }
 
     /// Signal the sink to pause
@@ -327,8 +337,8 @@ impl Player {
     /// position. If this is greater than the duration of the currently playing
     /// sound, it will just clamp to the max value.
     pub fn seek_current_song(&mut self, seek_amount: Duration) -> Result<(), SeekError> {
-        let unlocked_sink = self.audio_sink.lock().unwrap();
-        unlocked_sink.try_seek(seek_amount)?;
+        let sink_locked = self.audio_sink.lock().unwrap();
+        sink_locked.try_seek(seek_amount)?;
         Ok(())
     }
 
