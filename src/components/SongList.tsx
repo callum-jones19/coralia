@@ -49,6 +49,13 @@ export default function SongList() {
           )}
         </ReactVirtualizedAutoSizer>
       )}
+      {songs.length === 0 && (
+        <div className="h-full w-full flex flex-col justify-center">
+          <p className="w-fit ml-auto mr-auto">
+            <i>Song library empty...</i>
+          </p>
+        </div>
+      )}
     </>
   );
 }

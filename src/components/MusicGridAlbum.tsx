@@ -14,8 +14,10 @@ export default function MusicGridAlbum(
       <div className="p-2 h-full shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0">
         <img
           src={artSrc.cachedEmbeddedArt}
+          height={400}
+          width={400}
           alt="album-cover-image"
-          className="mb-3 rounded-m basis-1 rounded-md"
+          className="mb-3 rounded-m rounded-md"
         />
         <div className="flex-shrink-0">
           <h4

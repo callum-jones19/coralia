@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Volume1 } from "react-feather";
 import { useImage } from "react-image";
 import { Song } from "../types";
+import { Link } from "react-router";
 
 export default function SideBar() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -50,6 +51,8 @@ export default function SideBar() {
             );
           })}
         </li>
+        <Link to="/home" className="bg-white rounded-sm text-center">Songs</Link>
+        <Link to="/home/albums" className="bg-white rounded-sm text-center">Albums</Link>
         <div className="flex flex-col gap-3">
           {artworkUrl !== null
             && (
