@@ -42,7 +42,7 @@ struct AppState {
     library: Library,
 }
 
-fn run_audio_player(
+fn create_and_run_audio_player(
     state_update_tx: Sender<PlayerStateUpdate>,
     player_cmd_rx: Receiver<PlayerCommand>,
 ) {
@@ -154,7 +154,7 @@ fn main() {
             let handle = app.app_handle();
 
             tauri::async_runtime::spawn(async move {
-                run_audio_player(player_event_tx, player_cmd_rx);
+                create_and_run_audio_player(player_event_tx, player_cmd_rx);
             });
 
             tauri::async_runtime::spawn(async move {
