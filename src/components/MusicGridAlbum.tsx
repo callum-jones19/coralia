@@ -21,7 +21,6 @@ export default function MusicGridAlbum(
           src={imageSrc}
           width={400}
           height={400}
-          // src=""
           alt="album-cover-image"
           className="mb-3 rounded-m rounded-md"
         />

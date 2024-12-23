@@ -46,13 +46,13 @@ impl Song {
         let music_props = SongProperties::new_from_file(song_path.to_path_buf())?;
 
         // TODO get potentially embedded artwork
-        let artwork = Artwork::art_from_song_folder(&mut song_path.to_path_buf());
+        // let artwork = Artwork::art_from_song_folder(&mut song_path.to_path_buf());
 
         Ok(Song {
             file_path: song_path.into(),
             tags: music_tags,
             properties: music_props,
-            artwork,
+            artwork: Artwork::blank_artwork(),
         })
     }
 }
