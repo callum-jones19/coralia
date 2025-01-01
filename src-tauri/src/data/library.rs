@@ -6,7 +6,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use super::{album::Album, song::Song};
+use super::{album::Album, artwork::Artwork, song::Song};
 
 fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
     let mut albums: Vec<Album> = Vec::new();
@@ -27,6 +27,17 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
             let new_album = Album::create_from_song(song)
                 .expect("Song did not have necessary album metadata to create a new album for it");
             albums.push(new_album);
+        }
+    }
+
+    for album in &mut albums {
+        let artwork = match album.album_songs.first() {
+            Some(first_song) => Artwork::new(first_song).unwrap(),
+            None => panic!("No songs in album {}", album.title),
+        };
+
+        for song in &mut album.album_songs {
+            song.artwork = Some(artwork.clone());
         }
     }
 

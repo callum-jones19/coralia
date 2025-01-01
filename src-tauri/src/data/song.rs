@@ -37,7 +37,7 @@ pub struct Song {
     pub file_path: Box<Path>,
     pub tags: MusicTags,
     pub properties: SongProperties,
-    pub artwork: Artwork,
+    pub artwork: Option<Artwork>,
 }
 
 impl Song {
@@ -45,14 +45,13 @@ impl Song {
         let music_tags = MusicTags::new_from_file(song_path.to_path_buf())?;
         let music_props = SongProperties::new_from_file(song_path.to_path_buf())?;
 
-        // TODO get potentially embedded artwork
-        // let artwork = Artwork::art_from_song_folder(&mut song_path.to_path_buf());
-
-        Ok(Song {
+        let scanned_song = Song {
             file_path: song_path.into(),
             tags: music_tags,
             properties: music_props,
-            artwork: Artwork::blank_artwork(),
-        })
+            artwork: None,
+        };
+
+        Ok(scanned_song)
     }
 }

@@ -1,6 +1,91 @@
-use std::path::PathBuf;
+use core::panic;
+use std::{
+    fs::{create_dir_all, File},
+    io::{self, Error},
+    path::{Path, PathBuf},
+};
 
+use image::{ImageFormat, ImageReader};
 use serde::{Deserialize, Serialize};
+
+use super::{album::Album, song::Song};
+
+struct FolderArt {
+    path: PathBuf,
+    image_format: ImageFormat,
+}
+
+/// Get the path of the album art that sits in the song and album folders as
+/// separate image files, if it exists
+fn find_folder_art(song_path: &Path) -> Option<FolderArt> {
+    let art_file_names = vec![
+        "folder", "Folder", "cover", "Cover", "front", "Front", "artwork", "Artwork",
+    ];
+
+    let mut song_folder_path = PathBuf::from(song_path);
+    song_folder_path.pop();
+
+    // Try each possible art file name in the list and return the first
+    // found artwork
+    for art_f_name in art_file_names {
+        let jpg_file_name = String::from(art_f_name) + ".jpg";
+        let png_file_name = String::from(art_f_name) + ".png";
+        let jpg_path = Path::new(&jpg_file_name);
+        let png_path = Path::new(&png_file_name);
+
+        let mut jpg_full_path = PathBuf::from(&song_folder_path);
+        jpg_full_path.push(jpg_path);
+
+        let mut png_full_path = PathBuf::from(&song_folder_path);
+        png_full_path.push(png_path);
+
+        println!("Jpg path: {:?}", jpg_full_path.clone());
+        println!("Png path: {:?}", png_full_path.clone());
+
+        // Check if a jpg cover exists
+        // FIXME exists is error prone
+        if jpg_full_path.exists() {
+            return Some(FolderArt {
+                path: jpg_full_path.to_owned(),
+                image_format: ImageFormat::Jpeg,
+            });
+        } else if png_full_path.exists() {
+            return Some(FolderArt {
+                path: png_full_path.to_owned(),
+                image_format: ImageFormat::Png,
+            });
+        }
+    }
+
+    // No art was found in the song's folder
+    None
+}
+
+fn create_art_folder_if_missing() {
+    match dirs::cache_dir() {
+        Some(mut cache) => {
+            cache.push("kleo");
+            cache.push("AlbumArtwork");
+            if !cache.exists() {
+                create_dir_all(cache).unwrap();
+            }
+        }
+        None => panic!("No cache folder exists"),
+    }
+}
+
+fn get_album_art_folder() -> Result<PathBuf, String> {
+    create_art_folder_if_missing();
+
+    match dirs::cache_dir() {
+        Some(mut cache) => {
+            cache.push("kleo");
+            cache.push("AlbumArtwork");
+            Ok(cache)
+        }
+        None => Err(String::from("Could not find system cache folder")),
+    }
+}
 
 /// Represents the artwork we expect to possibly see associated with a music file
 /// By default prefers folder_album_art as default, and uses embedded artwork as
@@ -11,79 +96,80 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Artwork {
-    cached_embedded_art: Option<PathBuf>,
-    folder_album_art: Option<PathBuf>,
+    full_res_art: PathBuf,
+    thumb_art: PathBuf,
+    art_400: PathBuf,
 }
 
 impl Artwork {
-    pub fn blank_artwork() -> Self {
-        Artwork {
-            cached_embedded_art: None,
-            folder_album_art: None,
-        }
-    }
+    pub fn new(song: &Song) -> Result<Self, Error> {
+        let try_folder_art = find_folder_art(&song.file_path);
 
-    /// Look in the folder of the given song path for an artwork file with the
-    /// given art file name
-    fn try_art_by_name(song_path: &mut PathBuf, art_file_name: &str) -> Option<Self> {
-        // Look for folder artwork.
-        song_path.pop();
-        song_path.push(art_file_name);
+        let artwork = match try_folder_art {
+            Some(folder_art) => {
+                let img = image::open(folder_art.path).unwrap();
 
-        // FIXME change to try_exists when you fix MSRV
-        let art_file_exists = song_path.exists();
+                let mut cached_img_path = get_album_art_folder().unwrap();
+                // FIXME unwrap
+                // let cached_art_name = String::from(song.tags.album.as_ref().unwrap())
+                //     + &song.tags.artist.as_ref().unwrap().
+                //     + ".jpg";
+                let normalised_album_name: String = song
+                    .tags
+                    .album
+                    .as_ref()
+                    .unwrap()
+                    .clone()
+                    .chars()
+                    .filter(|c| c.is_alphabetic())
+                    .collect();
+                let normalised_artist_name: String = song
+                    .tags
+                    .artist
+                    .as_ref()
+                    .unwrap()
+                    .clone()
+                    .chars()
+                    .filter(|c| c.is_alphabetic())
+                    .collect();
+                let cached_art_name = normalised_album_name + &normalised_artist_name + ".jpg";
 
-        if art_file_exists {
-            Some(Artwork {
-                cached_embedded_art: None,
-                folder_album_art: Some(song_path.clone()),
-            })
-        } else {
-            None
-        }
-    }
+                cached_img_path.push(cached_art_name);
 
-    pub fn art_from_song_folder(song_path: &mut PathBuf) -> Self {
-        let cover_name_opts = vec![
-            "folder", "Folder", "cover", "Cover", "front", "Front", "artwork", "Artwork",
-        ];
+                // Write to the cached art, if it doesn't already exist
+                if !cached_img_path.exists() {
+                    println!(
+                        "Writing image file for song '{}' to '{:?}'",
+                        &song.tags.title,
+                        cached_img_path.clone()
+                    );
+                    let img_file_full_res = &mut File::create(cached_img_path.clone()).unwrap();
+                    img.write_to(w, img.)
+                    match folder_art.image_format {
+                        ImageFormat::Jpeg => {
+                            img.write_to(img_file_full_res, ImageFormat::Jpeg).unwrap()
+                        }
+                        ImageFormat::Png => {
+                            img.write_to(img_file_full_res, ImageFormat::Png).unwrap();
+                        }
+                        _ => panic!("Folder art format not handled!"),
+                    }
+                }
 
-        // Try each possible art file name in the list and return the first
-        // found artwork
-        for cover_name in cover_name_opts {
-            let cover_name_jpg = cover_name.to_owned() + ".jpg";
-            let cover_name_png = cover_name.to_owned() + ".png";
-
-            let try_art_jpg = Self::try_art_by_name(song_path, &cover_name_jpg);
-            if let Some(art) = try_art_jpg {
-                return art;
+                Artwork {
+                    full_res_art: cached_img_path,
+                    thumb_art: PathBuf::from("tmp"),
+                    art_400: PathBuf::from("tmp"),
+                }
             }
-
-            let try_art_png = Self::try_art_by_name(song_path, &cover_name_png);
-            if let Some(art) = try_art_png {
-                return art;
+            None => {
+                return Err(Error::new(
+                    std::io::ErrorKind::NotFound,
+                    String::from("Art file not found"),
+                ))
             }
-        }
+        };
 
-        // If no art was found, return a blank artwork
-        Self::blank_artwork()
+        Ok(artwork)
     }
-
-    pub fn has_no_art(&self) -> bool {
-        self.cached_embedded_art.is_none() && self.folder_album_art.is_none()
-    }
-
-    pub fn has_art(&self) -> bool {
-        self.cached_embedded_art.is_some() || self.folder_album_art.is_some()
-    }
-
-    // pub fn get_artwork(&self) -> Option<&Path> {
-    //     if let Some(art) = &self.folder_album_art {
-    //         Some(art.as_ref())
-    //     } else if let Some(art) = &self.cached_embedded_art {
-    //         Some(art.as_ref())
-    //     } else {
-    //         None
-    //     }
-    // }
 }
