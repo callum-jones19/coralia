@@ -1,7 +1,7 @@
 use core::panic;
 use std::{
     fs::{create_dir_all, File},
-    io::{self, Error},
+    io::{self, BufWriter, Error, Write},
     path::{Path, PathBuf},
 };
 
@@ -110,10 +110,6 @@ impl Artwork {
                 let img = image::open(folder_art.path).unwrap();
 
                 let mut cached_img_path = get_album_art_folder().unwrap();
-                // FIXME unwrap
-                // let cached_art_name = String::from(song.tags.album.as_ref().unwrap())
-                //     + &song.tags.artist.as_ref().unwrap().
-                //     + ".jpg";
                 let normalised_album_name: String = song
                     .tags
                     .album
@@ -121,16 +117,16 @@ impl Artwork {
                     .unwrap()
                     .clone()
                     .chars()
-                    .filter(|c| c.is_alphabetic())
+                    .filter(|c| c.is_alphanumeric())
                     .collect();
                 let normalised_artist_name: String = song
                     .tags
-                    .artist
+                    .album_artist
                     .as_ref()
                     .unwrap()
                     .clone()
                     .chars()
-                    .filter(|c| c.is_alphabetic())
+                    .filter(|c| c.is_alphanumeric())
                     .collect();
                 let cached_art_name = normalised_album_name + &normalised_artist_name + ".jpg";
 
@@ -143,17 +139,17 @@ impl Artwork {
                         &song.tags.title,
                         cached_img_path.clone()
                     );
-                    let img_file_full_res = &mut File::create(cached_img_path.clone()).unwrap();
-                    img.write_to(w, img.)
+                    let mut img_file_full_res = BufWriter::new(File::create(cached_img_path.clone()).unwrap());
                     match folder_art.image_format {
                         ImageFormat::Jpeg => {
-                            img.write_to(img_file_full_res, ImageFormat::Jpeg).unwrap()
+                            img.write_to(&mut img_file_full_res, ImageFormat::Jpeg).unwrap()
                         }
                         ImageFormat::Png => {
-                            img.write_to(img_file_full_res, ImageFormat::Png).unwrap();
+                            img.write_to(&mut img_file_full_res, ImageFormat::Png).unwrap();
                         }
                         _ => panic!("Folder art format not handled!"),
                     }
+                    img_file_full_res.flush().unwrap();
                 }
 
                 Artwork {
