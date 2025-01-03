@@ -92,7 +92,7 @@ impl Library {
         self.albums = lib_albums;
     }
 
-    pub fn get_all_songs(&self) -> Vec<Song> {
+    pub fn get_all_songs_unordered(&self) -> Vec<Song> {
         self.songs.clone().into_values().collect()
     }
 
