@@ -107,7 +107,8 @@ impl Artwork {
 
         let artwork = match try_folder_art {
             Some(folder_art) => {
-                let img = image::open(folder_art.path).unwrap();
+                // let img = image::open(&folder_art.path).unwrap();
+                let img = ImageReader::open(&folder_art.path).unwrap();
 
                 let mut cached_img_path = get_album_art_folder().unwrap();
                 let normalised_album_name: String = song
@@ -139,17 +140,8 @@ impl Artwork {
                         &song.tags.title,
                         cached_img_path.clone()
                     );
-                    let mut img_file_full_res = BufWriter::new(File::create(cached_img_path.clone()).unwrap());
-                    match folder_art.image_format {
-                        ImageFormat::Jpeg => {
-                            img.write_to(&mut img_file_full_res, ImageFormat::Jpeg).unwrap()
-                        }
-                        ImageFormat::Png => {
-                            img.write_to(&mut img_file_full_res, ImageFormat::Png).unwrap();
-                        }
-                        _ => panic!("Folder art format not handled!"),
-                    }
-                    img_file_full_res.flush().unwrap();
+                    // img.decode().unwrap().save(&cached_img_path).unwrap();
+                    img.decode().unwrap().thumbnail(50, 50).save(&cached_img_path).unwrap();
                 }
 
                 Artwork {

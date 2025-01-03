@@ -19,7 +19,6 @@ export default function MusicGrid() {
           return (
             <MusicGridAlbum
               key={album.albumArtist + album.title}
-              artSrc={album.artwork}
               title={album.title}
               artist={album.albumArtist}
             />

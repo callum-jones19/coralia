@@ -38,6 +38,7 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
 
         for song in &mut album.album_songs {
             song.artwork = Some(artwork.clone());
+            println!("test");
         }
     }
 
@@ -115,6 +116,7 @@ impl Library {
     pub fn scan_library_albums(&mut self) {
         let lib_albums = albums_from_songs(&self.songs);
         self.albums = lib_albums;
+        println!("{:?}", &self.songs.first());
     }
 
     pub fn get_all_songs(&self) -> Vec<Song> {

@@ -16,7 +16,7 @@ export interface SongProperties {
 export interface Song {
   filePath: string;
   tags: MusicTags;
-  artwork: Artwork;
+  artwork?: Artwork;
   properties: SongProperties;
 }
 
@@ -40,15 +40,15 @@ export interface MusicTags {
 }
 
 export interface Artwork {
-  cachedEmbeddedArt: string | undefined;
-  folderAlbumArt: string | undefined;
+  fullResArt: string;
+  thumbArt: string;
+  art400: string;
 }
 
 export interface Album {
   title: string;
   albumArtist: string;
   albumSongs: Song[];
-  artwork: Artwork;
 }
 
 export interface CachedPlayerState {
