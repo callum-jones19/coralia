@@ -34,10 +34,10 @@ impl SongProperties {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Song {
-    pub file_path: Box<Path>,
-    pub tags: MusicTags,
-    pub properties: SongProperties,
-    pub artwork: Artwork,
+    id: usize,
+    file_path: Box<Path>,
+    tags: MusicTags,
+    properties: SongProperties,
 }
 
 impl Song {

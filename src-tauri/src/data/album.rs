@@ -5,10 +5,10 @@ use super::{artwork::Artwork, song::Song};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Album {
-    pub title: String,
-    pub album_artist: String,
-    pub album_songs: Vec<Song>,
-    pub artwork: Artwork,
+    id: usize,
+    title: String,
+    album_artist: String,
+    album_songs: Vec<Song>,
 }
 
 impl Album {
