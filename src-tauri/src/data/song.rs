@@ -39,7 +39,7 @@ pub struct Song {
     pub file_path: Box<Path>,
     pub tags: MusicTags,
     pub properties: SongProperties,
-    pub album: Option<u16>,
+    pub album: Option<usize>,
 }
 
 static COUNTER: AtomicUsize = AtomicUsize::new(1);

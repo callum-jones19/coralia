@@ -13,6 +13,9 @@ export default function SongListItem(
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
+  console.log(song.id)
+  console.log(song.album);
+
   return (
     <div
       className={`flex flex-col h-full ${
