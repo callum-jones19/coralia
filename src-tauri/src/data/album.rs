@@ -1,3 +1,5 @@
+use std::sync::atomic::{AtomicUsize, Ordering};
+
 use serde::{Deserialize, Serialize};
 
 use super::{artwork::Artwork, song::Song};
@@ -5,10 +7,15 @@ use super::{artwork::Artwork, song::Song};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Album {
-    id: usize,
-    title: String,
-    album_artist: String,
-    album_songs: Vec<Song>,
+    pub id: usize,
+    pub title: String,
+    pub album_artist: String,
+    pub album_songs: Vec<usize>,
+}
+
+static COUNTER: AtomicUsize = AtomicUsize::new(1);
+fn get_id() -> usize {
+    COUNTER.fetch_add(1, Ordering::Relaxed)
 }
 
 impl Album {
@@ -35,10 +42,10 @@ impl Album {
         };
 
         Ok(Album {
+            id: get_id(),
             album_artist: album_artist.to_string(),
             title: album.to_string(),
-            album_songs: vec![first_song.clone()],
-            artwork: first_song.artwork.clone(),
+            album_songs: vec![first_song.id],
         })
     }
 
@@ -78,12 +85,13 @@ impl Album {
         };
 
         if album == &self.title && album_artist == &self.album_artist {
-            self.album_songs.push(new_song.clone());
+            self.album_songs.push(new_song.id);
 
             // Check if we need to update the album's artwork
-            if self.artwork.has_no_art() && new_song.artwork.has_art() {
-                self.artwork = new_song.artwork.clone();
-            }
+            // FIXME
+            // if self.artwork.has_no_art() && new_song.artwork.has_art() {
+            //     self.artwork = new_song.artwork.clone();
+            // }
 
             Ok(())
         } else {

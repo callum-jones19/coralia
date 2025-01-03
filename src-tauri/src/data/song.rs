@@ -1,5 +1,6 @@
 use std::{
     path::{Path, PathBuf},
+    sync::atomic::{AtomicUsize, Ordering},
     time::Duration,
 };
 
@@ -34,10 +35,16 @@ impl SongProperties {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Song {
-    id: usize,
-    file_path: Box<Path>,
-    tags: MusicTags,
-    properties: SongProperties,
+    pub id: usize,
+    pub file_path: Box<Path>,
+    pub tags: MusicTags,
+    pub properties: SongProperties,
+    pub album: Option<u16>,
+}
+
+static COUNTER: AtomicUsize = AtomicUsize::new(1);
+fn get_id() -> usize {
+    COUNTER.fetch_add(1, Ordering::Relaxed)
 }
 
 impl Song {
@@ -49,10 +56,11 @@ impl Song {
         let artwork = Artwork::art_from_song_folder(&mut song_path.to_path_buf());
 
         Ok(Song {
+            id: get_id(),
             file_path: song_path.into(),
             tags: music_tags,
             properties: music_props,
-            artwork,
+            album: None,
         })
     }
 }
