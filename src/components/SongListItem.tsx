@@ -13,6 +13,7 @@ export default function SongListItem(
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
+  console.log(song);
   console.log(song.id)
   console.log(song.album);
 

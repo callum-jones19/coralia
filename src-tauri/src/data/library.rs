@@ -9,15 +9,15 @@ use serde::{Deserialize, Serialize};
 
 use super::{album::Album, song::Song};
 
-fn albums_from_songs(songs: &HashMap<usize, Song>) -> HashMap<usize, Album> {
+fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> {
     let mut albums: HashMap<usize, Album> = HashMap::new();
 
-    for song in songs.values() {
+    for song in songs.values_mut() {
         // Is this song a part of any already existing albums?
         let mut found_matching_album = false;
         for album in albums.values_mut() {
             if album.should_contain_song(song) {
-                album.try_add_song(song).unwrap();
+                album.add_song(song);
                 found_matching_album = true;
             }
         }
@@ -88,7 +88,7 @@ impl Library {
     }
 
     pub fn scan_library_albums(&mut self) {
-        let lib_albums = albums_from_songs(&self.songs);
+        let lib_albums = albums_from_songs(&mut self.songs);
         self.albums = lib_albums;
     }
 
