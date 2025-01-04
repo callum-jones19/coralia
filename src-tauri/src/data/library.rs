@@ -32,13 +32,17 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
 
     for album in &mut albums {
         let artwork = match album.album_songs.first() {
-            Some(first_song) => Artwork::new(first_song).unwrap(),
+            Some(first_song) => Artwork::new(first_song),
             None => panic!("No songs in album {}", album.title),
         };
 
-        for song in &mut album.album_songs {
-            song.artwork = Some(artwork.clone());
-            println!("test");
+        match artwork {
+            Some(a) => {
+                for song in &mut album.album_songs {
+                    song.artwork = Some(a.clone());
+                }
+            }
+            None => {}
         }
     }
 

@@ -102,7 +102,7 @@ pub struct Artwork {
 }
 
 impl Artwork {
-    pub fn new(song: &Song) -> Result<Self, Error> {
+    pub fn new(song: &Song) -> Option<Self> {
         let try_folder_art = find_folder_art(&song.file_path);
 
         let artwork = match try_folder_art {
@@ -129,7 +129,10 @@ impl Artwork {
                     .chars()
                     .filter(|c| c.is_alphanumeric())
                     .collect();
-                let cached_art_name = normalised_album_name + &normalised_artist_name + ".jpg";
+                let cached_art_name = normalised_album_name
+                    + &normalised_artist_name
+                    + "."
+                    + folder_art.path.extension().unwrap().to_str().unwrap();
 
                 cached_img_path.push(cached_art_name);
 
@@ -141,23 +144,22 @@ impl Artwork {
                         cached_img_path.clone()
                     );
                     // img.decode().unwrap().save(&cached_img_path).unwrap();
-                    img.decode().unwrap().thumbnail(50, 50).save(&cached_img_path).unwrap();
+                    img.decode()
+                        .unwrap()
+                        .thumbnail(50, 50)
+                        .save(&cached_img_path)
+                        .unwrap();
                 }
 
-                Artwork {
+                Some(Artwork {
                     full_res_art: cached_img_path,
                     thumb_art: PathBuf::from("tmp"),
                     art_400: PathBuf::from("tmp"),
-                }
+                })
             }
-            None => {
-                return Err(Error::new(
-                    std::io::ErrorKind::NotFound,
-                    String::from("Art file not found"),
-                ))
-            }
+            None => None,
         };
 
-        Ok(artwork)
+        artwork
     }
 }
