@@ -31,21 +31,21 @@ fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> 
         }
     }
 
-    for album in &mut albums {
-        let artwork = match album.album_songs.first() {
-            Some(first_song) => Artwork::new(first_song),
-            None => panic!("No songs in album {}", album.title),
-        };
+    // for album in albums.values_mut() {
+    // let artwork = match album.album_songs.first() {
+    //     Some(first_song) => Artwork::new(first_song),
+    //     None => panic!("No songs in album {}", album.title),
+    // };
 
-        match artwork {
-            Some(a) => {
-                for song in &mut album.album_songs {
-                    song.artwork = Some(a.clone());
-                }
-            }
-            None => {}
-        }
-    }
+    // match artwork {
+    //     Some(a) => {
+    //         for song in &mut album.album_songs {
+    //             song.artwork = Some(a.clone());
+    //         }
+    //     }
+    //     None => {}
+    // }
+    // }
 
     albums
 }
@@ -104,7 +104,6 @@ impl Library {
     pub fn scan_library_albums(&mut self) {
         let lib_albums = albums_from_songs(&mut self.songs);
         self.albums = lib_albums;
-        println!("{:?}", &self.songs.first());
     }
 
     pub fn get_all_songs_unordered(&self) -> Vec<Song> {
