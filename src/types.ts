@@ -13,7 +13,7 @@ export interface Song {
   id: number;
   filePath: string;
   tags: MusicTags;
-  artwork: Artwork;
+  artwork?: Artwork;
   properties: SongProperties;
   album?: number;
 }
@@ -38,8 +38,9 @@ export interface MusicTags {
 }
 
 export interface Artwork {
-  cachedEmbeddedArt: string | undefined;
-  folderAlbumArt: string | undefined;
+  fullResArt: string;
+  thumbArt: string;
+  art400: string;
 }
 
 export interface Album {

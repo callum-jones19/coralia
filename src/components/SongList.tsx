@@ -27,7 +27,9 @@ export default function SongList() {
 
   useEffect(() => {
     getLibrarySongs()
-      .then(libSongs => setSongs(libSongs))
+      .then(libSongs => {
+        setSongs(libSongs);
+    })
       .catch(e => console.error(e));
   }, []);
 

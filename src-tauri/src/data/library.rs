@@ -7,7 +7,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use super::{album::Album, song::Song};
+use super::{album::Album, artwork::Artwork, song::Song};
 
 fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> {
     let mut albums: HashMap<usize, Album> = HashMap::new();
@@ -28,6 +28,22 @@ fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> 
             let new_album = Album::create_from_song(song)
                 .expect("Song did not have necessary album metadata to create a new album for it");
             albums.insert(new_album.id, new_album);
+        }
+    }
+
+    for album in &mut albums {
+        let artwork = match album.album_songs.first() {
+            Some(first_song) => Artwork::new(first_song),
+            None => panic!("No songs in album {}", album.title),
+        };
+
+        match artwork {
+            Some(a) => {
+                for song in &mut album.album_songs {
+                    song.artwork = Some(a.clone());
+                }
+            }
+            None => {}
         }
     }
 
@@ -88,6 +104,7 @@ impl Library {
     pub fn scan_library_albums(&mut self) {
         let lib_albums = albums_from_songs(&mut self.songs);
         self.albums = lib_albums;
+        println!("{:?}", &self.songs.first());
     }
 
     pub fn get_all_songs_unordered(&self) -> Vec<Song> {

@@ -39,6 +39,7 @@ pub struct Song {
     pub file_path: Box<Path>,
     pub tags: MusicTags,
     pub properties: SongProperties,
+    pub artwork: Option<Artwork>,
     pub album: Option<usize>,
 }
 
@@ -57,6 +58,7 @@ impl Song {
             file_path: song_path.into(),
             tags: music_tags,
             properties: music_props,
+            artwork: None,
             album: None,
         })
     }
