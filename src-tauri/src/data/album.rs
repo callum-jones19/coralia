@@ -1,21 +1,30 @@
+use std::sync::atomic::{AtomicUsize, Ordering};
+
 use serde::{Deserialize, Serialize};
 
-use super::{artwork::Artwork, song::Song};
+use super::song::Song;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Album {
+    pub id: usize,
     pub title: String,
     pub album_artist: String,
-    pub album_songs: Vec<Song>,
-    pub artwork: Artwork,
+    pub album_songs: Vec<usize>,
+}
+
+static COUNTER: AtomicUsize = AtomicUsize::new(1);
+fn get_id() -> usize {
+    COUNTER.fetch_add(1, Ordering::Relaxed)
 }
 
 impl Album {
     /// Given an album title and album artist, filter out all the songs in the
     /// given list that meet these two values, and then construct a new
     /// album from them
-    pub fn create_from_song(first_song: &Song) -> Result<Self, String> {
+    pub fn create_from_song(first_song: &mut Song) -> Result<Self, String> {
+        let album_id = get_id();
+
         let album_artist = match &first_song.tags.album_artist {
             Some(album_artist) => album_artist,
             None => {
@@ -34,11 +43,13 @@ impl Album {
             }
         };
 
+        first_song.album = Some(album_id);
+
         Ok(Album {
+            id: album_id,
             album_artist: album_artist.to_string(),
             title: album.to_string(),
-            album_songs: vec![first_song.clone()],
-            artwork: first_song.artwork.clone(),
+            album_songs: vec![first_song.id],
         })
     }
 
@@ -58,36 +69,8 @@ impl Album {
 
     /// If new_song belongs in this album, add it. Otherwise, throw an error
     /// FIXME I don't like how this is returning info. Please improve
-    pub fn try_add_song(&mut self, new_song: &Song) -> Result<(), String> {
-        let album_artist = match &new_song.tags.album_artist {
-            Some(album_artist) => album_artist,
-            None => {
-                return Err(String::from(
-                    "Attempted to create an album from a song with no album artist",
-                ))
-            }
-        };
-
-        let album = match &new_song.tags.album {
-            Some(album) => album,
-            None => {
-                return Err(String::from(
-                    "Attempted to create an album from a song with no album",
-                ))
-            }
-        };
-
-        if album == &self.title && album_artist == &self.album_artist {
-            self.album_songs.push(new_song.clone());
-
-            // Check if we need to update the album's artwork
-            if self.artwork.has_no_art() && new_song.artwork.has_art() {
-                self.artwork = new_song.artwork.clone();
-            }
-
-            Ok(())
-        } else {
-            Err(String::from("New song did not match album criteria"))
-        }
+    pub fn add_song(&mut self, new_song: &mut Song) {
+        self.album_songs.push(new_song.id);
+        new_song.album = Some(self.id);
     }
 }
