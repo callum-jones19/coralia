@@ -9,46 +9,46 @@ use serde::{Deserialize, Serialize};
 
 use super::{album::Album, artwork::Artwork, song::Song};
 
-fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> {
-    let mut albums: HashMap<usize, Album> = HashMap::new();
+// fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> {
+//     let mut albums: HashMap<usize, Album> = HashMap::new();
 
-    for song in songs.values_mut() {
-        // Is this song a part of any already existing albums?
-        let mut found_matching_album = false;
-        for album in albums.values_mut() {
-            if album.should_contain_song(song) {
-                album.add_song(song);
-                found_matching_album = true;
-            }
-        }
+//     for song in songs.values_mut() {
+//         // Is this song a part of any already existing albums?
+//         let mut found_matching_album = false;
+//         for album in albums.values_mut() {
+//             if album.should_contain_song(song) {
+//                 album.add_song(song);
+//                 found_matching_album = true;
+//             }
+//         }
 
-        if !found_matching_album {
-            // No existing albums for this song, so make a new one for it and add
-            // it to the list
-            let new_album = Album::create_from_song(song)
-                .expect("Song did not have necessary album metadata to create a new album for it");
-            albums.insert(new_album.id, new_album);
-        }
-    }
+//         if !found_matching_album {
+//             // No existing albums for this song, so make a new one for it and add
+//             // it to the list
+//             let new_album = Album::create_from_song(song)
+//                 .expect("Song did not have necessary album metadata to create a new album for it");
+//             albums.insert(new_album.id, new_album);
+//         }
+//     }
 
-    // for album in albums.values_mut() {
-    // let artwork = match album.album_songs.first() {
-    //     Some(first_song) => Artwork::new(first_song),
-    //     None => panic!("No songs in album {}", album.title),
-    // };
+//     for album in albums.values_mut() {
+//         let artwork = match album.album_songs.first() {
+//             Some(first_song) => Artwork::new(first_song),
+//             None => panic!("No songs in album {}", album.title),
+//         };
 
-    // match artwork {
-    //     Some(a) => {
-    //         for song in &mut album.album_songs {
-    //             song.artwork = Some(a.clone());
-    //         }
-    //     }
-    //     None => {}
-    // }
-    // }
+//         match artwork {
+//             Some(a) => {
+//                 for song in &mut album.album_songs {
+//                     song.artwork = Some(a.clone());
+//                 }
+//             }
+//             None => {}
+//         }
+//     }
 
-    albums
-}
+//     albums
+// }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -102,8 +102,49 @@ impl Library {
     }
 
     pub fn scan_library_albums(&mut self) {
-        let lib_albums = albums_from_songs(&mut self.songs);
-        self.albums = lib_albums;
+        let mut albums: HashMap<usize, Album> = HashMap::new();
+
+        for song in self.songs.values_mut() {
+            // Is this song a part of any already existing albums?
+            let mut found_matching_album = false;
+            for album in albums.values_mut() {
+                if album.should_contain_song(song) {
+                    album.add_song(song);
+                    found_matching_album = true;
+                }
+            }
+
+            if !found_matching_album {
+                // No existing albums for this song, so make a new one for it and add
+                // it to the list
+                let new_album = Album::create_from_song(song).expect(
+                    "Song did not have necessary album metadata to create a new album for it",
+                );
+                albums.insert(new_album.id, new_album);
+            }
+        }
+
+        for album in albums.values_mut() {
+            let artwork = match album.album_songs.first() {
+                Some(first_song_id) => {
+                    let song = self.songs.get(first_song_id).unwrap();
+                    Artwork::new(song)
+                }
+                None => panic!("No songs in album {}", album.title),
+            };
+
+            match artwork {
+                Some(a) => {
+                    for album_song_id in &album.album_songs {
+                        let s = self.songs.get_mut(&album_song_id).unwrap();
+                        s.artwork = Some(a.clone());
+                    }
+                }
+                None => {}
+            }
+        }
+
+        self.albums = albums;
     }
 
     pub fn get_all_songs_unordered(&self) -> Vec<Song> {
