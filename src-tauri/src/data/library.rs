@@ -9,47 +9,6 @@ use serde::{Deserialize, Serialize};
 
 use super::{album::Album, artwork::Artwork, song::Song};
 
-// fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> {
-//     let mut albums: HashMap<usize, Album> = HashMap::new();
-
-//     for song in songs.values_mut() {
-//         // Is this song a part of any already existing albums?
-//         let mut found_matching_album = false;
-//         for album in albums.values_mut() {
-//             if album.should_contain_song(song) {
-//                 album.add_song(song);
-//                 found_matching_album = true;
-//             }
-//         }
-
-//         if !found_matching_album {
-//             // No existing albums for this song, so make a new one for it and add
-//             // it to the list
-//             let new_album = Album::create_from_song(song)
-//                 .expect("Song did not have necessary album metadata to create a new album for it");
-//             albums.insert(new_album.id, new_album);
-//         }
-//     }
-
-//     for album in albums.values_mut() {
-//         let artwork = match album.album_songs.first() {
-//             Some(first_song) => Artwork::new(first_song),
-//             None => panic!("No songs in album {}", album.title),
-//         };
-
-//         match artwork {
-//             Some(a) => {
-//                 for song in &mut album.album_songs {
-//                     song.artwork = Some(a.clone());
-//                 }
-//             }
-//             None => {}
-//         }
-//     }
-
-//     albums
-// }
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Library {
