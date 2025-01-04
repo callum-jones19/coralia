@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use serde::{Deserialize, Serialize};
 
-use super::song::Song;
+use super::{artwork::Artwork, song::Song};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -11,6 +11,7 @@ pub struct Album {
     pub title: String,
     pub album_artist: String,
     pub album_songs: Vec<usize>,
+    pub artwork: Option<Artwork>,
 }
 
 static COUNTER: AtomicUsize = AtomicUsize::new(1);
@@ -50,6 +51,7 @@ impl Album {
             album_artist: album_artist.to_string(),
             title: album.to_string(),
             album_songs: vec![first_song.id],
+            artwork: None,
         })
     }
 

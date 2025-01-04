@@ -92,6 +92,8 @@ impl Library {
                 None => panic!("No songs in album {}", album.title),
             };
 
+            album.artwork = artwork.clone();
+
             match artwork {
                 Some(a) => {
                     for album_song_id in &album.album_songs {

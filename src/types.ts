@@ -48,6 +48,7 @@ export interface Album {
   title: string;
   albumArtist: string;
   albumSongs: id[];
+  artwork: Artwork;
 }
 
 export interface CachedPlayerState {

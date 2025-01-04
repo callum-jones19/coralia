@@ -1,18 +1,21 @@
+import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { Album } from "../types";
 
 export interface MusicGridAlbumProps {
-  title: string;
-  artist: string;
+  album: Album
 }
 
 export default function MusicGridAlbum(
-  { artSrc, title, artist }: MusicGridAlbumProps,
+  { album }: MusicGridAlbumProps,
 ) {
+  const imgSrc = album.artwork?.fullResArt ? convertFileSrc(album.artwork?.fullResArt) : undefined;
 
   return (
     <>
       <div className="p-2 h-full shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0">
         <img
           loading="lazy"
+          src={imgSrc}
           width={400}
           height={400}
           alt="album-cover-image"
@@ -20,12 +23,12 @@ export default function MusicGridAlbum(
         />
         <div className="flex-shrink-0">
           <p
-            title={title}
+            title={album.title}
             className="font-bold text-l text-center overflow-hidden text-nowrap text-ellipsis hover:underline"
           >
-            {title}
+            {album.title}
           </p>
-          <p className="text-center text-sm">{artist}</p>
+          <p className="text-center text-sm">{album.albumArtist}</p>
         </div>
       </div>
     </>

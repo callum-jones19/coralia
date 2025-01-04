@@ -18,10 +18,8 @@ export default function MusicGrid() {
         {albums.map(album => {
           return (
             <MusicGridAlbum
-              key={album.albumArtist + album.title}
-              artSrc={{ cachedEmbeddedArt: undefined, folderAlbumArt: undefined }}
-              title={album.title}
-              artist={album.albumArtist}
+              key={album.id}
+              album={album}
             />
           );
         })}
