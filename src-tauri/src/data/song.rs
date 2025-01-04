@@ -52,9 +52,6 @@ impl Song {
         let music_tags = MusicTags::new_from_file(song_path.to_path_buf())?;
         let music_props = SongProperties::new_from_file(song_path.to_path_buf())?;
 
-        // TODO get potentially embedded artwork
-        let artwork = Artwork::art_from_song_folder(&mut song_path.to_path_buf());
-
         Ok(Song {
             id: get_id(),
             file_path: song_path.into(),

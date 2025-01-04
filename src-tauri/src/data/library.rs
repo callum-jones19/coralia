@@ -46,13 +46,11 @@ impl Library {
     pub fn new_empty() -> Self {
         let empty_songs = HashMap::new();
         let empty_albums = HashMap::new();
-        let new_lib = Library {
+        Library {
             root_dirs: Vec::new(),
             songs: empty_songs,
             albums: empty_albums,
-        };
-
-        new_lib
+        }
     }
 
     pub fn add_new_folders(&mut self, mut folders: Vec<PathBuf>) {

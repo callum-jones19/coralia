@@ -68,22 +68,4 @@ impl Artwork {
         // If no art was found, return a blank artwork
         Self::blank_artwork()
     }
-
-    pub fn has_no_art(&self) -> bool {
-        self.cached_embedded_art.is_none() && self.folder_album_art.is_none()
-    }
-
-    pub fn has_art(&self) -> bool {
-        self.cached_embedded_art.is_some() || self.folder_album_art.is_some()
-    }
-
-    // pub fn get_artwork(&self) -> Option<&Path> {
-    //     if let Some(art) = &self.folder_album_art {
-    //         Some(art.as_ref())
-    //     } else if let Some(art) = &self.cached_embedded_art {
-    //         Some(art.as_ref())
-    //     } else {
-    //         None
-    //     }
-    // }
 }
