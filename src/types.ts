@@ -44,7 +44,7 @@ export interface Artwork {
 }
 
 export interface Album {
-  id: number
+  id: number;
   title: string;
   albumArtist: string;
   albumSongs: id[];

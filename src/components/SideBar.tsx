@@ -2,8 +2,8 @@ import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Volume1 } from "react-feather";
-import { Song } from "../types";
 import { Link } from "react-router";
+import { Song } from "../types";
 
 export default function SideBar() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -19,7 +19,9 @@ export default function SideBar() {
     };
   }, []);
 
-  const imgSrc = queue[0]?.artwork?.art400 ? convertFileSrc(queue[0]?.artwork?.art400) : undefined;
+  const imgSrc = queue[0]?.artwork?.art400
+    ? convertFileSrc(queue[0]?.artwork?.art400)
+    : undefined;
 
   return (
     <div className="w-72 bg-neutral-800 h-full flex-grow-0 flex-shrink-0 pr-2 pl-2">
@@ -27,7 +29,9 @@ export default function SideBar() {
         <li className="flex flex-col gap-3 text-white flex-grow overflow-auto">
           {queue.length === 0 && <ul>Empty queue</ul>}
           {queue.map((song, index) => {
-            const imgSrc = queue[0]?.artwork?.thumbArt ? convertFileSrc(queue[0]?.artwork?.thumbArt) : undefined;
+            const imgSrc = queue[0]?.artwork?.thumbArt
+              ? convertFileSrc(queue[0]?.artwork?.thumbArt)
+              : undefined;
             return (
               <ul
                 key={`${song.filePath}-${index}`}
@@ -35,14 +39,22 @@ export default function SideBar() {
               >
                 {index === 0 && <Volume1 size="1em" />}
                 {index !== 0 && <p>{index}.</p>}
-                <img alt="album art" src={imgSrc} className="w-6 aspect-square" />
+                <img
+                  alt="album art"
+                  src={imgSrc}
+                  className="w-6 aspect-square"
+                />
                 <p>{song.tags.title}</p>
               </ul>
             );
           })}
         </li>
-        <Link to="/home" className="bg-white rounded-sm text-center">Songs</Link>
-        <Link to="/home/albums" className="bg-white rounded-sm text-center">Albums</Link>
+        <Link to="/home" className="bg-white rounded-sm text-center">
+          Songs
+        </Link>
+        <Link to="/home/albums" className="bg-white rounded-sm text-center">
+          Albums
+        </Link>
         <div className="flex flex-col gap-3">
           {imgSrc && (
             <img

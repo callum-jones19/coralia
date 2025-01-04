@@ -2,13 +2,15 @@ import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { Album } from "../types";
 
 export interface MusicGridAlbumProps {
-  album: Album
+  album: Album;
 }
 
 export default function MusicGridAlbum(
   { album }: MusicGridAlbumProps,
 ) {
-  const imgSrc = album.artwork?.art400 ? convertFileSrc(album.artwork?.art400) : undefined;
+  const imgSrc = album.artwork?.art400
+    ? convertFileSrc(album.artwork?.art400)
+    : undefined;
 
   return (
     <>

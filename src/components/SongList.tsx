@@ -29,7 +29,7 @@ export default function SongList() {
     getLibrarySongs()
       .then(libSongs => {
         setSongs(libSongs);
-    })
+      })
       .catch(e => console.error(e));
   }, []);
 

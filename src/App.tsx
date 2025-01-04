@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import LibraryPage from "./screens/LibraryPage";
-import SettingsScreen from "./screens/SettingsScreen";
-import SongList from "./components/SongList";
 import MusicGrid from "./components/MusicGrid";
+import SongList from "./components/SongList";
+import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 
 export default function App() {
   return (
