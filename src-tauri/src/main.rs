@@ -300,8 +300,7 @@ async fn seek_current_song(
 #[tauri::command]
 async fn get_library_songs(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Song>, ()> {
     let state = state_mutex.lock().unwrap();
-    println!("{:?}", &state.library.get_all_songs().first());
-    Ok(state.library.get_all_songs())
+    Ok(state.library.get_all_songs_unordered())
 }
 
 #[tauri::command]

@@ -1,8 +1,4 @@
-export interface Library {
-  rootDir: string;
-  songs: Song[];
-  albums: Album[];
-}
+export type id = number;
 
 export interface Duration {
   nanos: number;
@@ -14,10 +10,12 @@ export interface SongProperties {
 }
 
 export interface Song {
+  id: number;
   filePath: string;
   tags: MusicTags;
   artwork?: Artwork;
   properties: SongProperties;
+  album?: number;
 }
 
 export interface SongInfo {
@@ -46,9 +44,10 @@ export interface Artwork {
 }
 
 export interface Album {
+  id: number
   title: string;
   albumArtist: string;
-  albumSongs: Song[];
+  albumSongs: id[];
 }
 
 export interface CachedPlayerState {

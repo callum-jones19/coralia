@@ -19,6 +19,7 @@ export default function MusicGrid() {
           return (
             <MusicGridAlbum
               key={album.albumArtist + album.title}
+              artSrc={{ cachedEmbeddedArt: undefined, folderAlbumArt: undefined }}
               title={album.title}
               artist={album.albumArtist}
             />

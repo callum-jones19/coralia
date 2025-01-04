@@ -16,6 +16,10 @@ export default function SongListItem(
   console.log(song)
   // const imgUrl = convertFileSrc(song.artwork ? song.artwork.fullResArt : "");
 
+  console.log(song);
+  console.log(song.id)
+  console.log(song.album);
+
   return (
     <div
       className={`flex flex-col h-full ${

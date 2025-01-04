@@ -1,5 +1,6 @@
 use core::panic;
 use std::{
+    collections::HashMap,
     fs::{self, read_dir},
     path::PathBuf,
 };
@@ -8,15 +9,15 @@ use serde::{Deserialize, Serialize};
 
 use super::{album::Album, artwork::Artwork, song::Song};
 
-fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
-    let mut albums: Vec<Album> = Vec::new();
+fn albums_from_songs(songs: &mut HashMap<usize, Song>) -> HashMap<usize, Album> {
+    let mut albums: HashMap<usize, Album> = HashMap::new();
 
-    for song in songs {
+    for song in songs.values_mut() {
         // Is this song a part of any already existing albums?
         let mut found_matching_album = false;
-        for album in &mut albums {
+        for album in albums.values_mut() {
             if album.should_contain_song(song) {
-                let _ = album.try_add_song(song);
+                album.add_song(song);
                 found_matching_album = true;
             }
         }
@@ -26,7 +27,7 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
             // it to the list
             let new_album = Album::create_from_song(song)
                 .expect("Song did not have necessary album metadata to create a new album for it");
-            albums.push(new_album);
+            albums.insert(new_album.id, new_album);
         }
     }
 
@@ -53,50 +54,29 @@ fn albums_from_songs(songs: &Vec<Song>) -> Vec<Album> {
 #[serde(rename_all = "camelCase")]
 pub struct Library {
     pub root_dirs: Vec<PathBuf>,
-    songs: Vec<Song>,
-    pub albums: Vec<Album>,
+    pub songs: HashMap<usize, Song>,
+    pub albums: HashMap<usize, Album>,
 }
 
 impl Library {
     pub fn new_empty() -> Self {
-        let empty_songs: Vec<Song> = Vec::new();
-        let empty_albums: Vec<Album> = Vec::new();
-        let new_lib = Library {
+        let empty_songs = HashMap::new();
+        let empty_albums = HashMap::new();
+        Library {
             root_dirs: Vec::new(),
             songs: empty_songs,
             albums: empty_albums,
-        };
-
-        new_lib
+        }
     }
-
-    // pub fn new(root_dir: &Path) -> Self {
-    //     let empty_songs: Vec<Song> = Vec::new();
-    //     let empty_albums: Vec<Album> = Vec::new();
-    //     let mut new_lib = Library {
-    //         root_dirs: vec![root_dir.into()],
-    //         songs: empty_songs,
-    //         albums: empty_albums,
-    //     };
-
-    //     new_lib.scan_library_songs();
-    //     new_lib.scan_library_albums();
-
-    //     new_lib
-    // }
-
-    // pub fn add_new_folder(&mut self, folder_dir: PathBuf) {
-    //     self.root_dirs.push(folder_dir);
-    // }
 
     pub fn add_new_folders(&mut self, mut folders: Vec<PathBuf>) {
         self.root_dirs.append(&mut folders);
     }
 
     /// Given the root directory of this library, scan it recursively for songs,
-    // and then update the library's song vec to reflect this.
+    // and then update the library to reflect this.
     pub fn scan_library_songs(&mut self) {
-        let mut all_lib_songs = Vec::new();
+        let mut all_lib_songs: Vec<Song> = Vec::new();
 
         for d in &self.root_dirs {
             // Get all paths in this directory
@@ -114,21 +94,25 @@ impl Library {
             all_lib_songs.append(&mut dir_songs);
         }
 
-        self.songs = all_lib_songs;
+        let mut res = HashMap::new();
+        for song in all_lib_songs {
+            res.insert(song.id, song);
+        }
+        self.songs = res;
     }
 
     pub fn scan_library_albums(&mut self) {
-        let lib_albums = albums_from_songs(&self.songs);
+        let lib_albums = albums_from_songs(&mut self.songs);
         self.albums = lib_albums;
         println!("{:?}", &self.songs.first());
     }
 
-    pub fn get_all_songs(&self) -> Vec<Song> {
-        self.songs.clone()
+    pub fn get_all_songs_unordered(&self) -> Vec<Song> {
+        self.songs.clone().into_values().collect()
     }
 
     pub fn get_all_albums(&self) -> Vec<Album> {
-        self.albums.clone()
+        self.albums.clone().into_values().collect()
     }
 }
 
