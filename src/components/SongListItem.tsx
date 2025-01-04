@@ -14,7 +14,7 @@ export default function SongListItem(
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   console.log(song)
-  // const imgUrl = convertFileSrc(song.artwork ? song.artwork.fullResArt : "");
+  const imgUrl = convertFileSrc(song.artwork ? song.artwork.fullResArt : "");
 
   console.log(song);
   console.log(song.id)
@@ -29,7 +29,7 @@ export default function SongListItem(
       onMouseLeave={() => setIsHovering(false)}
     >
       <div className="hover:bg-neutral-300 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow">
-        {/* <img src={imgUrl} width={30} height={30} alt="thumb art" /> */}
+        <img loading="lazy" src={imgUrl} width={35} height={35} alt="thumb art" className="rounded-sm" />
         <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2]">
           {!isHovering
             && (
