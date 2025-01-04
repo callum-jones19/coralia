@@ -1,14 +1,13 @@
 use core::panic;
 use std::{
-    fs::{create_dir_all, File},
-    io::{self, BufWriter, Error, Write},
+    fs::{self, create_dir_all},
     path::{Path, PathBuf},
 };
 
 use image::{ImageFormat, ImageReader};
 use serde::{Deserialize, Serialize};
 
-use super::{album::Album, song::Song};
+use super::song::Song;
 
 struct FolderArt {
     path: PathBuf,
@@ -107,54 +106,56 @@ impl Artwork {
 
         let artwork = match try_folder_art {
             Some(folder_art) => {
-                // let img = image::open(&folder_art.path).unwrap();
                 let img = ImageReader::open(&folder_art.path).unwrap();
 
-                let mut cached_img_path = get_album_art_folder().unwrap();
-                let normalised_album_name: String = song
-                    .tags
-                    .album
-                    .as_ref()
-                    .unwrap()
-                    .clone()
-                    .chars()
-                    .filter(|c| c.is_alphanumeric())
-                    .collect();
-                let normalised_artist_name: String = song
-                    .tags
-                    .album_artist
-                    .as_ref()
-                    .unwrap()
-                    .clone()
-                    .chars()
-                    .filter(|c| c.is_alphanumeric())
-                    .collect();
-                let cached_art_name = normalised_album_name
-                    + &normalised_artist_name
+                let image_cache_path = get_album_art_folder().unwrap();
+                let cached_art_name = song.id.to_string()
                     + "."
                     + folder_art.path.extension().unwrap().to_str().unwrap();
 
-                cached_img_path.push(cached_art_name);
+                let mut thumnail_cached_path = image_cache_path.clone();
+                thumnail_cached_path.push("thumnails");
+                create_dir_all(&thumnail_cached_path).unwrap();
+                thumnail_cached_path.push(&cached_art_name);
 
-                // Write to the cached art, if it doesn't already exist
-                if !cached_img_path.exists() {
-                    println!(
-                        "Writing image file for song '{}' to '{:?}'",
-                        &song.tags.title,
-                        cached_img_path.clone()
-                    );
-                    // img.decode().unwrap().save(&cached_img_path).unwrap();
-                    img.decode()
-                        .unwrap()
-                        .thumbnail(50, 50)
-                        .save(&cached_img_path)
-                        .unwrap();
+                let mut full_cached_path = image_cache_path.clone();
+                full_cached_path.push("full");
+                create_dir_all(&full_cached_path).unwrap();
+                full_cached_path.push(&cached_art_name);
+
+                let mut midsize_cached_path = image_cache_path;
+                midsize_cached_path.push("midsize");
+                create_dir_all(&midsize_cached_path).unwrap();
+                midsize_cached_path.push(&cached_art_name);
+
+                if !full_cached_path.exists() {
+                    println!("{:?}", &full_cached_path);
+                    fs::copy(&folder_art.path, &full_cached_path).unwrap();
+                }
+
+                if !thumnail_cached_path.exists() || !midsize_cached_path.exists() {
+                    let decoded_img = img.decode().unwrap();
+
+                    if !thumnail_cached_path.exists() {
+                        decoded_img
+                            .clone()
+                            .thumbnail(50, 50)
+                            .save(&thumnail_cached_path)
+                            .unwrap();
+                    }
+
+                    if !midsize_cached_path.exists() {
+                        decoded_img
+                            .resize(400, 400, image::imageops::FilterType::CatmullRom)
+                            .save(&midsize_cached_path)
+                            .unwrap();
+                    }
                 }
 
                 Some(Artwork {
-                    full_res_art: cached_img_path,
-                    thumb_art: PathBuf::from("tmp"),
-                    art_400: PathBuf::from("tmp"),
+                    full_res_art: full_cached_path,
+                    thumb_art: thumnail_cached_path,
+                    art_400: midsize_cached_path,
                 })
             }
             None => None,

@@ -14,7 +14,7 @@ export default function SongListItem(
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   console.log(song)
-  const imgUrl = convertFileSrc(song.artwork ? song.artwork.fullResArt : "");
+  const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
 
   console.log(song);
   console.log(song.id)

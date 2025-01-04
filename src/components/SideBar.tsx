@@ -19,7 +19,7 @@ export default function SideBar() {
     };
   }, []);
 
-  const imgSrc = queue[0]?.artwork?.fullResArt ? convertFileSrc(queue[0]?.artwork?.fullResArt) : undefined;
+  const imgSrc = queue[0]?.artwork?.art400 ? convertFileSrc(queue[0]?.artwork?.art400) : undefined;
 
   return (
     <div className="w-72 bg-neutral-800 h-full flex-grow-0 flex-shrink-0 pr-2 pl-2">
@@ -27,6 +27,7 @@ export default function SideBar() {
         <li className="flex flex-col gap-3 text-white flex-grow overflow-auto">
           {queue.length === 0 && <ul>Empty queue</ul>}
           {queue.map((song, index) => {
+            const imgSrc = queue[0]?.artwork?.thumbArt ? convertFileSrc(queue[0]?.artwork?.thumbArt) : undefined;
             return (
               <ul
                 key={`${song.filePath}-${index}`}

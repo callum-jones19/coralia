@@ -8,7 +8,7 @@ export interface MusicGridAlbumProps {
 export default function MusicGridAlbum(
   { album }: MusicGridAlbumProps,
 ) {
-  const imgSrc = album.artwork?.fullResArt ? convertFileSrc(album.artwork?.fullResArt) : undefined;
+  const imgSrc = album.artwork?.art400 ? convertFileSrc(album.artwork?.art400) : undefined;
 
   return (
     <>
