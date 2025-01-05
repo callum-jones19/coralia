@@ -158,7 +158,9 @@ impl Artwork {
                             .resize(
                                 &decoded_img,
                                 &mut dst_img,
-                                &ResizeOptions::new().resize_alg(ResizeAlg::Nearest),
+                                &ResizeOptions::new().resize_alg(ResizeAlg::Convolution(
+                                    fast_image_resize::FilterType::CatmullRom,
+                                )),
                             )
                             .unwrap();
 
@@ -191,15 +193,17 @@ impl Artwork {
 
                     if !midsize_cached_path.exists() {
                         println!("Generating midsize cached image");
-                        let dest_width = 300;
-                        let dest_height = 300;
+                        let dest_width = 400;
+                        let dest_height = 400;
                         let mut dst_img =
                             Image::new(dest_width, dest_height, decoded_img.pixel_type().unwrap());
                         resizer
                             .resize(
                                 &decoded_img,
                                 &mut dst_img,
-                                &ResizeOptions::new().resize_alg(ResizeAlg::Nearest),
+                                &ResizeOptions::new().resize_alg(ResizeAlg::Convolution(
+                                    fast_image_resize::FilterType::CatmullRom,
+                                )),
                             )
                             .unwrap();
 

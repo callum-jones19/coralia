@@ -1,7 +1,7 @@
 import { dialog } from "@tauri-apps/api";
 import { FormEvent, useEffect, useState } from "react";
 import { CheckSquare, Plus, Square, X } from "react-feather";
-import { redirect, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { addLibraryFolders } from "../api/commands";
 import { readLibFromCache } from "../api/importer";
 
