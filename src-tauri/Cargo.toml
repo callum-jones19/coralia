@@ -17,6 +17,7 @@ tauri-build = { version = "1.5.1", features = [] }
 [dependencies]
 crossbeam = "0.8.2"
 dirs = "5.0.1"
+fast_image_resize = { version = "5.1.0", features = ["image"] }
 glob = "0.3.1"
 image = "0.25.5"
 lofty = "0.20.0"

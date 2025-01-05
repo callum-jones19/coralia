@@ -1,10 +1,15 @@
 use core::panic;
 use std::{
-    fs::{self, create_dir_all},
+    fs::{self, create_dir_all, File},
+    io::BufWriter,
     path::{Path, PathBuf},
 };
 
-use image::{ImageFormat, ImageReader};
+use fast_image_resize::{images::Image, IntoImageView, ResizeAlg, ResizeOptions, Resizer};
+use image::{
+    codecs::{jpeg::JpegEncoder, png::PngEncoder},
+    ImageEncoder, ImageFormat, ImageReader,
+};
 use serde::{Deserialize, Serialize};
 
 use super::song::Song;
@@ -37,9 +42,6 @@ fn find_folder_art(song_path: &Path) -> Option<FolderArt> {
 
         let mut png_full_path = PathBuf::from(&song_folder_path);
         png_full_path.push(png_path);
-
-        println!("Jpg path: {:?}", jpg_full_path.clone());
-        println!("Png path: {:?}", png_full_path.clone());
 
         // Check if a jpg cover exists
         // FIXME exists is error prone
@@ -102,11 +104,17 @@ pub struct Artwork {
 
 impl Artwork {
     pub fn new(song: &Song) -> Option<Self> {
+        println!("============================================");
+        println!(
+            "Generating album art for {}",
+            song.tags.album.as_ref().unwrap()
+        );
         let try_folder_art = find_folder_art(&song.file_path);
 
         let artwork = match try_folder_art {
             Some(folder_art) => {
-                let img = ImageReader::open(&folder_art.path).unwrap();
+                let mut img = ImageReader::open(&folder_art.path).unwrap();
+                let img_format = img.format().unwrap();
 
                 let image_cache_path = get_album_art_folder().unwrap();
                 let cached_art_name = song.id.to_string()
@@ -129,26 +137,97 @@ impl Artwork {
                 midsize_cached_path.push(&cached_art_name);
 
                 if !full_cached_path.exists() {
-                    println!("{:?}", &full_cached_path);
+                    println!("Generating full-size cached image");
                     fs::copy(&folder_art.path, &full_cached_path).unwrap();
                 }
 
                 if !thumnail_cached_path.exists() || !midsize_cached_path.exists() {
+                    println!("Decoding image...");
+                    img.no_limits();
                     let decoded_img = img.decode().unwrap();
+                    println!("Decoded image");
+                    let mut resizer = Resizer::new();
 
                     if !thumnail_cached_path.exists() {
-                        decoded_img
-                            .clone()
-                            .thumbnail(50, 50)
-                            .save(&thumnail_cached_path)
+                        println!("Generating thumbnail cached image");
+                        let dest_width = 50;
+                        let dest_height = 50;
+                        let mut dst_img =
+                            Image::new(dest_width, dest_height, decoded_img.pixel_type().unwrap());
+                        resizer
+                            .resize(
+                                &decoded_img,
+                                &mut dst_img,
+                                &ResizeOptions::new().resize_alg(ResizeAlg::Nearest),
+                            )
                             .unwrap();
+
+                        let midsize_file = File::create(&thumnail_cached_path).unwrap();
+                        let mut result_buf = BufWriter::new(midsize_file);
+                        match img_format {
+                            ImageFormat::Jpeg => {
+                                JpegEncoder::new(&mut result_buf)
+                                    .write_image(
+                                        dst_img.buffer(),
+                                        dest_width,
+                                        dest_height,
+                                        decoded_img.color().into(),
+                                    )
+                                    .unwrap();
+                            }
+                            ImageFormat::Png => {
+                                PngEncoder::new(&mut result_buf)
+                                    .write_image(
+                                        dst_img.buffer(),
+                                        dest_width,
+                                        dest_height,
+                                        decoded_img.color().into(),
+                                    )
+                                    .unwrap();
+                            }
+                            _ => todo!(),
+                        }
                     }
 
                     if !midsize_cached_path.exists() {
-                        decoded_img
-                            .resize(400, 400, image::imageops::FilterType::CatmullRom)
-                            .save(&midsize_cached_path)
+                        println!("Generating midsize cached image");
+                        let dest_width = 300;
+                        let dest_height = 300;
+                        let mut dst_img =
+                            Image::new(dest_width, dest_height, decoded_img.pixel_type().unwrap());
+                        resizer
+                            .resize(
+                                &decoded_img,
+                                &mut dst_img,
+                                &ResizeOptions::new().resize_alg(ResizeAlg::Nearest),
+                            )
                             .unwrap();
+
+                        let midsize_file = File::create(&midsize_cached_path).unwrap();
+                        let mut result_buf = BufWriter::new(midsize_file);
+                        match img_format {
+                            ImageFormat::Jpeg => {
+                                JpegEncoder::new(&mut result_buf)
+                                    .write_image(
+                                        dst_img.buffer(),
+                                        dest_width,
+                                        dest_height,
+                                        decoded_img.color().into(),
+                                    )
+                                    .unwrap();
+                            }
+                            ImageFormat::Png => {
+                                PngEncoder::new(&mut result_buf)
+                                    .write_image(
+                                        dst_img.buffer(),
+                                        dest_width,
+                                        dest_height,
+                                        decoded_img.color().into(),
+                                    )
+                                    .unwrap();
+                            }
+                            _ => todo!(),
+                        }
                     }
                 }
 
