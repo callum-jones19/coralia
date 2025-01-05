@@ -14,7 +14,7 @@
       "protocol": {
         "all": true,
         "asset": true,
-        "assetScope": ["**"]
+        "assetScope": ["**", "$CACHE/**"]
       },
       "path": {
         "all": true
