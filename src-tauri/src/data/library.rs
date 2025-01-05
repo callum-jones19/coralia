@@ -1,11 +1,15 @@
 use core::panic;
 use std::{
     collections::HashMap,
-    fs::{self, read_dir},
+    fs::{self, read_dir, File},
+    io::{BufReader, BufWriter},
     path::PathBuf,
 };
 
+use dirs::cache_dir;
 use serde::{Deserialize, Serialize};
+
+use crate::utils::program_cache_dir;
 
 use super::{album::Album, artwork::Artwork, song::Song};
 
@@ -25,6 +29,20 @@ impl Library {
             root_dirs: Vec::new(),
             songs: empty_songs,
             albums: empty_albums,
+        }
+    }
+
+    pub fn get_library_from_cache() -> Option<Self> {
+        let mut library_cached_path = program_cache_dir().unwrap();
+        library_cached_path.push("cached_library");
+        let tmp = File::open(library_cached_path);
+        match tmp {
+            Ok(lib_file) => {
+                let reader = BufReader::new(lib_file);
+                let cached_lib = serde_json::from_reader(reader).unwrap();
+                Some(cached_lib)
+            }
+            Err(_) => None,
         }
     }
 
@@ -94,18 +112,24 @@ impl Library {
 
             album.artwork = artwork.clone();
 
-            match artwork {
-                Some(a) => {
-                    for album_song_id in &album.album_songs {
-                        let s = self.songs.get_mut(&album_song_id).unwrap();
-                        s.artwork = Some(a.clone());
-                    }
+            if let Some(a) = artwork {
+                for album_song_id in &album.album_songs {
+                    let s = self.songs.get_mut(album_song_id).unwrap();
+                    s.artwork = Some(a.clone());
                 }
-                None => {}
             }
         }
 
         self.albums = albums;
+    }
+
+    pub fn save_library_to_cache(&self) {
+        println!("Saving library to cache");
+        let mut library_cached_path = program_cache_dir().unwrap();
+        library_cached_path.push("cached_library");
+        let cached_lib_f = File::create(library_cached_path).unwrap();
+        let out_stream = BufWriter::new(cached_lib_f);
+        serde_json::to_writer(out_stream, self).unwrap();
     }
 
     pub fn get_all_songs_unordered(&self) -> Vec<Song> {

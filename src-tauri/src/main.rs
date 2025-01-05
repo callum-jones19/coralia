@@ -17,6 +17,7 @@ use tauri::{AppHandle, Manager, State};
 
 mod data;
 mod player;
+mod utils;
 
 enum PlayerCommand {
     EmptyAndPlay(Box<Song>),
@@ -195,6 +196,8 @@ async fn add_library_directories(
     state.library.add_new_folders(root_dirs);
     state.library.scan_library_songs();
     state.library.scan_library_albums();
+
+    state.library.save_library_to_cache();
 
     Ok(())
 }
