@@ -1,8 +1,9 @@
 import { dialog } from "@tauri-apps/api";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { CheckSquare, Plus, Square, X } from "react-feather";
-import { useNavigate } from "react-router";
+import { redirect, useNavigate } from "react-router";
 import { addLibraryFolders } from "../api/commands";
+import { readLibFromCache } from "../api/importer";
 
 interface DirectoryListItemProps {
   path: string;
@@ -13,17 +14,12 @@ interface DirectoryListItemProps {
 function DirectoryListItem(
   { path, onClickRemove, index }: DirectoryListItemProps,
 ) {
-  const [isHovering, setIsHovering] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(true);
-
-  console.log(isHovering);
 
   return (
     <>
       <div
         className="w-full flex flex-row items-center justify-between  rounded-lg h-10"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
       >
         <div className="flex flex-row items-center flex-grow basis-1/2 text-nowrap overflow-hidden">
           {false
@@ -62,7 +58,25 @@ function DirectoryListItem(
 
 export default function OnboardingScreen() {
   const [paths, setPaths] = useState<string[]>([]);
+  const [isCheckingCache, setIsCheckingCache] = useState<boolean>(true);
+  const [cachedLibExists, setCachedLibExists] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    readLibFromCache()
+      .then(libExists=> {
+        console.log(libExists);
+        setIsCheckingCache(false);
+        if (libExists) {
+          setCachedLibExists(true);
+          const t = navigate("/home");
+          if (t) {
+            t.catch(e => console.error(e));
+          }
+        }
+      })
+      .catch(e => console.log(e));
+  }, [navigate]);
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -91,7 +105,7 @@ export default function OnboardingScreen() {
 
   return (
     <div className="h-screen flex flex-col justify-center bg-neutral-400">
-      <form
+      {!isCheckingCache && !cachedLibExists && <form
         className="bg-white shadow-md text-neutral-950 w-2/3 m-auto h-1/2 p-10 rounded-xl flex flex-col gap-3 justify-between"
         onSubmit={handleFormSubmit}
       >
@@ -142,7 +156,7 @@ export default function OnboardingScreen() {
             Submit
           </button>
         </div>
-      </form>
+      </form>}
     </div>
   );
 }

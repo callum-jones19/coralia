@@ -181,6 +181,7 @@ fn main() {
             seek_current_song,
             remove_song_from_queue,
             get_player_state,
+            load_library_from_cache,
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -200,6 +201,19 @@ async fn add_library_directories(
     state.library.save_library_to_cache();
 
     Ok(())
+}
+
+#[tauri::command]
+async fn load_library_from_cache(state_mutex: State<'_, Mutex<AppState>>) -> Result<bool, ()> {
+    let mut state = state_mutex.lock().unwrap();
+    let lib = Library::get_library_from_cache();
+    match lib {
+        Some(saved_lib) => {
+            state.library = saved_lib;
+            Ok(true)
+        }
+        None => return Ok(false),
+    }
 }
 
 #[tauri::command]

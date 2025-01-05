@@ -12,3 +12,12 @@ export const getLibraryAlbums = async () => {
 export const getPlayerState = async () => {
   return invoke<CachedPlayerState>("get_player_state", {});
 };
+
+export const readLibFromCache = () => {
+  let res = invoke<boolean>("load_library_from_cache")
+    .then(result => result)
+    .catch(e => console.error(e))
+
+    return res;
+}
+

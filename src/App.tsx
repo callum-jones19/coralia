@@ -6,6 +6,7 @@ import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 
 export default function App() {
+
   return (
     <>
       <BrowserRouter>
