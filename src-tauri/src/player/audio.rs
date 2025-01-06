@@ -1,3 +1,4 @@
+use core::panic;
 use std::{
     collections::VecDeque,
     fs::File,
@@ -12,6 +13,7 @@ use std::{
 };
 
 use rodio::{
+    decoder::DecoderError,
     source::{EmptyCallback, SeekError},
     Decoder, OutputStream, OutputStreamHandle, Sink, Source,
 };
@@ -34,10 +36,13 @@ fn open_song_into_sink(
     sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
     song: &Song,
     song_end_tx: &Sender<()>,
-) {
+) -> Result<(), DecoderError> {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
-    let song_source = Decoder::new(song_file).unwrap();
+    let song_source = match Decoder::new(song_file) {
+        Ok(src) => src,
+        Err(e) => return Err(e),
+    };
 
     let skip: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
     let skip_inner = skip.clone();
@@ -65,6 +70,7 @@ fn open_song_into_sink(
     // Append the song and its end callback signaler into the queue
     sink.append(controlled);
     sink.append(callback_source);
+    Ok(())
 }
 
 /// Sleep on this function until woken up on the given mcsp channel.
@@ -95,17 +101,23 @@ fn handle_sink_song_end(
             song_queue_locked.pop_front();
             sink_songs_ctrls_locked.pop_front();
 
-            // Signal to the Player Event System that a song has ended
-            let new_queue = song_queue_locked.clone();
-            state_update_tx
-                .send(PlayerStateUpdate::SongEnd(new_queue))
-                .unwrap();
-
             // Do we need to pull a new song into the sink from the
             // queue?
             if let Some(s) = song_queue_locked.get(2) {
                 let sink_songs_ctrl2 = Arc::clone(&sink_songs_ctrl);
-                open_song_into_sink(&mut sink_locked, sink_songs_ctrl2, s, &sink_song_end_tx);
+                let open_status =
+                    open_song_into_sink(&mut sink_locked, sink_songs_ctrl2, s, &sink_song_end_tx);
+                match open_status {
+                    Ok(_) => {}
+                    Err(_) => {
+                        println!(
+                            "Removing song {} from queue - could not decode into sink",
+                            &s.tags.title
+                        );
+                        // Remove the song from the Song queue
+                        song_queue_locked.remove(2);
+                    }
+                }
             }
 
             if song_queue_locked.len() == 0 {
@@ -115,6 +127,12 @@ fn handle_sink_song_end(
                     .send(PlayerStateUpdate::SongPause(pos))
                     .unwrap();
             }
+
+            // Signal to the Player Event System that a song has ended
+            let new_queue = song_queue_locked.clone();
+            state_update_tx
+                .send(PlayerStateUpdate::SongEnd(new_queue))
+                .unwrap();
         }
     }
 }
@@ -226,7 +244,7 @@ impl Player {
     }
 
     /// Take a Song struct and open it manually into the sink
-    fn song_into_sink(&mut self, song: &Song) {
+    fn song_into_sink(&mut self, song: &Song) -> Result<(), DecoderError> {
         let mut sink = self.audio_sink.lock().unwrap();
         let sink_songs_ctrls_2 = Arc::clone(&self.sink_songs_controls);
         open_song_into_sink(
@@ -234,7 +252,8 @@ impl Player {
             sink_songs_ctrls_2,
             song,
             &self.player_event_tx.clone(),
-        );
+        )?;
+        Ok(())
     }
 
     /// Gets number of actual songs in the sink, ignoring non-song sources
@@ -251,21 +270,36 @@ impl Player {
         // instantly removed from the sink, or if it waits until it gets to
         // it and then does it. This will influence the size calculation.
 
-        let updated_song_queue = {
-            let mut songs_queue_locked = self.songs_queue.lock().unwrap();
-            songs_queue_locked.push_back(song.clone());
-            songs_queue_locked.clone()
-        };
-
         // The sink should have at most 3 song files open in it at any given time.
         // If it is full, we just leave the song in the file queue, and then
         // will pull more into the sink as other songs finish playing.
+
+        // Should not add to queue if tried to open into sink and failed
+        // due to decode error.
+        let mut should_add_to_queue = true;
         if self.number_songs_in_sink() < 3 {
-            self.song_into_sink(song);
+            let added_successfully = match self.song_into_sink(song) {
+                Ok(_) => true,
+                Err(_) => {
+                    println!(
+                        "Skipping adding song {} to queue - could not decode",
+                        &song.tags.title
+                    );
+                    false
+                }
+            };
+            should_add_to_queue = added_successfully;
         }
 
-        let queue_change_state = PlayerStateUpdate::QueueUpdate(updated_song_queue);
-        self.state_update_tx.send(queue_change_state).unwrap();
+        {
+            let mut songs_queue_locked = self.songs_queue.lock().unwrap();
+            if should_add_to_queue {
+                songs_queue_locked.push_back(song.clone());
+            }
+            let queue_change_state = PlayerStateUpdate::QueueUpdate(songs_queue_locked.clone());
+            self.state_update_tx.send(queue_change_state).unwrap();
+        };
+
         self.play();
     }
 
