@@ -52,7 +52,7 @@ export default function SongListItem(
                   <Play size="1em" color="white" />
                 </button>
                 <button
-                  className="p-2 rounded-full"
+                  className="p-1 h-fit w-fit rounded-full hover:bg-neutral-400 self-center"
                   onClick={() => enqueueSongBackend(song)}
                 >
                   <ChevronsRight color="black" size="1em" />
