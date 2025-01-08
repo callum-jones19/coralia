@@ -35,7 +35,7 @@ export default function SongListItem(
           alt="thumb art"
           className="rounded-sm"
         />
-        <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2] outline-green-800 outline-2 outline">
+        <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2]">
           {!isHovering
             && (
               <p className="w-fit">
