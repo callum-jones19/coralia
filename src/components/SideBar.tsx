@@ -56,6 +56,9 @@ export default function SideBar() {
         <Link to="/home/albums" className="bg-white rounded-sm text-center">
           Albums
         </Link>
+        <Link to="/settings" className="bg-white rounded-sm text-center">
+          Settings
+        </Link>
         <div className="flex flex-col gap-3">
           {imgSrc && (
             <img

@@ -185,6 +185,7 @@ fn main() {
             get_player_state,
             load_library_from_cache,
             get_library_songs_sorted,
+            clear_library_and_cache,
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -207,6 +208,14 @@ async fn add_library_directories(
 }
 
 #[tauri::command]
+async fn clear_library_and_cache(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+    let mut state = state_mutex.lock().unwrap();
+    state.library.clear_library();
+
+    Ok(())
+}
+
+#[tauri::command]
 async fn load_library_from_cache(state_mutex: State<'_, Mutex<AppState>>) -> Result<bool, ()> {
     let mut state = state_mutex.lock().unwrap();
     let lib = Library::get_library_from_cache();
@@ -215,7 +224,7 @@ async fn load_library_from_cache(state_mutex: State<'_, Mutex<AppState>>) -> Res
             state.library = saved_lib;
             Ok(true)
         }
-        None => return Ok(false),
+        None => Ok(false),
     }
 }
 

@@ -46,6 +46,33 @@ impl Library {
         }
     }
 
+    fn wipe_cache(&self) -> Result<(), String> {
+        let base_program_dir = program_cache_dir().unwrap();
+        let mut library_cache_path = base_program_dir.clone();
+        library_cache_path.push("cached_library");
+        let remove_cache_res = fs::remove_file(library_cache_path);
+        if let Err(e) = remove_cache_res {
+            return Err(e.to_string());
+        }
+
+        let mut art_cache = base_program_dir;
+        art_cache.push("AlbumArtwork");
+        let remove_art_res = fs::remove_dir_all(art_cache);
+        if let Err(e) = remove_art_res {
+            return Err(e.to_string());
+        }
+
+        Ok(())
+    }
+
+    /// Clear the library of all data, and wipe all data cached to the disk
+    pub fn clear_library(&mut self) {
+        self.root_dirs.clear();
+        self.songs.clear();
+        self.albums.clear();
+        self.wipe_cache().unwrap();
+    }
+
     pub fn add_new_folders(&mut self, mut folders: Vec<PathBuf>) {
         self.root_dirs.append(&mut folders);
     }
