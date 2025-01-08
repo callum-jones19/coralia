@@ -1,6 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
-import { ChevronRight, Play } from "react-feather";
+import { ChevronsRight, Play } from "react-feather";
 import { clearAndPlayBackend, enqueueSongBackend } from "../api/commands";
 import { Song } from "../types";
 
@@ -35,7 +35,7 @@ export default function SongListItem(
           alt="thumb art"
           className="rounded-sm"
         />
-        <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2]">
+        <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2] outline-green-800 outline-2 outline">
           {!isHovering
             && (
               <p className="w-fit">
@@ -44,12 +44,20 @@ export default function SongListItem(
             )}
           {isHovering
             && (
-              <button
-                className="p-2 bg-neutral-800 rounded-full"
-                onClick={() => clearAndPlayBackend(song)}
-              >
-                <Play size="1em" color="white" />
-              </button>
+              <div className="flex flex-row gap-1">
+                <button
+                  className="p-2 bg-neutral-800 rounded-full"
+                  onClick={() => clearAndPlayBackend(song)}
+                >
+                  <Play size="1em" color="white" />
+                </button>
+                <button
+                  className="p-2 rounded-full"
+                  onClick={() => enqueueSongBackend(song)}
+                >
+                  <ChevronsRight color="black" size="1em" />
+                </button>
+              </div>
             )}
         </div>
         <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex flex-row items-center gap-1">
@@ -78,12 +86,6 @@ export default function SongListItem(
         >
           {song.tags.albumArtist}
         </p>
-        {isHovering && <button
-          className="p-2 bg-neutral-800 rounded-full"
-          onClick={() => enqueueSongBackend(song)}
-        >
-          <ChevronRight size="1em" color="white" />
-        </button>}
       </div>
     </div>
   );

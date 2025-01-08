@@ -30,8 +30,8 @@ export default function SideBar() {
         <li className="flex flex-col gap-3 text-white flex-grow overflow-auto">
           {queue.length === 0 && <ul>Empty queue</ul>}
           {queue.map((song, index) => {
-            const imgSrc = queue[0]?.artwork?.thumbArt
-              ? convertFileSrc(queue[0]?.artwork?.thumbArt)
+            const queueImgSrc = song.artwork?.thumbArt
+              ? convertFileSrc(song.artwork?.thumbArt)
               : undefined;
             return (
               <ul
@@ -42,7 +42,7 @@ export default function SideBar() {
                 {index !== 0 && <p>{index}.</p>}
                 <img
                   alt="album art"
-                  src={imgSrc}
+                  src={queueImgSrc}
                   className="w-6 aspect-square"
                 />
                 <p>{song.tags.title}</p>
