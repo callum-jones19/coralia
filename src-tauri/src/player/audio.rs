@@ -143,7 +143,7 @@ pub enum PlayerStateUpdate {
     SongEnd(VecDeque<Song>),
     SongPlay(Duration),
     SongPause(Duration),
-    QueueUpdate(VecDeque<Song>),
+    QueueUpdate(VecDeque<Song>, Duration),
 }
 
 /// Stores a snapshot of the player state at a given moment
@@ -293,10 +293,14 @@ impl Player {
 
         {
             let mut songs_queue_locked = self.songs_queue.lock().unwrap();
+            let audio_sink_locked = self.audio_sink.lock().unwrap();
             if should_add_to_queue {
                 songs_queue_locked.push_back(song.clone());
             }
-            let queue_change_state = PlayerStateUpdate::QueueUpdate(songs_queue_locked.clone());
+            let queue_change_state = PlayerStateUpdate::QueueUpdate(
+                songs_queue_locked.clone(),
+                audio_sink_locked.get_pos(),
+            );
             self.state_update_tx.send(queue_change_state).unwrap();
         };
 
@@ -347,6 +351,7 @@ impl Player {
     /// If a song does exist, return the Song that was removed.
     pub fn remove_song_from_queue(&mut self, song_index: usize) -> Option<Song> {
         let mut song_queue = self.songs_queue.lock().unwrap();
+        let sink = self.audio_sink.lock().unwrap();
 
         let skipped_song = song_queue.remove(song_index);
 
@@ -360,7 +365,8 @@ impl Player {
         }
 
         if skipped_song.is_some() {
-            let queue_change_state = PlayerStateUpdate::QueueUpdate(song_queue.clone());
+            let queue_change_state =
+                PlayerStateUpdate::QueueUpdate(song_queue.clone(), sink.get_pos());
             self.state_update_tx.send(queue_change_state).unwrap();
         }
 

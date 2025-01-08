@@ -5,6 +5,7 @@ import { getLibrarySongs } from "../api/importer";
 import { Song } from "../types";
 import SongListItem from "./SongListItem";
 import { listen } from "@tauri-apps/api/event";
+import { Duration } from "@tauri-apps/api/http";
 
 interface SongListData {
   songs: Song[];
@@ -39,21 +40,21 @@ export default function SongList() {
       })
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<Song[]>("queue-change", e => {
+    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
       console.log("queue changed");
 
-      const newQueue = e.payload;
+      const newQueue = e.payload[0];
       setQueue(newQueue);
     });
 
     return () => {
       unlistenQueue.then(f => f).catch(e => console.log(e));
     }
-    
+
   }, []);
 
   const data: SongListData = {
-    currentlyPlayingId: queue[0] ? queue[0].id : null,
+    currentlyPlayingId: queue[0] ? queue[0].id : undefined,
     songs: songs
   }
 

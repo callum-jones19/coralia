@@ -56,6 +56,24 @@ export default function Seekbar() {
       },
     );
 
+    const eventPauseRes = listen<SongInfo>("is-paused", (e) => {
+      const { paused, position } = e.payload;
+      // Remove an interval that already existed.
+      updateSeekbarPos(position, paused);
+    })
+      .catch(e => console.error(e));
+
+    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
+      const newQueue = e.payload[0];
+      const syncedSongPos = e.payload[1];
+      console.log(newQueue);
+      setCurrentSong(newQueue[0]);
+      setSongPos(syncedSongPos.secs + (syncedSongPos.nanos / 1000000000))
+    });
+
+
+
+
     getPlayerState()
       .then(playerState => {
         setSongPos(
@@ -73,13 +91,6 @@ export default function Seekbar() {
       })
       .catch(e => console.error(e));
 
-    const eventPauseRes = listen<SongInfo>("is-paused", (e) => {
-      const { paused, position } = e.payload;
-      // Remove an interval that already existed.
-      updateSeekbarPos(position, paused);
-    })
-      .catch(e => console.error(e));
-
     return () => {
       unlistenSongChange
         .then(f => f)
@@ -87,6 +98,10 @@ export default function Seekbar() {
       eventPauseRes
         .then(f => f)
         .catch(e => console.log(e));
+      unlistenQueue
+        .then(f => f)
+        .catch(e => console.log(e));
+
     };
   }, []);
 

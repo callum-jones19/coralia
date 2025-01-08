@@ -14,13 +14,9 @@ export default function SongListItem(
   { song, colored, currentlyPlayingId }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
-  console.log(song);
   const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
 
   const isPlaying = currentlyPlayingId === song.id;
-  console.log(song);
-  console.log(song.id);
-  console.log(song.album);
 
   return (
     <div

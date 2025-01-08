@@ -107,7 +107,9 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     .emit_all("queue-length-change", &new_queue.len())
                     .unwrap();
                 handle.emit_all("song-end", &new_queue.front()).unwrap();
-                handle.emit_all("queue-change", new_queue).unwrap();
+                handle
+                    .emit_all("queue-change", (&new_queue, Some(Duration::ZERO)))
+                    .unwrap();
             }
             PlayerStateUpdate::SongPlay(song_pos) => {
                 let payload = PlayEventData {
@@ -121,18 +123,21 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     paused: true,
                     position: song_pos,
                 };
-                handle.emit_all("is-paused", payload).unwrap();
+                handle
+                    .emit_all::<PlayEventData>("is-paused", payload)
+                    .unwrap();
             }
-            PlayerStateUpdate::QueueUpdate(updated_queue) => {
-                if updated_queue.len() == 1 {
-                    handle
-                        .emit_all("currently-playing-update", &updated_queue.front())
-                        .unwrap();
-                }
+            PlayerStateUpdate::QueueUpdate(updated_queue, current_song_position) => {
                 handle
                     .emit_all("queue-length-change", &updated_queue.len())
                     .unwrap();
-                handle.emit_all("queue-change", updated_queue).unwrap();
+
+                // We want to send both the queue, but also the playback info
+                // of the current song.
+                let queue_change_payload = (updated_queue, current_song_position);
+                handle
+                    .emit_all("queue-change", queue_change_payload)
+                    .unwrap();
             }
         }
     }

@@ -6,6 +6,7 @@ import PlayButtons from "./PlayButtons";
 import Seekbar from "./Seekbar";
 import SongInfoFooter from "./SongInfoFooter";
 import VolumeController from "./VolumeController";
+import { Duration } from "@tauri-apps/api/http";
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
@@ -18,7 +19,7 @@ export default function MusicFooter() {
       .then(initState => setCurrentSong(initState.songsQueue[0]))
       .catch(e => console.error(e));
 
-    const unlistenSongChange = listen<Song | undefined>(
+    const unlistenSongEnd = listen<Song | undefined>(
       "song-end",
       e => {
         const newCurrentSong = e.payload;
@@ -30,11 +31,19 @@ export default function MusicFooter() {
       },
     );
 
+    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
+      const newQueue = e.payload[0];
+      setCurrentSong(newQueue[0]);
+    });
+
     return () => {
-      unlistenSongChange
+      unlistenSongEnd
         .then(f => f)
         .catch(e => console.log(e));
-    };
+      unlistenQueue
+        .then(f => f)
+        .catch(e => console.log(e));
+  };
   }, []);
 
   return (
