@@ -1,7 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
-import { Play } from "react-feather";
-import { clearAndPlayBackend } from "../api/commands";
+import { ChevronRight, Play } from "react-feather";
+import { clearAndPlayBackend, enqueueSongBackend } from "../api/commands";
 import { Song } from "../types";
 
 export interface SongListItemProps {
@@ -78,6 +78,12 @@ export default function SongListItem(
         >
           {song.tags.albumArtist}
         </p>
+        {isHovering && <button
+          className="p-2 bg-neutral-800 rounded-full"
+          onClick={() => enqueueSongBackend(song)}
+        >
+          <ChevronRight size="1em" color="white" />
+        </button>}
       </div>
     </div>
   );
