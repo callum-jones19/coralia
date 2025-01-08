@@ -44,7 +44,7 @@ export default function Seekbar() {
 
   useEffect(() => {
     const unlistenSongChange = listen<Song | undefined>(
-      "currently-playing-update",
+      "song-end",
       e => {
         const newCurrentSong = e.payload;
         if (newCurrentSong) {

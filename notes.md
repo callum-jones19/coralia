@@ -1,33 +1,24 @@
-# Types
+# TODO
 
-Collection
+Order song list/album list responses properly. Have a way so this is synced
+between backend/frontend for easy mass-enqueuing.
 
-- List of songs
-- List of albums
+Fix issue with seeking and starting a new source causing issues with mpa offset. Occurred when playing:
 
-Songs:
+- Raphael’s Final Act
 
-- Path of music file
-- Tags attached to that file
+## Events
 
-Tags:
+Song ends
 
-- Data possibly written in a song's metadata
+- song-end (new playing song)
 
-Album:
+Queue changed
 
-- Title of the album
-- Artwork
-- References to songs in the album
+- queue-change (new queue)
 
-## Album notes
+- queue-length-change (new queue length)
 
-- How does an album know what songs form it?
-  - Collect together every song that shares the same:
-    - Album name &&
-    - album artist
-- Where does an album struct get its data from?
-  - For key, album-wide data (supposedly), get it from the first of the list
-  - Maybe at a later stage, we can add a verifying step, which will alert the
-    user if there was a mismatch between song tags that should be uniform across
-    the album
+Playback state changed
+
+- is-paused (if player is paused or playing).

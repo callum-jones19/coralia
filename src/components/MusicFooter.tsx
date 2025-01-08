@@ -19,7 +19,7 @@ export default function MusicFooter() {
       .catch(e => console.error(e));
 
     const unlistenSongChange = listen<Song | undefined>(
-      "currently-playing-update",
+      "song-end",
       e => {
         const newCurrentSong = e.payload;
         if (newCurrentSong) {

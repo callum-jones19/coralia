@@ -104,12 +104,9 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
         match state_update {
             PlayerStateUpdate::SongEnd(new_queue) => {
                 handle
-                    .emit_all("currently-playing-update", &new_queue.front())
+                    .emit_all("queue-length-change", &new_queue.len())
                     .unwrap();
-                handle
-                    .emit_all("song-end-queue-length", &new_queue.len())
-                    .unwrap();
-                handle.emit_all("song-end", new_queue.clone()).unwrap();
+                handle.emit_all("song-end", &new_queue.front()).unwrap();
                 handle.emit_all("queue-change", new_queue).unwrap();
             }
             PlayerStateUpdate::SongPlay(song_pos) => {

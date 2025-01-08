@@ -21,11 +21,6 @@ export default function PlayButtons() {
       setQueueLen(newQueueLen);
     }).catch(e => console.error(e));
 
-    const unlistenSongEnd = listen<number>("song-end-queue-length", e => {
-      const newQueueLen = e.payload;
-      setQueueLen(newQueueLen);
-    });
-
     getPlayerState()
       .then(playerState => {
         setQueueLen(playerState.songsQueue.length);
@@ -36,7 +31,6 @@ export default function PlayButtons() {
     return () => {
       unlistenPause.then(f => f).catch(e => console.log(e));
       unlistenQueueLen.then(f => f).catch(e => console.log(e));
-      unlistenSongEnd.then(f => f).catch(e => console.log(e));
     };
   }, []);
 
