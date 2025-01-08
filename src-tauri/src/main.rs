@@ -184,6 +184,7 @@ fn main() {
             remove_song_from_queue,
             get_player_state,
             load_library_from_cache,
+            get_library_songs_sorted,
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -320,6 +321,14 @@ async fn seek_current_song(
 async fn get_library_songs(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Song>, ()> {
     let state = state_mutex.lock().unwrap();
     Ok(state.library.get_all_songs_unordered())
+}
+
+#[tauri::command]
+async fn get_library_songs_sorted(
+    state_mutex: State<'_, Mutex<AppState>>,
+) -> Result<Vec<Song>, ()> {
+    let state = state_mutex.lock().unwrap();
+    Ok(state.library.get_all_songs_sorted_album())
 }
 
 #[tauri::command]

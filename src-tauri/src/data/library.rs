@@ -136,6 +136,20 @@ impl Library {
         self.songs.clone().into_values().collect()
     }
 
+    pub fn get_all_songs_sorted_album(&self) -> Vec<Song> {
+        let mut ordered_songs: Vec<Song> = self.songs.clone().into_values().collect();
+        ordered_songs.sort_by(|a, b| {
+            match a.album.cmp(&b.album) {
+                std::cmp::Ordering::Less => return std::cmp::Ordering::Less,
+                std::cmp::Ordering::Equal => {
+                    return a.tags.track_number.cmp(&b.tags.track_number);
+                }
+                std::cmp::Ordering::Greater => return std::cmp::Ordering::Greater,
+            };
+        });
+        ordered_songs
+    }
+
     pub fn get_all_albums(&self) -> Vec<Album> {
         self.albums.clone().into_values().collect()
     }
