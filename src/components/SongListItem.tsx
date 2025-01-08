@@ -7,15 +7,17 @@ import { Song } from "../types";
 export interface SongListItemProps {
   song: Song;
   colored: boolean;
+  currentlyPlayingId: number | undefined;
 }
 
 export default function SongListItem(
-  { song, colored }: SongListItemProps,
+  { song, colored, currentlyPlayingId }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   console.log(song);
   const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
 
+  const isPlaying = currentlyPlayingId === song.id;
   console.log(song);
   console.log(song.id);
   console.log(song.album);
@@ -23,7 +25,7 @@ export default function SongListItem(
   return (
     <div
       className={`flex flex-col h-full ${
-        colored ? "bg-neutral-100" : "bg-white"
+        isPlaying ? "bg-green-400" : colored ? "bg-neutral-100" : "bg-white"
       }`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
