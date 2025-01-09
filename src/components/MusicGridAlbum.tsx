@@ -14,7 +14,7 @@ export default function MusicGridAlbum(
 
   return (
     <>
-      <div className="p-2 h-full shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0">
+      <div className="p-2 w-full shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0">
         <img
           loading="lazy"
           src={imgSrc}

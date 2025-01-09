@@ -1,7 +1,32 @@
-import { useEffect, useState } from "react";
+import { CSSProperties, memo, useEffect, useState } from "react";
 import { getLibraryAlbums } from "../api/importer";
 import { Album } from "../types";
+import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import MusicGridAlbum from "./MusicGridAlbum";
+import { areEqual, FixedSizeGrid } from "react-window";
+
+
+interface RowProps {
+  data: Album[];
+  columnIndex: number;
+  rowIndex: number;
+  style: CSSProperties;
+}
+
+const Cell = memo(({ data, columnIndex, rowIndex, style }: RowProps) => {
+  console.log(data);
+  const albumIndex = (rowIndex * 4) + columnIndex;
+  const album = data[albumIndex];
+
+  return (
+    <div style={style}>
+      <MusicGridAlbum album={album} />
+      {/* <p>Row: {rowIndex} Column: {columnIndex}</p>
+      <p>AlbumIndex: {albumIndex}</p> */}
+    </div>
+  );
+}, areEqual);
+Cell.displayName = "AlbumRow";
 
 export default function MusicGrid() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -14,26 +39,30 @@ export default function MusicGrid() {
 
   return (
     <>
-      {albums.length > 0 && (
-        <div className="w-full h-full grid gap-4 bg-slate-50 p-3 auto-rows-min sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 overflow-auto">
-          {albums.map(album => {
-            return (
-              <MusicGridAlbum
-                key={album.id}
-                album={album}
-              />
-            );
-          })}
+      {albums.length > 0 &&
+        <ReactVirtualizedAutoSizer>
+          {({ height, width }) => (
+            <FixedSizeGrid
+              columnCount={4}
+              rowCount={albums.length / 4}
+              height={height}
+              width={width}
+              columnWidth={(width / 4)}
+              rowHeight={(width / 4) + 100}
+              itemData={albums}
+            >
+              {Cell}
+            </FixedSizeGrid>
+          )}
+        </ReactVirtualizedAutoSizer>
+      }
+      {albums.length === 0 &&
+        <div className="h-full w-full flex flex-col justify-center">
+          <p className="w-fit ml-auto mr-auto">
+            <i>No albums detected...</i>
+          </p>
         </div>
-      )}
-      {albums.length === 0
-        && (
-          <div className="h-full w-full flex flex-col justify-center">
-            <p className="w-fit ml-auto mr-auto">
-              <i>Song library empty...</i>
-            </p>
-          </div>
-        )}
+      }
     </>
   );
 }
