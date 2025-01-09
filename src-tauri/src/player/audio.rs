@@ -38,14 +38,18 @@ fn open_song_into_sink(
     song_end_tx: &Sender<()>,
 ) -> Result<(), DecoderError> {
     // Open the file.
+
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
+
     let song_source = match Decoder::new(song_file) {
         Ok(src) => src,
         Err(e) => return Err(e),
     };
 
     let skip: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
+
     let skip_inner = skip.clone();
+
     let controlled = song_source.periodic_access(Duration::from_millis(5), move |src| {
         if skip_inner.load(Ordering::SeqCst) {
             src.stoppable();
@@ -54,11 +58,15 @@ fn open_song_into_sink(
 
     // Add a control for this new source in the sink. It should be index-aligned
     // (ignoring the EmptyCallback elements).
+
+    // It's getting stuck here. Which means BEFORE this is run, the
+    // sink_song_controls are getting locked and not freed.
     let mut sink_song_controls_locked = sink_songs_controls.lock().unwrap();
     sink_song_controls_locked.push_back(skip);
 
     // Create a callback
     let song_end_tx = song_end_tx.clone();
+
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
         println!("Callback running");
         match song_end_tx.send(()) {
@@ -69,7 +77,9 @@ fn open_song_into_sink(
 
     // Append the song and its end callback signaler into the queue
     sink.append(controlled);
+
     sink.append(callback_source);
+
     Ok(())
 }
 
@@ -90,23 +100,29 @@ fn handle_sink_song_end(
 ) {
     loop {
         // Sleep this thread until a song ends
+        println!("Sleeping until a song in the sink ends");
         sink_song_end_rx.recv().unwrap();
-
+        println!("Sink song end receiver received signal!");
         {
+            let sink_songs_ctrl2 = Arc::clone(&sink_songs_ctrl);
+
             let mut song_queue_locked = song_queue.lock().unwrap();
-            let mut sink_songs_ctrls_locked = sink_songs_ctrl.lock().unwrap();
             let mut sink_locked = sink.lock().unwrap();
 
-            // Pop the old song out of the queue
-            song_queue_locked.pop_front();
-            sink_songs_ctrls_locked.pop_front();
+            {
+                // Pop the old song out of the queue
+                let mut sink_songs_ctrls_locked = sink_songs_ctrl.lock().unwrap();
+                song_queue_locked.pop_front();
+                sink_songs_ctrls_locked.pop_front();
+            }
 
             // Do we need to pull a new song into the sink from the
             // queue?
+            // FIXME something is grabbing the lock in here
             if let Some(s) = song_queue_locked.get(2) {
-                let sink_songs_ctrl2 = Arc::clone(&sink_songs_ctrl);
                 let open_status =
                     open_song_into_sink(&mut sink_locked, sink_songs_ctrl2, s, &sink_song_end_tx);
+
                 match open_status {
                     Ok(_) => {}
                     Err(_) => {
@@ -122,7 +138,9 @@ fn handle_sink_song_end(
 
             if song_queue_locked.len() == 0 {
                 sink_locked.pause();
+
                 let pos = sink_locked.get_pos();
+
                 state_update_tx
                     .send(PlayerStateUpdate::SongPause(pos))
                     .unwrap();
@@ -130,6 +148,7 @@ fn handle_sink_song_end(
 
             // Signal to the Player Event System that a song has ended
             let new_queue = song_queue_locked.clone();
+
             state_update_tx
                 .send(PlayerStateUpdate::SongEnd(new_queue))
                 .unwrap();
@@ -278,7 +297,7 @@ impl Player {
         // due to decode error.
         let mut should_add_to_queue = true;
         if self.number_songs_in_sink() < 3 {
-            let added_successfully = match self.song_into_sink(song) {
+            let added_successfully = match &self.song_into_sink(song) {
                 Ok(_) => true,
                 Err(_) => {
                     println!(
@@ -291,6 +310,7 @@ impl Player {
             should_add_to_queue = added_successfully;
         }
 
+        println!("fuck2");
         {
             let mut songs_queue_locked = self.songs_queue.lock().unwrap();
             let audio_sink_locked = self.audio_sink.lock().unwrap();
@@ -299,10 +319,11 @@ impl Player {
             }
             let queue_change_state = PlayerStateUpdate::QueueUpdate(
                 songs_queue_locked.clone(),
-                audio_sink_locked.get_pos(),
+                audio_sink_locked.get_pos().clone(),
             );
             self.state_update_tx.send(queue_change_state).unwrap();
         };
+        println!("fuck3");
 
         self.play();
     }
@@ -343,7 +364,9 @@ impl Player {
 
     /// Skip the currently playing source in the sink
     pub fn skip_current_song(&mut self) {
+        println!("testsetsts");
         self.audio_sink.lock().unwrap().skip_one();
+        println!("sdfjnkkjgh");
     }
 
     /// Remove a song from the queue given its index.

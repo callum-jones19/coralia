@@ -233,6 +233,7 @@ async fn load_library_from_cache(state_mutex: State<'_, Mutex<AppState>>) -> Res
 #[tauri::command]
 async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
     println!("Received tauri command: enqueue_song");
+    println!("=================================================");
 
     let state = state_mutex.lock().unwrap();
     state
@@ -355,11 +356,9 @@ async fn get_album_songs(
     let song_ids = &album.album_songs;
     let songs: Result<Vec<Song>, ()> = song_ids
         .iter()
-        .map(|song_id| {
-            match state.library.songs.get(song_id) {
-                Some(song) => Ok(song.clone()),
-                None => Err(()),
-            }
+        .map(|song_id| match state.library.songs.get(song_id) {
+            Some(song) => Ok(song.clone()),
+            None => Err(()),
         })
         .collect();
 
@@ -367,7 +366,7 @@ async fn get_album_songs(
         Ok(mut songs) => {
             songs.sort_by(|a, b| a.tags.track_number.cmp(&b.tags.track_number));
             Ok(songs)
-        },
+        }
         Err(_) => Err(()),
     };
 
@@ -375,10 +374,7 @@ async fn get_album_songs(
 }
 
 #[tauri::command]
-async fn get_album(
-    state_mutex: State<'_, Mutex<AppState>>,
-    album_id: usize,
-) -> Result<Album, ()> {
+async fn get_album(state_mutex: State<'_, Mutex<AppState>>, album_id: usize) -> Result<Album, ()> {
     let state = state_mutex.lock().unwrap();
     match state.library.albums.get(&album_id) {
         Some(album) => Ok(album.clone()),

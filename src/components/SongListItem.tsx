@@ -8,10 +8,11 @@ export interface SongListItemProps {
   song: Song;
   colored: boolean;
   currentlyPlayingId: number | undefined;
+  showImage?: boolean;
 }
 
 export default function SongListItem(
-  { song, colored, currentlyPlayingId }: SongListItemProps,
+  { song, colored, currentlyPlayingId,showImage }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
@@ -20,21 +21,21 @@ export default function SongListItem(
 
   return (
     <li
-      className={`flex flex-col h-full ${
+      className={`flex flex-col h-14 ${
         isPlaying ? "bg-green-400" : colored ? "bg-neutral-100" : "bg-white"
       }`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       <div className="hover:bg-neutral-300 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow">
-        <img
+        {showImage && <img
           loading="lazy"
           src={imgUrl}
           width={35}
           height={35}
           alt="thumb art"
           className="rounded-sm"
-        />
+        />}
         <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2]">
           {!isHovering
             && (

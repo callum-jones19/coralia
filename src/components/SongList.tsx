@@ -23,7 +23,12 @@ const Row = memo(({ data, index, style }: RowProps) => {
 
   return (
     <div style={style}>
-      <SongListItem song={song} colored={index % 2 === 0} currentlyPlayingId={data.currentlyPlayingId} />
+      <SongListItem
+        song={song}
+        colored={index % 2 === 0}
+        currentlyPlayingId={data.currentlyPlayingId}
+        showImage
+      />
     </div>
   );
 }, areEqual);
