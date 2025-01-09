@@ -4,7 +4,7 @@ import { Album, Song } from "../types";
 import { Link, useParams } from "react-router";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import SongListItem from "./SongListItem";
-import { ArrowLeft, ChevronLeft, Home } from "react-feather";
+import { ChevronLeft } from "react-feather";
 import { enqueueSongsBackend } from "../api/commands";
 
 export type AlbumViewParams =  string;
