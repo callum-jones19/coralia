@@ -5,11 +5,16 @@ import { Volume1 } from "react-feather";
 import { Link } from "react-router";
 import { Song } from "../types";
 import { Duration } from "@tauri-apps/api/http";
+import { getPlayerState } from "../api/importer";
 
 export default function SideBar() {
   const [queue, setQueue] = useState<Song[]>([]);
 
   useEffect(() => {
+    getPlayerState()
+      .then(cachedState => setQueue(cachedState.songsQueue))
+      .catch(e => console.error(e));
+
     const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
       const newQueue = e.payload[0];
       setQueue(newQueue);

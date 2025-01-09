@@ -29,6 +29,7 @@ enum PlayerCommand {
     RemoveAtIndex(usize),
     TrySeek(Duration),
     GetPlayerState(Sender<CachedPlayerState>),
+    Clear,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -91,6 +92,9 @@ fn create_and_run_audio_player(
             PlayerCommand::GetPlayerState(state_rx) => {
                 let cached_state = player.get_current_state();
                 state_rx.send(cached_state).unwrap();
+            }
+            PlayerCommand::Clear => {
+                player.clear();
             }
         }
     }
@@ -188,7 +192,8 @@ fn main() {
             clear_library_and_cache,
             get_album_songs,
             get_album,
-            enqueue_songs
+            enqueue_songs,
+            clear_queue
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -274,6 +279,15 @@ async fn clear_queue_and_play(
         .command_tx
         .send(PlayerCommand::EmptyAndPlay(Box::new(song)))
         .unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn clear_queue(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+    println!("Received tauri command: enqueue_song");
+
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::Clear).unwrap();
     Ok(())
 }
 

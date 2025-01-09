@@ -1,24 +1,42 @@
 import { useEffect, useState } from "react";
-import { getAlbum, getAlbumSongs } from "../api/importer";
+import { getAlbum, getAlbumSongs, getPlayerState } from "../api/importer";
 import { Album, Song } from "../types";
 import { Link, useParams } from "react-router";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import SongListItem from "./SongListItem";
 import { ChevronLeft } from "react-feather";
 import { enqueueSongsBackend } from "../api/commands";
+import { listen } from "@tauri-apps/api/event";
+import { Duration } from "@tauri-apps/api/http";
+import { invoke } from "@tauri-apps/api";
 
 export type AlbumViewParams =  string;
 
 export default function AlbumView() {
   const { albumId } = useParams<AlbumViewParams>();
 
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [album, setAlbum] = useState<Album | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
 
   useEffect(() => {
-    console.log("Album ID updated!");
-    console.log(albumId);
+    getPlayerState()
+      .then(d => setCurrentSong(d.songsQueue[0]))
+      .catch(e => console.error(e));
 
+    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
+      const newQueue = e.payload[0];
+      setCurrentSong(newQueue[0]);
+    });
+
+    return () => {
+      unlistenQueue
+        .then(f => f)
+        .catch(e => console.log(e));
+    }
+  }, []);
+
+  useEffect(() => {
     if (!albumId) return;
 
     const albumIdParsed = parseInt(albumId);
@@ -36,10 +54,6 @@ export default function AlbumView() {
   }, [albumId]);
 
   const albumArtUri = album?.artwork.art400 ? convertFileSrc(album.artwork.art400) : undefined;
-
-  console.log(album);
-  console.log(songs);
-  console.log(`albumArtUri: ${albumArtUri}`);
 
   return (
     <>
@@ -79,7 +93,11 @@ export default function AlbumView() {
               >
                 <button
                   className="bg-gray-950 min-w-20 rounded-full text-white p-1"
-                  onClick={() => enqueueSongsBackend(songs)}
+                  onClick={() => {
+                    invoke("clear_queue", {})
+                      .then(() => enqueueSongsBackend(songs))
+                      .catch(e => console.error(e));
+                  }}
                 >
                   Play
                 </button>
@@ -104,7 +122,12 @@ export default function AlbumView() {
               </div>
             </li>
             {songs.map(song => (
-              <SongListItem key={song.id} song={song} colored={false} currentlyPlayingId={0} />
+              <SongListItem
+                key={song.id}
+                song={song}
+                colored={false}
+                currentlyPlayingId={currentSong?.id}
+              />
             ))}
           </ul>
         </div>

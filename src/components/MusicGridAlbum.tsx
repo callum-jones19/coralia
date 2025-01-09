@@ -3,6 +3,9 @@ import { Album } from "../types";
 import { useNavigate } from "react-router";
 import { Play } from "react-feather";
 import { useState } from "react";
+import { invoke } from "@tauri-apps/api";
+import { enqueueSongsBackend } from "../api/commands";
+import { getAlbumSongs } from "../api/importer";
 
 export interface MusicGridAlbumProps {
   album: Album;
@@ -43,11 +46,24 @@ export default function MusicGridAlbum(
             className="rounded-m rounded-md self-center flex-shrink hover:cursor-pointer"
             onClick={() => navigateToAlbum()}
           />
-          {isHovering && <button
-            className="bg-white p-5 rounded-full absolute bottom-3 right-3 shadow-md"
-          >
-            <Play />
-          </button>}
+          {isHovering &&
+            <button
+              className="bg-white p-5 rounded-full absolute bottom-3 right-3 shadow-md"
+              onClick={() => {
+                const albumSongsReq = getAlbumSongs(album.id);
+                albumSongsReq
+                  .then(songs => {
+                    if (!songs) return Promise.reject();
+                    invoke("clear_queue", {}).catch(e => console.error(e));
+                    return songs;
+                  })
+                  .then(songs => enqueueSongsBackend(songs))
+                  .catch(e => console.error(e));
+              }}
+            >
+              <Play />
+            </button>
+          }
         </div>
         <div className="flex flex-col">
           <button
