@@ -353,17 +353,25 @@ async fn get_album_songs(
         None => return Err(()),
     };
     let song_ids = &album.album_songs;
-    let songs: Result<Vec<Song>, ()> = song_ids.iter().map(|song_id| {
-        match state.library.songs.get(song_id) {
-            Some(song) => Ok(song.clone()),
-            None => Err(()),
-        }
-    }).collect();
+    let songs: Result<Vec<Song>, ()> = song_ids
+        .iter()
+        .map(|song_id| {
+            match state.library.songs.get(song_id) {
+                Some(song) => Ok(song.clone()),
+                None => Err(()),
+            }
+        })
+        .collect();
 
-    match songs {
-        Ok(songs) => Ok(songs),
+    let res = match songs {
+        Ok(mut songs) => {
+            songs.sort_by(|a, b| a.tags.track_number.cmp(&b.tags.track_number));
+            Ok(songs)
+        },
         Err(_) => Err(()),
-    }
+    };
+
+    res
 }
 
 #[tauri::command]
