@@ -19,7 +19,7 @@ export default function SongListItem(
   const isPlaying = currentlyPlayingId === song.id;
 
   return (
-    <div
+    <li
       className={`flex flex-col h-full ${
         isPlaying ? "bg-green-400" : colored ? "bg-neutral-100" : "bg-white"
       }`}
@@ -87,6 +87,6 @@ export default function SongListItem(
           {song.tags.albumArtist}
         </p>
       </div>
-    </div>
+    </li>
   );
 }

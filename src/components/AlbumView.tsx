@@ -3,12 +3,12 @@ import { getAlbum, getAlbumSongs } from "../api/importer";
 import { Album, Song } from "../types";
 import { useParams } from "react-router";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
+import SongListItem from "./SongListItem";
 
 export type AlbumViewParams =  string;
 
 export default function AlbumView() {
   const { albumId } = useParams<AlbumViewParams>();
-
 
   const [album, setAlbum] = useState<Album | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -52,18 +52,18 @@ export default function AlbumView() {
       )}
       {album && songs.length > 0 &&
         <div className="flex flex-col gap-2 min-h-full">
-          <div id="album-header" className="h-fit p-3 flex flex-row gap-3">
+          <div id="album-header" className="bg-neutral-50 h-fit p-3 flex flex-row gap-3">
             <img
               alt="Album Art Image"
               src={albumArtUri}
               height="250px"
               width="250px"
-              className="rounded-md"
+              className="rounded-md shadow-md"
             />
             <div className="flex flex-col justify-between gap-3">
               <div>
-                <p className="font-extrabold text-4xl">{album.title}</p>
-                <p className="italic text-2xl">{album.albumArtist}</p>
+                <p className="font-bold text-4xl">{album.title}</p>
+                <p className="italic text-xl">{album.albumArtist}</p>
               </div>
               <div
                 id="controls"
@@ -86,25 +86,15 @@ export default function AlbumView() {
             className="basis-1 flex-grow-1 p-3"
           >
             <li className="border-b-2">
-              <div className="flex flex-row w-full gap-2 p-2 hover:bg-gray-300">
+              <div className="flex flex-row w-full gap-2 p-2">
                 <p className="flex-grow basis-1/12">#</p>
                 <p className="flex-grow basis-1/2">Title</p>
                 <p className="flex-grow basis-1/2">Genre</p>
               </div>
             </li>
-            {songs.map((song, index) => {
-              return (
-                <li key={song.filePath}>
-                  <div className="flex flex-row w-full gap-2 p-2 hover:bg-gray-300">
-                    <button className="flex-grow basis-1/12 hover:bg-gray-500 text-left">
-                      {index}
-                    </button>
-                    <p className="flex-grow basis-1/2">{song.tags.title}</p>
-                    <p className="flex-grow basis-1/2">{song.tags.genre}</p>
-                  </div>
-                </li>
-              );
-            })}
+            {songs.map(song => (
+              <SongListItem key={song.id} song={song} colored={false} currentlyPlayingId={0} />
+            ))}
           </ul>
         </div>
       }
