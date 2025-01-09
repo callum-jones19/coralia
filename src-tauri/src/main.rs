@@ -11,6 +11,7 @@ use std::{
 };
 
 use data::{album::Album, library::Library, song::Song};
+use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
 use serde::Serialize;
 use tauri::{AppHandle, Manager, State};
@@ -48,52 +49,66 @@ fn create_and_run_audio_player(
     state_update_tx: Sender<PlayerStateUpdate>,
     player_cmd_rx: Receiver<PlayerCommand>,
 ) {
-    println!("Starting player command handler loop");
     let mut player = Player::new(state_update_tx);
 
     loop {
         let command = player_cmd_rx.recv().unwrap();
         match command {
             PlayerCommand::Enqueue(song) => {
+                info!(
+                    "Player Command Handler: Received request to enqueue song {} into the player.",
+                    &song.tags.title
+                );
                 player.add_to_queue(&song);
             }
             PlayerCommand::Play => {
-                println!("Resuming playback");
+                info!("Player Command Handler: Received request to set sink to play.");
                 player.play();
             }
             PlayerCommand::Pause => {
-                println!("Pausing playback");
+                info!("Player Command Handler: Received request to set sink to pause.");
                 player.pause();
             }
             PlayerCommand::SetVolume(vol) => {
                 let clamped_vol = if vol > 100 { 100 } else { vol };
                 let parsed_vol = f32::from(clamped_vol) / 100.0;
-                println!("{}", parsed_vol);
+                info!(
+                    "Player Command Handler: Received request to set change sink volume to {}.",
+                    parsed_vol
+                );
                 player.change_vol(parsed_vol);
             }
             PlayerCommand::SkipOne => {
-                println!("skipping");
+                info!("Player Command Handler: Received request to skip current song");
                 player.skip_current_song();
                 player.play();
             }
             PlayerCommand::EmptyAndPlay(song) => {
+                info!(
+                    "Player Command Handler: Received request to empty sink and play song {}.",
+                    &song.tags.title
+                );
                 player.clear();
                 player.add_to_queue(&song);
             }
             PlayerCommand::TrySeek(duration) => {
+                info!("Player Command Handler: Received request to seek the current audio source to {}.", &duration.as_secs());
                 match player.seek_current_song(duration) {
                     Ok(_) => println!("Seeking song"),
                     Err(_) => println!("Unable to seek current song"),
                 };
             }
             PlayerCommand::RemoveAtIndex(skip_index) => {
+                info!("Player Command Handler: Received request to remove song from queue at index {}.", skip_index);
                 let _ = player.remove_song_from_queue(skip_index);
             }
             PlayerCommand::GetPlayerState(state_rx) => {
+                info!("Player Command Handler: Received request to export the player state.");
                 let cached_state = player.get_current_state();
                 state_rx.send(cached_state).unwrap();
             }
             PlayerCommand::Clear => {
+                info!("Player Command Handler: Received request to clear the player queue.");
                 player.clear();
             }
         }
@@ -101,9 +116,7 @@ fn create_and_run_audio_player(
 }
 
 fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerStateUpdate>) {
-    println!("Starting player state update handler loop");
     loop {
-        println!("State updated!");
         let state_update = player_event_rx.recv().unwrap();
         match state_update {
             PlayerStateUpdate::SongEnd(new_queue) => {
@@ -148,6 +161,8 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
 }
 
 fn main() {
+    env_logger::init();
+
     let tauri_context = tauri::generate_context!();
 
     // Initialise an empty music library, and setup the player command and the
@@ -160,10 +175,12 @@ fn main() {
         .setup(move |app| {
             let handle = app.app_handle();
 
+            info!("Starting async tokio thread to hold the audio player");
             tauri::async_runtime::spawn(async move {
                 create_and_run_audio_player(player_event_tx, player_cmd_rx);
             });
 
+            info!("Starting async tokio thread to respond to music player events");
             tauri::async_runtime::spawn(async move {
                 handle_player_events(handle, player_event_rx);
             });
@@ -238,9 +255,6 @@ async fn load_library_from_cache(state_mutex: State<'_, Mutex<AppState>>) -> Res
 
 #[tauri::command]
 async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
-    println!("Received tauri command: enqueue_song");
-    println!("=================================================");
-
     let state = state_mutex.lock().unwrap();
     state
         .command_tx
@@ -254,9 +268,6 @@ async fn enqueue_songs(
     state_mutex: State<'_, Mutex<AppState>>,
     songs: Vec<Song>,
 ) -> Result<(), ()> {
-    println!("Received tauri command: enqueue_song");
-    println!("=================================================");
-
     let state = state_mutex.lock().unwrap();
     for song in songs {
         state
@@ -272,8 +283,6 @@ async fn clear_queue_and_play(
     state_mutex: State<'_, Mutex<AppState>>,
     song: Song,
 ) -> Result<(), ()> {
-    println!("Received tauri command: enqueue_song");
-
     let state = state_mutex.lock().unwrap();
     state
         .command_tx
@@ -284,8 +293,6 @@ async fn clear_queue_and_play(
 
 #[tauri::command]
 async fn clear_queue(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
-    println!("Received tauri command: enqueue_song");
-
     let state = state_mutex.lock().unwrap();
     state.command_tx.send(PlayerCommand::Clear).unwrap();
     Ok(())
@@ -293,8 +300,6 @@ async fn clear_queue(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> 
 
 #[tauri::command]
 async fn play(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
-    println!("Received tauri command: play");
-
     let state = state_mutex.lock().unwrap();
     state.command_tx.send(PlayerCommand::Play).unwrap();
     Ok(())
@@ -302,8 +307,6 @@ async fn play(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
 
 #[tauri::command]
 async fn pause(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
-    println!("Received tauri command: pause");
-
     let state = state_mutex.lock().unwrap();
     state.command_tx.send(PlayerCommand::Pause).unwrap();
     Ok(())
@@ -311,8 +314,6 @@ async fn pause(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
 
 #[tauri::command]
 async fn set_volume(state_mutex: State<'_, Mutex<AppState>>, new_volume: u8) -> Result<(), ()> {
-    println!("Received tauri command: set_volume, {}", new_volume);
-
     let state = state_mutex.lock().unwrap();
     state
         .command_tx
@@ -323,8 +324,6 @@ async fn set_volume(state_mutex: State<'_, Mutex<AppState>>, new_volume: u8) -> 
 
 #[tauri::command]
 async fn skip_current_song(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
-    println!("Received tauri command: skip song");
-
     let state = state_mutex.lock().unwrap();
     state.command_tx.send(PlayerCommand::SkipOne).unwrap();
     Ok(())
@@ -335,8 +334,6 @@ async fn remove_song_from_queue(
     state_mutex: State<'_, Mutex<AppState>>,
     skip_index: usize,
 ) -> Result<(), ()> {
-    println!("Received tauri command: remove song from queue");
-
     let state = state_mutex.lock().unwrap();
     state
         .command_tx
@@ -350,8 +347,6 @@ async fn seek_current_song(
     state_mutex: State<'_, Mutex<AppState>>,
     seek_duration: Duration,
 ) -> Result<(), ()> {
-    println!("Received tauri command: seek song");
-
     let state = state_mutex.lock().unwrap();
     state
         .command_tx

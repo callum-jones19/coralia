@@ -67,13 +67,11 @@ fn open_song_into_sink(
     // Create a callback
     let song_end_tx = song_end_tx.clone();
 
-    let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
-        println!("Callback running");
-        match song_end_tx.send(()) {
+    let callback_source: EmptyCallback<f32> =
+        EmptyCallback::new(Box::new(move || match song_end_tx.send(()) {
             Ok(_) => println!("Successfully sent song end event"),
             Err(e) => println!("{:?}", e),
-        }
-    }));
+        }));
 
     // Append the song and its end callback signaler into the queue
     sink.append(controlled);
@@ -100,9 +98,7 @@ fn handle_sink_song_end(
 ) {
     loop {
         // Sleep this thread until a song ends
-        println!("Sleeping until a song in the sink ends");
         sink_song_end_rx.recv().unwrap();
-        println!("Sink song end receiver received signal!");
         {
             let sink_songs_ctrl2 = Arc::clone(&sink_songs_ctrl);
 
@@ -310,7 +306,6 @@ impl Player {
             should_add_to_queue = added_successfully;
         }
 
-        println!("fuck2");
         {
             let mut songs_queue_locked = self.songs_queue.lock().unwrap();
             let audio_sink_locked = self.audio_sink.lock().unwrap();
@@ -323,7 +318,6 @@ impl Player {
             );
             self.state_update_tx.send(queue_change_state).unwrap();
         };
-        println!("fuck3");
 
         self.play();
     }
@@ -364,9 +358,7 @@ impl Player {
 
     /// Skip the currently playing source in the sink
     pub fn skip_current_song(&mut self) {
-        println!("testsetsts");
         self.audio_sink.lock().unwrap().skip_one();
-        println!("sdfjnkkjgh");
     }
 
     /// Remove a song from the queue given its index.
