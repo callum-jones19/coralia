@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import SongListItem from "./SongListItem";
 import { ArrowLeft, ChevronLeft, Home } from "react-feather";
+import { enqueueSongsBackend } from "../api/commands";
 
 export type AlbumViewParams =  string;
 
@@ -76,7 +77,10 @@ export default function AlbumView() {
                 id="controls"
                 className="w-full flex flex-row gap-2"
               >
-                <button className="bg-gray-950 min-w-20 rounded-full text-white p-1">
+                <button
+                  className="bg-gray-950 min-w-20 rounded-full text-white p-1"
+                  onClick={() => enqueueSongsBackend(songs)}
+                >
                   Play
                 </button>
                 <button className="bg-gray-950 min-w-20 rounded-full text-white p-1">

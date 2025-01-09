@@ -10,13 +10,16 @@ export const resetLibraryBackend = () => {
 
 export const addLibraryFolders = (folders: string[]) => {
   invoke("add_library_directories", { rootDirs: folders })
-    .then(() => console.log("Added new folders to the library"))
     .catch(e => console.error(e));
 };
 
 export const enqueueSongBackend = (song: Song) => {
   invoke("enqueue_song", { song: song })
-    .then(() => console.log("queued new song"))
+    .catch(e => console.error(e));
+};
+
+export const enqueueSongsBackend = (songs: Song[]) => {
+  invoke("enqueue_songs", { songs: songs })
     .catch(e => console.error(e));
 };
 

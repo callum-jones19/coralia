@@ -188,6 +188,7 @@ fn main() {
             clear_library_and_cache,
             get_album_songs,
             get_album,
+            enqueue_songs
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -240,6 +241,24 @@ async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Re
         .command_tx
         .send(PlayerCommand::Enqueue(Box::new(song)))
         .unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn enqueue_songs(
+    state_mutex: State<'_, Mutex<AppState>>,
+    songs: Vec<Song>,
+) -> Result<(), ()> {
+    println!("Received tauri command: enqueue_song");
+    println!("=================================================");
+
+    let state = state_mutex.lock().unwrap();
+    for song in songs {
+        state
+            .command_tx
+            .send(PlayerCommand::Enqueue(Box::new(song)))
+            .unwrap();
+    }
     Ok(())
 }
 
