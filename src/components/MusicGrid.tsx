@@ -12,17 +12,17 @@ interface RowProps {
   rowIndex: number;
   style: CSSProperties;
 }
+const ALBUMS_PER_ROW = 6;
 
 const Cell = memo(({ data, columnIndex, rowIndex, style }: RowProps) => {
+
   console.log(data);
-  const albumIndex = (rowIndex * 4) + columnIndex;
+  const albumIndex = (rowIndex * ALBUMS_PER_ROW) + columnIndex;
   const album = data[albumIndex];
 
   return (
     <div style={style}>
       <MusicGridAlbum album={album} />
-      {/* <p>Row: {rowIndex} Column: {columnIndex}</p>
-      <p>AlbumIndex: {albumIndex}</p> */}
     </div>
   );
 }, areEqual);
@@ -43,12 +43,12 @@ export default function MusicGrid() {
         <ReactVirtualizedAutoSizer>
           {({ height, width }) => (
             <FixedSizeGrid
-              columnCount={5}
-              rowCount={albums.length / 5}
+              columnCount={ALBUMS_PER_ROW}
+              rowCount={albums.length / ALBUMS_PER_ROW}
               height={height}
               width={width}
-              columnWidth={(width / 5)}
-              rowHeight={(width / 5) + 55}
+              columnWidth={(width / ALBUMS_PER_ROW)}
+              rowHeight={(width / ALBUMS_PER_ROW) + 55}
               itemData={albums}
               overscanRowCount={1}
             >
