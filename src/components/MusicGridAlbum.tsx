@@ -15,33 +15,36 @@ export default function MusicGridAlbum(
 
   const navigate = useNavigate();
 
+  const navigateToAlbum = () => {
+    const t = navigate(`/home/album/${album.id}`);
+    if (t) {
+      t.catch(e => console.error(e));
+    }
+  }
+
   return (
-    <>
-      <div className="p-2 w-full shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0">
+    <div className="p-2 w-full h-full flex flex-col justify-center items-center">
+      <div className="p-2 w-full h-3/4 shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
         <img
           loading="lazy"
           src={imgSrc}
-          width={400}
-          height={400}
+          width={360}
+          height={360}
           alt="album-cover-image"
-          className="mb-3 rounded-m rounded-md"
+          className="rounded-m rounded-md self-center flex-shrink hover:cursor-pointer"
+          onClick={() => navigateToAlbum()}
         />
-        <div className="flex-shrink-0">
+        <div className="flex flex-col">
           <button
             title={album.title}
-            className="font-bold text-l text-center overflow-hidden text-nowrap text-ellipsis hover:underline"
-            onClick={() => {
-              const t = navigate(`/home/album/${album.id}`);
-              if (t) {
-                t.catch(e => console.error(e));
-              }
-            }}
+            className="font-bold text-l text-center overflow-hidden text-nowrap text-ellipsis hover:underline p-1 rounded-md"
+            onClick={() => navigateToAlbum()}
           >
             {album.title}
           </button>
           <p className="text-center text-sm">{album.albumArtist}</p>
         </div>
       </div>
-    </>
+    </div>
   );
 }

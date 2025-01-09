@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { getAlbum, getAlbumSongs } from "../api/importer";
 import { Album, Song } from "../types";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import SongListItem from "./SongListItem";
+import { ArrowLeft, ChevronLeft, Home } from "react-feather";
 
 export type AlbumViewParams =  string;
 
@@ -51,7 +52,13 @@ export default function AlbumView() {
         </>
       )}
       {album && songs.length > 0 &&
-        <div className="flex flex-col gap-2 min-h-full">
+        <div className="flex flex-col min-h-full">
+          <Link
+            className="bg-neutral-300 w-fit p-2 ml-3 mt-2 rounded-md"
+            to="/home/albums"
+          >
+            <ChevronLeft />
+          </Link>
           <div id="album-header" className="bg-neutral-50 h-fit p-3 flex flex-row gap-3">
             <img
               alt="Album Art Image"

@@ -389,7 +389,9 @@ async fn get_album(
 #[tauri::command]
 async fn get_library_albums(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Album>, ()> {
     let state = state_mutex.lock().unwrap();
-    Ok(state.library.get_all_albums())
+    let mut albums = state.library.get_all_albums().clone();
+    albums.sort_by(|a, b| a.title.cmp(&b.title));
+    Ok(albums)
 }
 
 #[tauri::command]

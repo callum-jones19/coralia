@@ -43,13 +43,14 @@ export default function MusicGrid() {
         <ReactVirtualizedAutoSizer>
           {({ height, width }) => (
             <FixedSizeGrid
-              columnCount={4}
-              rowCount={albums.length / 4}
+              columnCount={5}
+              rowCount={albums.length / 5}
               height={height}
               width={width}
-              columnWidth={(width / 4)}
-              rowHeight={(width / 4) + 100}
+              columnWidth={(width / 5)}
+              rowHeight={(width / 5) + 55}
               itemData={albums}
+              overscanRowCount={1}
             >
               {Cell}
             </FixedSizeGrid>
