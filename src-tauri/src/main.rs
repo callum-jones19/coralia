@@ -186,6 +186,8 @@ fn main() {
             load_library_from_cache,
             get_library_songs_sorted,
             clear_library_and_cache,
+            get_album_songs,
+            get_album,
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -338,6 +340,42 @@ async fn get_library_songs_sorted(
 ) -> Result<Vec<Song>, ()> {
     let state = state_mutex.lock().unwrap();
     Ok(state.library.get_all_songs_sorted_album())
+}
+
+#[tauri::command]
+async fn get_album_songs(
+    state_mutex: State<'_, Mutex<AppState>>,
+    album_id: usize,
+) -> Result<Vec<Song>, ()> {
+    let state = state_mutex.lock().unwrap();
+    let album = match state.library.albums.get(&album_id) {
+        Some(album) => album,
+        None => return Err(()),
+    };
+    let song_ids = &album.album_songs;
+    let songs: Result<Vec<Song>, ()> = song_ids.iter().map(|song_id| {
+        match state.library.songs.get(song_id) {
+            Some(song) => Ok(song.clone()),
+            None => Err(()),
+        }
+    }).collect();
+
+    match songs {
+        Ok(songs) => Ok(songs),
+        Err(_) => Err(()),
+    }
+}
+
+#[tauri::command]
+async fn get_album(
+    state_mutex: State<'_, Mutex<AppState>>,
+    album_id: usize,
+) -> Result<Album, ()> {
+    let state = state_mutex.lock().unwrap();
+    match state.library.albums.get(&album_id) {
+        Some(album) => Ok(album.clone()),
+        None => return Err(()),
+    }
 }
 
 #[tauri::command]
