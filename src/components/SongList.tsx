@@ -1,7 +1,7 @@
 import { CSSProperties, memo, useEffect, useState } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
-import { getLibrarySongs } from "../api/importer";
+import { getLibrarySongs, getPlayerState } from "../api/importer";
 import { Song } from "../types";
 import SongListItem from "./SongListItem";
 import { listen } from "@tauri-apps/api/event";
@@ -43,6 +43,10 @@ export default function SongList() {
       .then(libSongs => {
         setSongs(libSongs);
       })
+      .catch(e => console.error(e));
+
+    getPlayerState()
+      .then(cachedState => setQueue(cachedState.songsQueue))
       .catch(e => console.error(e));
 
     const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {

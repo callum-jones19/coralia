@@ -19,13 +19,13 @@ export default function SettingsScreen() {
     <div className="w-full h-full flex flex-row">
       <div className="basis-1/4 flex flex-col shadow-md p-2">
         <h2 className="font-bold text-lg">Settings</h2>
-        <Link to="/home" className="bg-neutral-100 p-2 rounded-md text-center">
+        <Link to="/home" className=" p-2 rounded-md text-center">
           Home
         </Link>
       </div>
       <div className="flex-grow p-2">
         <button
-          className="bg-red-200 p-3 rounded-md"
+          className="bg-red-500 p-3 rounded-md text-white font-bold"
           onClick={() => resetLibrary()}
         >
           Reset library

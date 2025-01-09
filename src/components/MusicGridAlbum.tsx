@@ -35,7 +35,7 @@ export default function MusicGridAlbum(
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="p-2 w-full h-3/4 shadow-md bg-white rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
+      <div className="p-2 w-full h-3/4 shadow-md shadow-neutral-700 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
         <div className="m-auto relative">
           <img
             loading="lazy"
@@ -48,7 +48,7 @@ export default function MusicGridAlbum(
           />
           {isHovering &&
             <button
-              className="bg-white p-5 rounded-full absolute bottom-3 right-3 shadow-md"
+              className="bg-black p-5 rounded-full absolute bottom-3 right-3 shadow-md"
               onClick={() => {
                 const albumSongsReq = getAlbumSongs(album.id);
                 albumSongsReq

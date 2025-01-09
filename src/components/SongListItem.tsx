@@ -1,7 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
-import { ChevronsRight, Play } from "react-feather";
-import { clearAndPlayBackend, enqueueSongBackend } from "../api/commands";
+import { Play, Volume2 } from "react-feather";
+import { clearAndPlayBackend } from "../api/commands";
 import { Song } from "../types";
 
 export interface SongListItemProps {
@@ -21,13 +21,13 @@ export default function SongListItem(
 
   return (
     <li
-      className={`flex flex-col h-14 ${
-        isPlaying ? "bg-green-400" : colored ? "bg-neutral-100" : "bg-white"
+      className={`flex flex-col h-14 rounded-md ${
+        isPlaying ? "bg-green-800" : colored ? "bg-neutral-900" : "bg-transparent"
       }`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="hover:bg-neutral-300 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow">
+      <div className="hover:bg-neutral-800 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow rounded-md">
         {showImage && <img
           loading="lazy"
           src={imgUrl}
@@ -37,26 +37,24 @@ export default function SongListItem(
           className="rounded-sm"
         />}
         <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2]">
-          {!isHovering
+          {!isHovering && !isPlaying
             && (
               <p className="w-fit">
                 {song.tags.trackNumber ? song.tags.trackNumber : "N/A"}.
               </p>
             )}
+          {!isHovering && isPlaying
+            && (
+              <Volume2 />
+            )}
           {isHovering
             && (
               <div className="flex flex-row gap-1">
                 <button
-                  className="p-2 bg-neutral-800 rounded-full"
+                  className="p-3 bg-neutral-800 rounded-full"
                   onClick={() => clearAndPlayBackend(song)}
                 >
                   <Play size="1em" color="white" />
-                </button>
-                <button
-                  className="p-1 h-fit w-fit rounded-full hover:bg-neutral-400 self-center"
-                  onClick={() => enqueueSongBackend(song)}
-                >
-                  <ChevronsRight color="black" size="1em" />
                 </button>
               </div>
             )}

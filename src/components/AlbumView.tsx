@@ -74,7 +74,7 @@ export default function AlbumView() {
           >
             <ChevronLeft />
           </Link>
-          <div id="album-header" className="bg-neutral-50 h-fit p-3 flex flex-row gap-3">
+          <div id="album-header" className="h-fit p-3 flex flex-row gap-3">
             <img
               alt="Album Art Image"
               src={albumArtUri}
