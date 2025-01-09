@@ -1,6 +1,18 @@
 import { invoke } from "@tauri-apps/api";
 import { Album, CachedPlayerState, Song } from "../types";
 
+export const getAlbumSongs = async (albumId: number) => {
+  return invoke<Song[]>("get_album_songs", { albumId: albumId })
+    .then(data => data)
+    .catch(e => console.error(e));
+};
+
+export const getAlbum = async (albumId: number) => {
+  return invoke<Album>("get_album", { albumId: albumId })
+    .then(data => data)
+    .catch(e => console.error(e));
+};
+
 export const getLibrarySongs = async () => {
   return invoke<Song[]>("get_library_songs_sorted", {});
 };

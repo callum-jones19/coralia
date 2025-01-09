@@ -1,5 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { Album } from "../types";
+import { useNavigate } from "react-router";
 
 export interface MusicGridAlbumProps {
   album: Album;
@@ -11,6 +12,8 @@ export default function MusicGridAlbum(
   const imgSrc = album.artwork?.art400
     ? convertFileSrc(album.artwork?.art400)
     : undefined;
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -24,12 +27,18 @@ export default function MusicGridAlbum(
           className="mb-3 rounded-m rounded-md"
         />
         <div className="flex-shrink-0">
-          <p
+          <button
             title={album.title}
             className="font-bold text-l text-center overflow-hidden text-nowrap text-ellipsis hover:underline"
+            onClick={() => {
+              const t = navigate(`/home/album/${album.id}`);
+              if (t) {
+                t.catch(e => console.error(e));
+              }
+            }}
           >
             {album.title}
-          </p>
+          </button>
           <p className="text-center text-sm">{album.albumArtist}</p>
         </div>
       </div>

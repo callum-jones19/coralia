@@ -8,7 +8,6 @@ export const resetLibraryBackend = () => {
   return tmp;
 };
 
-
 export const addLibraryFolders = (folders: string[]) => {
   invoke("add_library_directories", { rootDirs: folders })
     .then(() => console.log("Added new folders to the library"))

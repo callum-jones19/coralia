@@ -4,6 +4,7 @@ import SongList from "./components/SongList";
 import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import AlbumView from "./components/AlbumView";
 
 export default function App() {
 
@@ -26,6 +27,10 @@ export default function App() {
             <Route
               path="albums"
               element={<MusicGrid />}
+            />
+            <Route
+              path="album/:albumId"
+              element={<AlbumView />}
             />
           </Route>
           <Route
