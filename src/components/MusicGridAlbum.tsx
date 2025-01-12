@@ -73,7 +73,7 @@ export default function MusicGridAlbum(
           >
             {album.title}
           </button>
-          <p className="text-center text-sm">{album.albumArtist}</p>
+          <p className="text-center text-sm overflow-hidden text-nowrap text-ellipsis">{album.albumArtist}</p>
         </div>
       </div>
     </div>
