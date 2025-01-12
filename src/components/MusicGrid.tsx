@@ -12,7 +12,7 @@ interface RowProps {
   rowIndex: number;
   style: CSSProperties;
 }
-const ALBUMS_PER_ROW = 6;
+const ALBUMS_PER_ROW = 4;
 
 const Cell = memo(({ data, columnIndex, rowIndex, style }: RowProps) => {
 
@@ -47,7 +47,7 @@ export default function MusicGrid() {
               rowCount={albums.length / ALBUMS_PER_ROW}
               height={height}
               width={width}
-              columnWidth={(width / ALBUMS_PER_ROW) - 3}
+              columnWidth={(width / ALBUMS_PER_ROW) - (ALBUMS_PER_ROW)}
               rowHeight={(width / ALBUMS_PER_ROW) + 55}
               itemData={albums}
               overscanRowCount={1}

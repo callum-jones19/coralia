@@ -20,9 +20,8 @@ export default function QueueListItem({ song, index }: QueueListItem) {
       className="flex flex-row gap-2 w-full items-center"
       onMouseEnter={() => setisHovering(true)}
       onMouseLeave={() => setisHovering(false)}
-      onClick={() => removeFromQueue(index)}
     >
-      <div className="basis-1/12">
+      <div className="basis-1/12 flex-shrink-0">
         {index === 0 && <Volume1 size="1em" />}
         {index !== 0 &&
           <p>{index}.</p>
@@ -36,7 +35,9 @@ export default function QueueListItem({ song, index }: QueueListItem) {
       />
       <p className="overflow-hidden text-nowrap text-ellipsis flex-grow" title={song.tags.title}>{song.tags.title}</p>
       {isHovering &&
-        <button>
+        <button
+          onClick={() => removeFromQueue(index)}
+        >
           <X scale={2} />
         </button>
       }

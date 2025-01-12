@@ -37,15 +37,13 @@ export default function MusicGridAlbum(
     >
       <div className="p-2 w-full h-3/4 bg-neutral-800 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
         <div className="m-auto relative">
-          <img
+          {imgSrc && <img
             loading="lazy"
             src={imgSrc}
-            width={360}
-            height={360}
             alt="album-cover-image"
             className="rounded-md self-center flex-shrink hover:cursor-pointer sh"
             onClick={() => navigateToAlbum()}
-          />
+          />}
           {isHovering &&
             <button
               className="bg-black p-5 rounded-full absolute bottom-3 right-3 shadow-md"
