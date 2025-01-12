@@ -47,7 +47,7 @@ export default function MusicGrid() {
               rowCount={albums.length / ALBUMS_PER_ROW}
               height={height}
               width={width}
-              columnWidth={(width / ALBUMS_PER_ROW)}
+              columnWidth={(width / ALBUMS_PER_ROW) - 3}
               rowHeight={(width / ALBUMS_PER_ROW) + 55}
               itemData={albums}
               overscanRowCount={1}
