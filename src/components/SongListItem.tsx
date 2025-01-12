@@ -36,9 +36,9 @@ export default function SongListItem(
           width={35}
           height={35}
           alt="thumb art"
-          className="rounded-sm"
+          className="rounded-sm mr-2"
         />}
-        <div className="basis-1/12 flex flex-row justify-center flex-shrink-[2]">
+        <div className="basis-1/12 flex flex-row justify-start flex-shrink-[2]">
           {!isHovering && !isPlaying
             && (
               <p className="w-fit">

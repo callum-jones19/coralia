@@ -35,7 +35,7 @@ export default function MusicGridAlbum(
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="p-2 w-full h-3/4 shadow-md shadow-neutral-700 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
+      <div className="p-2 w-full h-3/4 bg-neutral-800 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
         <div className="m-auto relative">
           <img
             loading="lazy"
@@ -43,7 +43,7 @@ export default function MusicGridAlbum(
             width={360}
             height={360}
             alt="album-cover-image"
-            className="rounded-m rounded-md self-center flex-shrink hover:cursor-pointer"
+            className="rounded-md self-center flex-shrink hover:cursor-pointer sh"
             onClick={() => navigateToAlbum()}
           />
           {isHovering &&

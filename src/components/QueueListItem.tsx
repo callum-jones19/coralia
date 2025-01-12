@@ -24,7 +24,9 @@ export default function QueueListItem({ song, index }: QueueListItem) {
     >
       <div className="basis-1/12">
         {index === 0 && <Volume1 size="1em" />}
-        {index !== 0 && <p>{index}.</p>}
+        {index !== 0 &&
+          <p>{index}.</p>
+        }
       </div>
       <img
         loading="lazy"

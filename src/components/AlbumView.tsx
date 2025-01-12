@@ -122,12 +122,13 @@ export default function AlbumView() {
               </div>
             </li>
             {songs.map(song => (
-              <SongListItem
-                key={song.id}
-                song={song}
-                colored={false}
-                currentlyPlayingId={currentSong?.id}
-              />
+              <div key={song.id} className="h-14">
+                  <SongListItem
+                    song={song}
+                    colored={false}
+                    currentlyPlayingId={currentSong?.id}
+                  />
+                </div>
             ))}
           </ul>
         </div>
