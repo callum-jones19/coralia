@@ -53,7 +53,7 @@ export default function AlbumView() {
     }).catch(e => console.error(e));
   }, [albumId]);
 
-  const albumArtUri = album?.artwork.art400 ? convertFileSrc(album.artwork.art400) : undefined;
+  const albumArtUri = album?.artwork?.art400 ? convertFileSrc(album.artwork.art400) : "";
 
   return (
     <>

@@ -1,7 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
-import { Volume1, X } from "react-feather";
 import { Link } from "react-router";
 import { Song } from "../types";
 import { Duration } from "@tauri-apps/api/http";
