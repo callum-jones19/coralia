@@ -21,13 +21,15 @@ export default function SongListItem(
 
   return (
     <li
-      className={`flex flex-col h-14 rounded-md ${
+      className={`flex flex-col h-full rounded-md  ${
         isPlaying ? "bg-green-800" : colored ? "bg-neutral-900" : "bg-transparent"
       }`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="hover:bg-neutral-800 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow rounded-md">
+      <div
+        className="hover:bg-neutral-800 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow rounded-md"
+      >
         {showImage && <img
           loading="lazy"
           src={imgUrl}
@@ -51,10 +53,10 @@ export default function SongListItem(
             && (
               <div className="flex flex-row gap-1">
                 <button
-                  className="p-3 bg-neutral-800 rounded-full"
+                  className="bg-neutral-800 rounded-full"
                   onClick={() => clearAndPlayBackend(song)}
                 >
-                  <Play size="1em" color="white" />
+                  <Play color="white" />
                 </button>
               </div>
             )}

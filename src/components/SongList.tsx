@@ -22,7 +22,10 @@ const Row = memo(({ data, index, style }: RowProps) => {
   const song = data.songs[index];
 
   return (
-    <div style={style}>
+    <div
+      style={style}
+      // className="[&_*]:outline-green-300 [&_*]:outline [&_*]:outline-2"
+    >
       <SongListItem
         song={song}
         colored={index % 2 === 0}
@@ -75,7 +78,7 @@ export default function SongList() {
             <FixedSizeList
               height={height}
               itemCount={songs.length}
-              itemSize={53}
+              itemSize={60}
               width={width}
               itemData={data}
               overscanCount={5}
