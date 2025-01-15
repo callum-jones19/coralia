@@ -1,7 +1,7 @@
 import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Song } from "../types";
 import { Duration } from "@tauri-apps/api/http";
 import { getPlayerState } from "../api/importer";
@@ -9,6 +9,7 @@ import QueueListItem from "./QueueListItem";
 
 export default function SideBar() {
   const [queue, setQueue] = useState<Song[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getPlayerState()
@@ -51,7 +52,8 @@ export default function SideBar() {
             <img
               alt="Currently playing song album art"
               src={imgSrc}
-              className="w-full aspect-square rounded-lg"
+              className="w-full aspect-square rounded-lg hover:cursor-pointer"
+              onClick={() => navigate(`album/${queue[0].album}`)}
             />
           )}
         </div>

@@ -80,7 +80,7 @@ export default function AlbumView() {
               src={albumArtUri}
               height="250px"
               width="250px"
-              className="rounded-md shadow-md"
+              className="rounded-md shadow-md aspect-square flex-grow-0 flex-shrink-0"
             />
             <div className="flex flex-col justify-between gap-3">
               <div>

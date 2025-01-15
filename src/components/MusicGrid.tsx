@@ -12,7 +12,7 @@ interface RowProps {
   rowIndex: number;
   style: CSSProperties;
 }
-const ALBUMS_PER_ROW = 4;
+const ALBUMS_PER_ROW = 5;
 
 const Cell = memo(({ data, columnIndex, rowIndex, style }: RowProps) => {
 
