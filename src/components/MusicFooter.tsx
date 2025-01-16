@@ -7,6 +7,7 @@ import Seekbar from "./Seekbar";
 import SongInfoFooter from "./SongInfoFooter";
 import VolumeController from "./VolumeController";
 import { Duration } from "@tauri-apps/api/http";
+import { Maximize2 } from "react-feather";
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from

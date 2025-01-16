@@ -5,6 +5,7 @@ import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import AlbumView from "./components/AlbumView";
+import FullscreenScreen from "./screens/FullscreenScreen";
 
 export default function App() {
 
@@ -33,6 +34,7 @@ export default function App() {
               element={<AlbumView />}
             />
           </Route>
+          <Route path="fullscreen" element={<FullscreenScreen />} />
           <Route
             path="/settings"
             element={<SettingsScreen />}

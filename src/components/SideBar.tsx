@@ -53,7 +53,12 @@ export default function SideBar() {
               alt="Currently playing song album art"
               src={imgSrc}
               className="w-full aspect-square rounded-lg hover:cursor-pointer"
-              onClick={() => navigate(`album/${queue[0].album}`)}
+              onClick={() => {
+                const navRes = navigate(`album/${queue[0].album}`);
+                if (navRes) {
+                  navRes.catch(e => console.error(e));
+                }
+              }}
             />
           )}
         </div>

@@ -1,7 +1,8 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { Volume1, Volume2, VolumeX } from "react-feather";
+import { Maximize2, Volume1, Volume2, VolumeX } from "react-feather";
 import { setVolumeBackend } from "../api/commands";
 import { getPlayerState } from "../api/importer";
+import { Link } from "react-router";
 
 export default function VolumeController() {
   const [volume, setVolume] = useState<number>(23);
@@ -37,6 +38,9 @@ export default function VolumeController() {
           setVolumeBackend(newVol);
         }}
       />
+      <Link to={"/fullscreen"} className="flex-grow-0">
+        <Maximize2 size="1em" />
+      </Link>
     </div>
   );
 }
