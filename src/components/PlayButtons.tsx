@@ -48,7 +48,7 @@ export default function PlayButtons() {
           <SkipBack fill="gray" color="gray" size="1em" />
         </button>
         <button
-          className="bg-white flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-gray-500"
+          className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-gray-500 hover:bg-neutral-700"
           disabled={queueLen === 0}
           onClick={() => {
             if (isPaused) {
@@ -58,8 +58,8 @@ export default function PlayButtons() {
             }
           }}
         >
-          {isPaused && <Play fill="black" size="1em" />}
-          {!isPaused && <Pause size="1em" fill="black" />}
+          {isPaused && <Play fill="white" size="1em" />}
+          {!isPaused && <Pause size="1em" fill="white" />}
         </button>
         <button
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"

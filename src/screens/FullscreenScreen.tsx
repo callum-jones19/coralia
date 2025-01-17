@@ -9,7 +9,6 @@ import { Home } from "react-feather";
 import Seekbar from "../components/Seekbar";
 import SongInfoFooter from "../components/SongInfoFooter";
 import PlayButtons from "../components/PlayButtons";
-import { useImage } from "react-image";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -40,15 +39,17 @@ export default function FullscreenScreen() {
           </Link>
         </div>
         <div
-          className="flex-grow flex flex-col gap-10 items-cente min-h-0"
+          className="flex-grow flex flex-col gap-2 items-cente min-h-0"
         >
-          <div className="basis-1/2 w-full overflow-hidden flex-grow p-10">
+          <div className="basis-1/2 w-full overflow-hidden flex-grow p-6">
             <img src={imgSrc} className="rounded-lg shadow-lg h-full m-auto object-contain" />
           </div>
-          <div className="flex flex-col gap-2 justify-center items-center w-full overflow-auto">
-            <SongInfoFooter currentSong={queue[0]}/>
-            <PlayButtons />
+          <div className="flex flex-col gap-2 justify-center items-center w-2/3 m-auto overflow-auto">
+            <div className="mb-3">
+              <SongInfoFooter currentSong={queue[0]} />
+            </div>
             <Seekbar />
+            <PlayButtons />
           </div>
         </div>
       </div>
