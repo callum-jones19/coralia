@@ -7,8 +7,9 @@ import Seekbar from "./Seekbar";
 import SongInfoFooter from "./SongInfoFooter";
 import VolumeController from "./VolumeController";
 import { Duration } from "@tauri-apps/api/http";
-import { Maximize2, Minimize2 } from "react-feather";
+import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
+import { appWindow } from "@tauri-apps/api/window";
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
@@ -56,7 +57,9 @@ export default function MusicFooter() {
           <SongInfoFooter currentSong={currentSong} />
           <div className="flex flex-row items-center gap-2">
             <VolumeController />
-            <Link to={"/fullscreen"} className="">
+            <Link to={"/fullscreen"} onClick={() => {
+              appWindow.setFullscreen(true).catch(e => console.error(e))
+            }}>
               <Maximize2 size="1em" />
             </Link>
           </div>

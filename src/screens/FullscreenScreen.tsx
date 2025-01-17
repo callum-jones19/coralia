@@ -10,6 +10,7 @@ import Seekbar from "../components/Seekbar";
 import SongInfoFooter from "../components/SongInfoFooter";
 import PlayButtons from "../components/PlayButtons";
 import VolumeController from "../components/VolumeController";
+import { appWindow } from "@tauri-apps/api/window";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -33,7 +34,7 @@ export default function FullscreenScreen() {
 
   return (
     <>
-      <div className="w-full h-full flex flex-col bg-neutral-800 text-white p-5">
+      <div className="w-full h-full flex flex-col bg-gradient-to-b from-neutral-700 to-neutral-900 text-white p-5">
         <div
           className="flex-grow flex flex-col gap-2 items-cente min-h-0"
         >
@@ -51,7 +52,9 @@ export default function FullscreenScreen() {
               </div>
               <PlayButtons />
               <div className="basis-0 flex-grow flex flex-row justify-end items-center">
-                <Link to={"/home"} className="">
+                <Link to={"/home"} onClick={() => {
+                  appWindow.setFullscreen(false).catch(e => console.error(e))
+                }}>
                   <Minimize2 size="1em" />
                 </Link>
               </div>
