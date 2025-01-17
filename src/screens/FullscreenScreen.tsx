@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { getPlayerState } from "../api/importer";
 import { listen } from "@tauri-apps/api/event";
 import { Song } from "../types";
@@ -14,6 +14,7 @@ import { appWindow } from "@tauri-apps/api/window";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getPlayerState()
@@ -25,9 +26,26 @@ export default function FullscreenScreen() {
       setQueue(newQueue);
     });
 
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      console.log(e.key);
+      if (e.key === 'Escape') {
+        const res = navigate('/home');
+        appWindow.setFullscreen(false).catch(e => console.error(e))
+        if (res) {
+          res.catch(e => console.error(e));
+        }
+      }
+    };
+  
+    // Setup keybinds
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       unlistenQueue.then(f => f).catch(e => console.log(e));
+      window.removeEventListener('keydown', handleKeyDown);
     };
+
   }, []);
 
   const imgSrc = queue[0]?.artwork ? convertFileSrc(queue[0].artwork.fullResArt) : undefined;
