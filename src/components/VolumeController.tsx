@@ -1,8 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { Maximize2, Volume1, Volume2, VolumeX } from "react-feather";
+import { Volume1, Volume2, VolumeX } from "react-feather";
 import { setVolumeBackend } from "../api/commands";
 import { getPlayerState } from "../api/importer";
-import { Link } from "react-router";
 
 export default function VolumeController() {
   const [volume, setVolume] = useState<number>(23);

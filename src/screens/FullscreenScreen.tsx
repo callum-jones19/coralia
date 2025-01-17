@@ -5,7 +5,7 @@ import { listen } from "@tauri-apps/api/event";
 import { Song } from "../types";
 import { Duration } from "@tauri-apps/api/http";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { Home, Maximize2, Minimize2 } from "react-feather";
+import { Minimize2 } from "react-feather";
 import Seekbar from "../components/Seekbar";
 import SongInfoFooter from "../components/SongInfoFooter";
 import PlayButtons from "../components/PlayButtons";
