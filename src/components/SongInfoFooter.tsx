@@ -8,7 +8,7 @@ export default function SongInfoFooter({ currentSong }: SongInfoFooterProps) {
 
   return (
     <>
-      <div id="music-info" className="flex flex-col text-white text-center">
+      <div id="music-info" className="flex flex-col text-center">
         <p className="font-bold">
           {currentSong
             ? (currentSong.tags.title ? currentSong.tags.title : "N/A")

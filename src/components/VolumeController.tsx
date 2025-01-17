@@ -38,9 +38,6 @@ export default function VolumeController() {
           setVolumeBackend(newVol);
         }}
       />
-      <Link to={"/fullscreen"} className="flex-grow-0">
-        <Maximize2 size="1em" />
-      </Link>
     </div>
   );
 }

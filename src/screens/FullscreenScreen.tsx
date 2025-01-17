@@ -5,10 +5,11 @@ import { listen } from "@tauri-apps/api/event";
 import { Song } from "../types";
 import { Duration } from "@tauri-apps/api/http";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { Home } from "react-feather";
+import { Home, Maximize2, Minimize2 } from "react-feather";
 import Seekbar from "../components/Seekbar";
 import SongInfoFooter from "../components/SongInfoFooter";
 import PlayButtons from "../components/PlayButtons";
+import VolumeController from "../components/VolumeController";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -33,23 +34,28 @@ export default function FullscreenScreen() {
   return (
     <>
       <div className="w-full h-full flex flex-col bg-neutral-800 text-white p-5">
-        <div className="w-full flex flex-row justify-start">
-          <Link to="/home">
-            <Home />
-          </Link>
-        </div>
         <div
           className="flex-grow flex flex-col gap-2 items-cente min-h-0"
         >
           <div className="basis-1/2 w-full overflow-hidden flex-grow p-6">
-            <img src={imgSrc} className="rounded-lg shadow-lg h-full m-auto object-contain" />
+            <img src={imgSrc} className="rounded-lg drop-shadow-md h-full m-auto object-contain" />
           </div>
           <div className="flex flex-col gap-2 justify-center items-center w-2/3 m-auto overflow-auto">
             <div className="mb-3">
               <SongInfoFooter currentSong={queue[0]} />
             </div>
             <Seekbar />
-            <PlayButtons />
+            <div className="w-full flex flex-row justify-between">
+              <div className="basis-0 flex-grow flex flex-row items-center">
+                <VolumeController />
+              </div>
+              <PlayButtons />
+              <div className="basis-0 flex-grow flex flex-row justify-end items-center">
+                <Link to={"/home"} className="">
+                  <Minimize2 size="1em" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>

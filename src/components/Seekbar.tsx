@@ -164,14 +164,14 @@ export default function Seekbar() {
   return (
     <div className="flex flex-row items-center w-full">
       {!(seekPosMins && seekPosSecs) && (
-        <p className="text-white w-16">
+        <p className="w-16">
           {songPosMins ? songPosMins : "00"}:{songPosSecs
             ? songPosSecs
             : "00"}
         </p>
       )}
       {seekPosMins && seekPosSecs && (
-        <p className="text-white w-16">
+        <p className="w-16">
           {seekPosMins}:{seekPosSecs}
         </p>
       )}
@@ -205,7 +205,7 @@ export default function Seekbar() {
           setSeekPos(null);
         }}
       />
-      <p className="text-white">
+      <p>
         {durationMins ? durationMins : "00"}:{durationSecs
           ? durationSecs
           : "00"}

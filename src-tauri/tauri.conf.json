@@ -16,6 +16,9 @@
         "asset": true,
         "assetScope": ["**", "$CACHE/**"]
       },
+      "window": {
+        "setFullscreen": true
+      },
       "path": {
         "all": true
       },
