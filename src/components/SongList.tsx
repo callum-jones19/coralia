@@ -1,11 +1,12 @@
 import { CSSProperties, memo, useEffect, useState } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
-import { getLibrarySongs, getPlayerState } from "../api/importer";
+import { getPlayerState } from "../api/importer";
 import { Song } from "../types";
 import SongListItem from "./SongListItem";
 import { listen } from "@tauri-apps/api/event";
 import { Duration } from "@tauri-apps/api/http";
+import { useSongs } from "../Contexts";
 
 interface SongListData {
   songs: Song[];
@@ -38,16 +39,11 @@ const Row = memo(({ data, index, style }: RowProps) => {
 Row.displayName = "SongRow";
 
 export default function SongList() {
-  const [songs, setSongs] = useState<Song[]>([]);
+  const songs = useSongs();
+
   const [queue, setQueue] = useState<Song[]>([]);
 
   useEffect(() => {
-    getLibrarySongs()
-      .then(libSongs => {
-        setSongs(libSongs);
-      })
-      .catch(e => console.error(e));
-
     getPlayerState()
       .then(cachedState => setQueue(cachedState.songsQueue))
       .catch(e => console.error(e));

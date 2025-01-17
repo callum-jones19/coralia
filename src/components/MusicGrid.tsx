@@ -1,9 +1,9 @@
-import { CSSProperties, memo, useEffect, useState } from "react";
-import { getLibraryAlbums } from "../api/importer";
+import { CSSProperties, memo } from "react";
 import { Album } from "../types";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import MusicGridAlbum from "./MusicGridAlbum";
 import { areEqual, FixedSizeGrid } from "react-window";
+import { useAlbums } from "../Contexts";
 
 
 interface RowProps {
@@ -29,13 +29,7 @@ const Cell = memo(({ data, columnIndex, rowIndex, style }: RowProps) => {
 Cell.displayName = "AlbumRow";
 
 export default function MusicGrid() {
-  const [albums, setAlbums] = useState<Album[]>([]);
-
-  useEffect(() => {
-    getLibraryAlbums()
-      .then(data => setAlbums(data))
-      .catch(e => console.error(e));
-  }, []);
+  const albums = useAlbums();
 
   return (
     <>
