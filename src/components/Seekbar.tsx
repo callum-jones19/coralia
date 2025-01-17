@@ -177,7 +177,7 @@ export default function Seekbar() {
       )}
       <input
         id="seekbar-range"
-        className="w-full ml-5 mr-5 bg-transparent"
+        className="w-full flex-grow"
         type="range"
         disabled={currentSong === null}
         readOnly
@@ -205,7 +205,7 @@ export default function Seekbar() {
           setSeekPos(null);
         }}
       />
-      <p>
+      <p className="w-16 text-end">
         {durationMins ? durationMins : "00"}:{durationSecs
           ? durationSecs
           : "00"}
