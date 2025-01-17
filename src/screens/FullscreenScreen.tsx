@@ -9,6 +9,7 @@ import { Home } from "react-feather";
 import Seekbar from "../components/Seekbar";
 import SongInfoFooter from "../components/SongInfoFooter";
 import PlayButtons from "../components/PlayButtons";
+import { useImage } from "react-image";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -32,15 +33,19 @@ export default function FullscreenScreen() {
 
   return (
     <>
-      <div className="w-full h-full flex flex-col bg-gradient-to-b bg-neutral-800 text-white p-5 overflow-hidden gap-3">
-        <div id="header-row" className="w-full flex flex-row justify-start">
+      <div className="w-full h-full flex flex-col bg-neutral-800 text-white p-5">
+        <div className="w-full flex flex-row justify-start">
           <Link to="/home">
             <Home />
           </Link>
         </div>
-        <div id="main-section" className="flex-grow min-h-0 flex flex-row gap-10">
-          {imgSrc && <img alt='fullsize album art' src={imgSrc} className="h-full aspect-square rounded-lg" />}
-          <div className="w-full flex flex-col gap-2 justify-center items-center">
+        <div
+          className="flex-grow flex flex-col gap-10 items-cente min-h-0"
+        >
+          <div className="basis-1/2 w-full overflow-hidden flex-grow p-10">
+            <img src={imgSrc} className="rounded-lg shadow-lg h-full m-auto object-contain" />
+          </div>
+          <div className="flex flex-col gap-2 justify-center items-center w-full overflow-auto">
             <SongInfoFooter currentSong={queue[0]}/>
             <PlayButtons />
             <Seekbar />
