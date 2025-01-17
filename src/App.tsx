@@ -25,7 +25,7 @@ export default function App() {
       getLibraryAlbums()
         .then(libAlbums => setAlbums(libAlbums))
         .catch(e => console.error(e));
-  });
+  }, []);
 
   return (
     <>
