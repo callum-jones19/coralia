@@ -104,7 +104,7 @@ export default function AlbumView() {
                   className="w-full flex flex-row gap-2"
                 >
                   <button
-                    className="bg-gray-950 rounded-full p-4"
+                    className="bg-neutral-950 rounded-full p-4"
                     onClick={() => {
                       invoke("clear_queue", {})
                         .then(() => enqueueSongsBackend(songs))
@@ -115,7 +115,7 @@ export default function AlbumView() {
                   </button>
                   <button
                     disabled
-                    className="bg-gray-950 rounded-full p-4 disabled:bg-neutral-800"
+                    className="bg-neutral-950 rounded-full p-4 disabled:bg-neutral-800"
                   >
                     <Shuffle />
                   </button>

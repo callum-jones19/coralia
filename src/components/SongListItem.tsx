@@ -33,7 +33,7 @@ export default function SongListItem(
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="basis-1/5 flex flex-row justify-start items-center">
+      <div className="basis-1/5 flex flex-row justify-start items-center pl-2">
         {showImage && (
           <img
             loading="lazy"
