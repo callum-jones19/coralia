@@ -4,7 +4,7 @@ import { Album, Song } from "../types";
 import { useNavigate, useParams } from "react-router";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import SongListItem from "./SongListItem";
-import { ChevronLeft } from "react-feather";
+import { ChevronLeft, Play, Shuffle } from "react-feather";
 import { enqueueSongsBackend } from "../api/commands";
 import { listen } from "@tauri-apps/api/event";
 import { Duration } from "@tauri-apps/api/http";
@@ -101,20 +101,17 @@ export default function AlbumView() {
                 className="w-full flex flex-row gap-2"
               >
                 <button
-                  className="bg-gray-950 min-w-20 rounded-full text-white p-1"
+                  className="bg-gray-950 rounded-full p-4"
                   onClick={() => {
                     invoke("clear_queue", {})
                       .then(() => enqueueSongsBackend(songs))
                       .catch(e => console.error(e));
                   }}
                 >
-                  Play
+                  <Play />
                 </button>
-                <button className="bg-gray-950 min-w-20 rounded-full text-white p-1">
-                  Shuffle
-                </button>
-                <button className="bg-gray-950 min-w-14 rounded-full text-white p-1">
-                  ...
+                <button disabled className="bg-gray-950 rounded-full p-4 disabled:bg-neutral-800">
+                  <Shuffle />
                 </button>
               </div>
             </div>
