@@ -1,10 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
+import { Duration } from "@tauri-apps/api/http";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Song } from "../types";
-import { Duration } from "@tauri-apps/api/http";
 import { getPlayerState } from "../api/importer";
+import { Song } from "../types";
 import QueueListItem from "./QueueListItem";
 
 export default function QueueBar() {
@@ -36,7 +36,9 @@ export default function QueueBar() {
         <h2 className="font-bold">Queue</h2>
         <li className="flex flex-col gap-3 flex-grow overflow-auto">
           {queue.length === 0 && <ul>Empty queue</ul>}
-          {queue.map((song, index) => <QueueListItem key={index} song={song} index={index} />)}
+          {queue.map((song, index) => (
+            <QueueListItem key={index} song={song} index={index} />
+          ))}
         </li>
         <div className="flex flex-col gap-3">
           {imgSrc && (

@@ -1,10 +1,9 @@
 import { CSSProperties, memo } from "react";
-import { Album } from "../types";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
-import MusicGridAlbum from "./MusicGridAlbum";
 import { areEqual, FixedSizeGrid } from "react-window";
 import { useAlbums } from "../Contexts";
-
+import { Album } from "../types";
+import MusicGridAlbum from "./MusicGridAlbum";
 
 interface RowProps {
   data: Album[];
@@ -15,7 +14,6 @@ interface RowProps {
 const ALBUMS_PER_ROW = 5;
 
 const Cell = memo(({ data, columnIndex, rowIndex, style }: RowProps) => {
-
   console.log(data);
   const albumIndex = (rowIndex * ALBUMS_PER_ROW) + columnIndex;
   const album = data[albumIndex];
@@ -33,31 +31,33 @@ export default function MusicGrid() {
 
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
-      {albums.length > 0 &&
-        <ReactVirtualizedAutoSizer>
-          {({ height, width }) => (
-            <FixedSizeGrid
-              columnCount={ALBUMS_PER_ROW}
-              rowCount={albums.length / ALBUMS_PER_ROW}
-              height={height}
-              width={width}
-              columnWidth={(width / ALBUMS_PER_ROW) - (ALBUMS_PER_ROW)}
-              rowHeight={(width / ALBUMS_PER_ROW) + 55}
-              itemData={albums}
-              overscanRowCount={1}
-            >
-              {Cell}
-            </FixedSizeGrid>
-          )}
-        </ReactVirtualizedAutoSizer>
-      }
-      {albums.length === 0 &&
-        <div className="h-full w-full flex flex-col justify-center">
-          <p className="w-fit ml-auto mr-auto">
-            <i>No albums detected...</i>
-          </p>
-        </div>
-      }
+      {albums.length > 0
+        && (
+          <ReactVirtualizedAutoSizer>
+            {({ height, width }) => (
+              <FixedSizeGrid
+                columnCount={ALBUMS_PER_ROW}
+                rowCount={albums.length / ALBUMS_PER_ROW}
+                height={height}
+                width={width}
+                columnWidth={(width / ALBUMS_PER_ROW) - ALBUMS_PER_ROW}
+                rowHeight={(width / ALBUMS_PER_ROW) + 55}
+                itemData={albums}
+                overscanRowCount={1}
+              >
+                {Cell}
+              </FixedSizeGrid>
+            )}
+          </ReactVirtualizedAutoSizer>
+        )}
+      {albums.length === 0
+        && (
+          <div className="h-full w-full flex flex-col justify-center">
+            <p className="w-fit ml-auto mr-auto">
+              <i>No albums detected...</i>
+            </p>
+          </div>
+        )}
     </div>
   );
 }

@@ -68,11 +68,8 @@ export default function Seekbar() {
       const syncedSongPos = e.payload[1];
       console.log(newQueue);
       setCurrentSong(newQueue[0]);
-      setSongPos(syncedSongPos.secs + (syncedSongPos.nanos / 1000000000))
+      setSongPos(syncedSongPos.secs + (syncedSongPos.nanos / 1000000000));
     });
-
-
-
 
     getPlayerState()
       .then(playerState => {
@@ -101,7 +98,6 @@ export default function Seekbar() {
       unlistenQueue
         .then(f => f)
         .catch(e => console.log(e));
-
     };
   }, []);
 

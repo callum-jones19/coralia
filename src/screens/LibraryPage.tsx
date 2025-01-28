@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
+import MenuBar from "../components/MenuBar";
 import MusicFooter from "../components/MusicFooter";
 import QueueBar from "../components/QueueBar";
-import MenuBar from "../components/MenuBar";
 
 export default function LibraryPage() {
   return (

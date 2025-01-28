@@ -30,7 +30,7 @@ symphonia = "0.5.4"
 symphonia-bundle-mp3 = "0.5.4"
 symphonia-core = "0.5.4"
 symphonia-metadata = "0.5.4"
-tauri = { version = "1.6.2", features = [ "window-all", "dialog-all", "fs-all", "path-all", "protocol-all"] }
+tauri = { version = "1.6.2", features = ["window-all", "dialog-all", "fs-all", "path-all", "protocol-all"] }
 tokio = "1.29.1"
 
 [features]

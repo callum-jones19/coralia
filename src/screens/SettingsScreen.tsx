@@ -6,14 +6,14 @@ export default function SettingsScreen() {
   const resetLibrary = () => {
     resetLibraryBackend()
       .then(() => {
-        console.log('fuck')
+        console.log("fuck");
         const t = navigate("/");
         if (t) {
           t.catch(e => console.error(e));
         }
       })
       .catch(e => console.log(e));
-  }
+  };
 
   return (
     <div className="w-full h-full flex flex-row">

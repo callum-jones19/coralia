@@ -1,8 +1,8 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
-import { Song } from "../types";
 import { Volume1, X } from "react-feather";
 import { removeFromQueue } from "../api/commands";
+import { Song } from "../types";
 
 export interface QueueListItem {
   song: Song;
@@ -23,9 +23,8 @@ export default function QueueListItem({ song, index }: QueueListItem) {
     >
       <div className="basis-1/12 flex-shrink-0">
         {index === 0 && <Volume1 size="1em" />}
-        {index !== 0 &&
-          <p>{index}.</p>
-        }
+        {index !== 0
+          && <p>{index}.</p>}
       </div>
       <img
         loading="lazy"
@@ -33,14 +32,20 @@ export default function QueueListItem({ song, index }: QueueListItem) {
         src={queueImgSrc}
         className="w-6 aspect-square"
       />
-      <p className="overflow-hidden text-nowrap text-ellipsis flex-grow" title={song.tags.title}>{song.tags.title}</p>
-      {isHovering &&
-        <button
-          onClick={() => removeFromQueue(index)}
-        >
-          <X scale={2} />
-        </button>
-      }
+      <p
+        className="overflow-hidden text-nowrap text-ellipsis flex-grow"
+        title={song.tags.title}
+      >
+        {song.tags.title}
+      </p>
+      {isHovering
+        && (
+          <button
+            onClick={() => removeFromQueue(index)}
+          >
+            <X scale={2} />
+          </button>
+        )}
     </ul>
   );
 }

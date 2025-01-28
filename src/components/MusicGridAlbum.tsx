@@ -1,11 +1,11 @@
-import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { Album } from "../types";
-import { useNavigate } from "react-router";
-import { Play } from "react-feather";
-import { useState } from "react";
 import { invoke } from "@tauri-apps/api";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { useState } from "react";
+import { Play } from "react-feather";
+import { useNavigate } from "react-router";
 import { enqueueSongsBackend } from "../api/commands";
 import { getAlbumSongs } from "../api/importer";
+import { Album } from "../types";
 
 export interface MusicGridAlbumProps {
   album: Album;
@@ -27,7 +27,7 @@ export default function MusicGridAlbum(
     if (t) {
       t.catch(e => console.error(e));
     }
-  }
+  };
 
   return (
     <div
@@ -35,33 +35,36 @@ export default function MusicGridAlbum(
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="p-2 w-full h-3/4 bg-neutral-800 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
+      <div className="p-2 w-full h-3/4 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
         <div className="m-auto relative">
-          {imgSrc && <img
-            loading="lazy"
-            src={imgSrc}
-            alt="album-cover-image"
-            className="rounded-md self-center flex-shrink hover:cursor-pointer sh"
-            onClick={() => navigateToAlbum()}
-          />}
-          {isHovering &&
-            <button
-              className="bg-black p-5 rounded-full absolute bottom-3 right-3 shadow-md"
-              onClick={() => {
-                const albumSongsReq = getAlbumSongs(album.id);
-                albumSongsReq
-                  .then(songs => {
-                    if (!songs) return Promise.reject();
-                    invoke("clear_queue", {}).catch(e => console.error(e));
-                    return songs;
-                  })
-                  .then(songs => enqueueSongsBackend(songs))
-                  .catch(e => console.error(e));
-              }}
-            >
-              <Play />
-            </button>
-          }
+          {imgSrc && (
+            <img
+              loading="lazy"
+              src={imgSrc}
+              alt="album-cover-image"
+              className="rounded-md self-center flex-shrink hover:cursor-pointer sh"
+              onClick={() => navigateToAlbum()}
+            />
+          )}
+          {isHovering
+            && (
+              <button
+                className="bg-black p-5 rounded-full absolute bottom-3 right-3 shadow-md"
+                onClick={() => {
+                  const albumSongsReq = getAlbumSongs(album.id);
+                  albumSongsReq
+                    .then(songs => {
+                      if (!songs) return Promise.reject();
+                      invoke("clear_queue", {}).catch(e => console.error(e));
+                      return songs;
+                    })
+                    .then(songs => enqueueSongsBackend(songs))
+                    .catch(e => console.error(e));
+                }}
+              >
+                <Play />
+              </button>
+            )}
         </div>
         <div className="flex flex-col">
           <button
@@ -71,7 +74,9 @@ export default function MusicGridAlbum(
           >
             {album.title}
           </button>
-          <p className="text-center text-sm overflow-hidden text-nowrap text-ellipsis">{album.albumArtist}</p>
+          <p className="text-center text-sm overflow-hidden text-nowrap text-ellipsis">
+            {album.albumArtist}
+          </p>
         </div>
       </div>
     </div>

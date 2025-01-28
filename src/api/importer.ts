@@ -28,8 +28,7 @@ export const getPlayerState = async () => {
 export const readLibFromCache = () => {
   const res = invoke<boolean>("load_library_from_cache")
     .then(result => result)
-    .catch(e => console.error(e))
+    .catch(e => console.error(e));
 
-    return res;
-}
-
+  return res;
+};

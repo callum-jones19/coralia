@@ -5,25 +5,25 @@ export default function MenuBar() {
   const navigate = useNavigate();
 
   const handleClickSongs = () => {
-    const t = navigate('/home');
+    const t = navigate("/home");
     if (t) {
       t.catch(e => console.error(e));
     }
-  }
+  };
 
   const handleClickAlbums = () => {
-    const t = navigate('/home/albums');
+    const t = navigate("/home/albums");
     if (t) {
       t.catch(e => console.error(e));
     }
-  }
+  };
 
   const handleClickSettings = () => {
-    const t = navigate('/settings');
+    const t = navigate("/settings");
     if (t) {
       t.catch(e => console.error(e));
     }
-  }
+  };
 
   return (
     <>

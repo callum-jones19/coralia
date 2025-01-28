@@ -12,7 +12,7 @@ export interface SongListItemProps {
 }
 
 export default function SongListItem(
-  { song, colored, currentlyPlayingId,showImage }: SongListItemProps,
+  { song, colored, currentlyPlayingId, showImage }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
@@ -22,20 +22,28 @@ export default function SongListItem(
   return (
     <div
       className={`h-full rounded-md  ${
-        isPlaying ? "bg-green-800" : isHovering ? "bg-neutral-700" : colored ? "bg-neutral-900" : "bg-neutral-900"
+        isPlaying
+          ? "bg-green-800"
+          : isHovering
+          ? "bg-neutral-700"
+          : colored
+          ? "bg-neutral-900"
+          : "bg-neutral-900"
       } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       <div className="basis-1/5 flex flex-row justify-start items-center">
-        {showImage && <img
-          loading="lazy"
-          src={imgUrl}
-          width={35}
-          height={35}
-          alt="thumb art"
-          className="rounded-sm mr-2"
-        />}
+        {showImage && (
+          <img
+            loading="lazy"
+            src={imgUrl}
+            width={35}
+            height={35}
+            alt="thumb art"
+            className="rounded-sm mr-2"
+          />
+        )}
         {!isHovering && !isPlaying
           && (
             <p className="w-fit">
@@ -43,9 +51,7 @@ export default function SongListItem(
             </p>
           )}
         {!isHovering && isPlaying
-          && (
-            <Volume2 />
-          )}
+          && <Volume2 />}
         {isHovering
           && (
             <button

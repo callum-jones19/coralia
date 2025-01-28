@@ -18,9 +18,7 @@ function DirectoryListItem(
 
   return (
     <>
-      <div
-        className="w-full flex flex-row items-center justify-between  rounded-lg h-10"
-      >
+      <div className="w-full flex flex-row items-center justify-between  rounded-lg h-10">
         <div className="flex flex-row items-center flex-grow basis-1/2 text-nowrap overflow-hidden">
           {false
             && (
@@ -64,7 +62,7 @@ export default function OnboardingScreen() {
 
   useEffect(() => {
     readLibFromCache()
-      .then(libExists=> {
+      .then(libExists => {
         console.log(libExists);
         setIsCheckingCache(false);
         if (libExists) {
@@ -105,58 +103,60 @@ export default function OnboardingScreen() {
 
   return (
     <div className="h-screen flex flex-col justify-center bg-neutral-400">
-      {!isCheckingCache && !cachedLibExists && <form
-        className="bg-white shadow-md text-neutral-950 w-2/3 m-auto h-1/2 p-10 rounded-xl flex flex-col gap-3 justify-between"
-        onSubmit={handleFormSubmit}
-      >
-        <div className="border-b-2 border-solid border-neutral-300">
-          <p className="text-2xl font-bold">Library Folders</p>
-          <p className="mb-1">
-            Music will be scanned into the library from the following folders:
-          </p>
-        </div>
-        <div className="bg-white text-neutral-950 rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center ">
-          <div className="overflow-auto basis-full flex flex-col gap-3">
-            {paths.map((path, index) => (
-              <div key={path} className="mr-4">
-                <DirectoryListItem
-                  path={path}
-                  index={index + 1}
-                  onClickRemove={() => {
-                    const tmp = [...paths];
-                    tmp.splice(index, 1);
-                    setPaths(tmp);
-                  }}
-                />
-              </div>
-            ))}
-            {paths.length === 0
-              && (
-                <p className="text-center mt-auto mb-auto italic">
-                  No folders added to library
-                </p>
-              )}
+      {!isCheckingCache && !cachedLibExists && (
+        <form
+          className="bg-white shadow-md text-neutral-950 w-2/3 m-auto h-1/2 p-10 rounded-xl flex flex-col gap-3 justify-between"
+          onSubmit={handleFormSubmit}
+        >
+          <div className="border-b-2 border-solid border-neutral-300">
+            <p className="text-2xl font-bold">Library Folders</p>
+            <p className="mb-1">
+              Music will be scanned into the library from the following folders:
+            </p>
           </div>
-        </div>
+          <div className="bg-white text-neutral-950 rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center ">
+            <div className="overflow-auto basis-full flex flex-col gap-3">
+              {paths.map((path, index) => (
+                <div key={path} className="mr-4">
+                  <DirectoryListItem
+                    path={path}
+                    index={index + 1}
+                    onClickRemove={() => {
+                      const tmp = [...paths];
+                      tmp.splice(index, 1);
+                      setPaths(tmp);
+                    }}
+                  />
+                </div>
+              ))}
+              {paths.length === 0
+                && (
+                  <p className="text-center mt-auto mb-auto italic">
+                    No folders added to library
+                  </p>
+                )}
+            </div>
+          </div>
 
-        <div className="flex flex-row w-full justify-between">
-          <button
-            className="rounded-lg flex flex-row gap-2 hover:bg-neutral-300 text-sm p-2 pl-3 pr-4 bg-neutral-700 w-fit text-white shadow-md"
-            onClick={handleAddDir}
-            type="button"
-          >
-            <Plus size={20} />
-            <p>New directory</p>
-          </button>
-          <button
-            type="submit"
-            disabled={paths.length === 0}
-            className="disabled:bg-neutral-200 disabled:text-neutral-500 rounded-lg bg-neutral-700 pl-3 pr-3 text-white shadow-md p-2 w-fit hover:bg-neutral-200 self-end"
-          >
-            Submit
-          </button>
-        </div>
-      </form>}
+          <div className="flex flex-row w-full justify-between">
+            <button
+              className="rounded-lg flex flex-row gap-2 hover:bg-neutral-300 text-sm p-2 pl-3 pr-4 bg-neutral-700 w-fit text-white shadow-md"
+              onClick={handleAddDir}
+              type="button"
+            >
+              <Plus size={20} />
+              <p>New directory</p>
+            </button>
+            <button
+              type="submit"
+              disabled={paths.length === 0}
+              className="disabled:bg-neutral-200 disabled:text-neutral-500 rounded-lg bg-neutral-700 pl-3 pr-3 text-white shadow-md p-2 w-fit hover:bg-neutral-200 self-end"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

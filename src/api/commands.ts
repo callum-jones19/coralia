@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api";
 import { Duration, Song } from "../types";
 
 export const resetLibraryBackend = () => {
-  console.log('test2');
+  console.log("test2");
   const tmp = invoke<void>("clear_library_and_cache", {});
   console.log(tmp);
   return tmp;

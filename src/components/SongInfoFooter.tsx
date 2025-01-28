@@ -5,7 +5,6 @@ export interface SongInfoFooterProps {
 }
 
 export default function SongInfoFooter({ currentSong }: SongInfoFooterProps) {
-
   return (
     <>
       <div id="music-info" className="flex flex-col text-center">
