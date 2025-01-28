@@ -27,25 +27,27 @@ export default function MenuBar() {
 
   return (
     <>
-      <div className="w-20 overflow-auto h-full flex flex-col justify-start gap-4 items-center p-2 bg-neutral-800">
-        <button
-          className="bg-neutral-600 rounded-md w-10/12 aspect-square"
-          onClick={() => handleClickSongs()}
-        >
-          <Music className="m-auto" />
-        </button>
-        <button
-          className="bg-neutral-600 rounded-md w-10/12 aspect-square"
-          onClick={() => handleClickAlbums()}
-        >
-          <Disc className="m-auto" />
-        </button>
-        <button
-          className="bg-neutral-600 rounded-md w-10/12 aspect-square"
-          onClick={() => handleClickSettings()}
-        >
-          <Settings className="m-auto" />
-        </button>
+      <div className="bg-neutral-950 w-24 h-full">
+        <div className="w-20 overflow-auto h-[99%] flex flex-col justify-start gap-4 items-center p-2 bg-neutral-900 rounded-md m-auto mt-2">
+          <button
+            className="bg-neutral-600 rounded-md w-10/12 aspect-square"
+            onClick={() => handleClickSongs()}
+          >
+            <Music className="m-auto" />
+          </button>
+          <button
+            className="bg-neutral-600 rounded-md w-10/12 aspect-square"
+            onClick={() => handleClickAlbums()}
+          >
+            <Disc className="m-auto" />
+          </button>
+          <button
+            className="bg-neutral-600 rounded-md w-10/12 aspect-square"
+            onClick={() => handleClickSettings()}
+          >
+            <Settings className="m-auto" />
+          </button>
+        </div>
       </div>
     </>
   );
