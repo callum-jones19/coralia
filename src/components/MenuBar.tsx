@@ -28,7 +28,7 @@ export default function MenuBar() {
   return (
     <>
       <div className="bg-neutral-950 w-24 h-full">
-        <div className="w-20 overflow-auto h-[99%] flex flex-col justify-start gap-4 items-center p-2 bg-neutral-900 rounded-md m-auto mt-2">
+        <div className="w-20 overflow-auto h-full flex flex-col justify-start gap-4 items-center p-2 pt-3 bg-neutral-900 rounded-b-md m-auto">
           <button
             className="bg-neutral-600 rounded-md w-10/12 aspect-square"
             onClick={() => handleClickSongs()}

@@ -21,7 +21,7 @@ export default function QueueListItem({ song, index }: QueueListItem) {
       onMouseEnter={() => setisHovering(true)}
       onMouseLeave={() => setisHovering(false)}
     >
-      <div className="basis-1/12 flex-shrink-0">
+      <div className="basis-6 flex-grow-0 flex-shrink-0">
         {index === 0 && <Volume1 size="1em" />}
         {index !== 0
           && <p>{index}.</p>}
