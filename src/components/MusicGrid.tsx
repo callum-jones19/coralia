@@ -32,7 +32,7 @@ export default function MusicGrid() {
   const albums = useAlbums();
 
   return (
-    <>
+    <div className="basis-1/2 flex-grow h-full flex flex-col">
       {albums.length > 0 &&
         <ReactVirtualizedAutoSizer>
           {({ height, width }) => (
@@ -58,6 +58,6 @@ export default function MusicGrid() {
           </p>
         </div>
       }
-    </>
+    </div>
   );
 }

@@ -67,7 +67,7 @@ export default function AlbumView() {
         </>
       )}
       {album && songs.length > 0 &&
-        <div className="flex flex-col min-h-full">
+        <div className="flex flex-col min-h-full w-full">
           <Link
             className="w-fit p-2 ml-3 mt-2 rounded-md"
             to="/home/albums"

@@ -22,7 +22,7 @@ export default function SongListItem(
   return (
     <div
       className={`h-full rounded-md  ${
-        isPlaying ? "bg-green-800" : isHovering ? "bg-neutral-700" : colored ? "bg-neutral-900" : "bg-neutral-800"
+        isPlaying ? "bg-green-800" : isHovering ? "bg-neutral-700" : colored ? "bg-neutral-900" : "bg-neutral-900"
       } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
