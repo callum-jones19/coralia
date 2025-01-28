@@ -10,4 +10,5 @@ html, body {
 
 #root {
   height: 100%;
+  scrollbar-color: rgb(255, 255, 255) #bbda5500;
 }

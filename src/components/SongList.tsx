@@ -68,7 +68,7 @@ export default function SongList() {
 
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
-      <div className="flex flex-row justify-between text-start gap-4 pt-2 pb-2 bg-neutral-900">
+      <div className="flex flex-row justify-between text-start gap-4 pt-2 pb-2 bg-neutral-900 border-b-2 border-neutral-200 border-solid">
         <p className="basis-1/5">Disk #</p>
         <p className="basis-1/5">Title</p>
         <p className="basis-1/5">Album</p>
