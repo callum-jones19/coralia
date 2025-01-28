@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../api/importer";
 import { Album, Song } from "../types";
-import { Link, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import SongListItem from "./SongListItem";
 import { ChevronLeft } from "react-feather";
@@ -10,7 +10,7 @@ import { listen } from "@tauri-apps/api/event";
 import { Duration } from "@tauri-apps/api/http";
 import { invoke } from "@tauri-apps/api";
 
-export type AlbumViewParams =  string;
+export type AlbumViewParams = string;
 
 export default function AlbumView() {
   const { albumId } = useParams<AlbumViewParams>();
@@ -55,8 +55,17 @@ export default function AlbumView() {
 
   const albumArtUri = album?.artwork?.art400 ? convertFileSrc(album.artwork.art400) : "";
 
+  const navigate = useNavigate();
+  const handleBackClick = () => {
+    // TODO
+    const t = navigate(-1);
+    if (t) {
+      t.catch(e => console.error(e));
+    }
+  };
+
   return (
-    <>
+    <div className="flex flex-col basis-9 flex-grow overflow-auto">
       {!album || songs.length === 0 && (
         <>
           <p>
@@ -67,13 +76,13 @@ export default function AlbumView() {
         </>
       )}
       {album && songs.length > 0 &&
-        <div className="flex flex-col min-h-full w-full">
-          <Link
+        <>
+          <button
             className="w-fit p-2 ml-3 mt-2 rounded-md"
-            to="/home/albums"
+            onClick={() => handleBackClick()}
           >
             <ChevronLeft />
-          </Link>
+          </button>
           <div id="album-header" className="h-fit p-3 flex flex-row gap-3">
             <img
               alt="Album Art Image"
@@ -131,8 +140,8 @@ export default function AlbumView() {
                 </div>
             ))}
           </ul>
-        </div>
+        </>
       }
-    </>
+    </div>
   );
 }

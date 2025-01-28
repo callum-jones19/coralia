@@ -27,7 +27,7 @@ export default function MenuBar() {
 
   return (
     <>
-      <div className="w-20 h-full flex flex-col justify-start gap-4 items-center p-2 bg-neutral-800 border-r-8 border-b-8 border-neutral-950">
+      <div className="w-20 flex-shrink-0 flex-grow-0 h-full flex flex-col justify-start gap-4 items-center p-2 bg-neutral-800 border-r-8 border-b-8 border-neutral-950">
         <button
           className="bg-neutral-600 rounded-md w-10/12 aspect-square"
           onClick={() => handleClickSongs()}
