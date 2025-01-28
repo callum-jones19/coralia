@@ -52,7 +52,7 @@ export default function FullscreenScreen() {
 
   return (
     <>
-      <div className="w-full h-full flex flex-col bg-gradient-to-b from-neutral-700 to-neutral-900 text-white p-5">
+      <div className="w-full h-full flex flex-col bg-gradient-to-b from-neutral-800 to-neutral-900 text-white p-5">
         <div
           className="flex-grow flex flex-col gap-2 items-cente min-h-0"
         >

@@ -6,12 +6,8 @@ export default function LibraryPage() {
   return (
     <div className="h-full flex flex-col bg-neutral-900 text-neutral-50">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
+        <Outlet />
         <SideBar />
-        <div
-          className="basis-full flex-grow-0 min-w-0 relative overflow-auto"
-        >
-          <Outlet />
-        </div>
       </div>
       <MusicFooter />
     </div>

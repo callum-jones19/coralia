@@ -67,9 +67,9 @@ export default function SongList() {
   }
 
   return (
-    <>
+    <div className="basis-1/2 flex-grow h-full">
       {songs.length > 0 && (
-        <ReactVirtualizedAutoSizer>
+        <ReactVirtualizedAutoSizer >
           {({ height, width }) => (
             <FixedSizeList
               height={height}
@@ -91,6 +91,6 @@ export default function SongList() {
           </p>
         </div>
       )}
-    </>
+    </div>
   );
 }
