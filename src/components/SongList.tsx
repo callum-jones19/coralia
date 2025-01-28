@@ -67,22 +67,31 @@ export default function SongList() {
   }
 
   return (
-    <div className="basis-1/2 flex-grow h-full">
+    <div className="basis-1/2 flex-grow h-full flex flex-col ">
+      <div className="flex flex-row justify-between text-start gap-4 pt-2 pb-2 bg-neutral-950">
+        <p className="basis-1/5">Disk #</p>
+        <p className="basis-1/5">Title</p>
+        <p className="basis-1/5">Album</p>
+        <p className="basis-1/5">Artist</p>
+        <p className="basis-1/5">Artist</p>
+      </div>
       {songs.length > 0 && (
-        <ReactVirtualizedAutoSizer >
-          {({ height, width }) => (
-            <FixedSizeList
-              height={height}
-              itemCount={songs.length}
-              itemSize={60}
-              width={width}
-              itemData={data}
-              overscanCount={5}
-            >
-              {Row}
-            </FixedSizeList>
-          )}
-        </ReactVirtualizedAutoSizer>
+        <div className="basis-full">
+          <ReactVirtualizedAutoSizer >
+            {({ height, width }) => (
+              <FixedSizeList
+                height={height}
+                itemCount={songs.length}
+                itemSize={60}
+                width={width}
+                itemData={data}
+                overscanCount={5}
+              >
+                {Row}
+              </FixedSizeList>
+            )}
+          </ReactVirtualizedAutoSizer>
+        </div>
       )}
       {songs.length === 0 && (
         <div className="h-full w-full flex flex-col justify-center">

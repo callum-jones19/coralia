@@ -20,16 +20,14 @@ export default function SongListItem(
   const isPlaying = currentlyPlayingId === song.id;
 
   return (
-    <li
-      className={`flex flex-col h-full rounded-md  ${
-        isPlaying ? "bg-green-800" : colored ? "bg-neutral-900" : "bg-neutral-800"
-      }`}
+    <div
+      className={`h-full rounded-md  ${
+        isPlaying ? "bg-green-800" : isHovering ? "bg-neutral-700" : colored ? "bg-neutral-900" : "bg-neutral-800"
+      } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div
-        className="hover:bg-neutral-800 p-2 flex flex-row gap-2 flex-shrink items-center flex-grow rounded-md"
-      >
+      <div className="basis-1/5 flex flex-row justify-start items-center">
         {showImage && <img
           loading="lazy"
           src={imgUrl}
@@ -38,56 +36,52 @@ export default function SongListItem(
           alt="thumb art"
           className="rounded-sm mr-2"
         />}
-        <div className="basis-1/12 flex flex-row justify-start flex-shrink-[2]">
-          {!isHovering && !isPlaying
-            && (
-              <p className="w-fit">
-                {song.tags.trackNumber ? song.tags.trackNumber : "N/A"}.
-              </p>
-            )}
-          {!isHovering && isPlaying
-            && (
-              <Volume2 />
-            )}
-          {isHovering
-            && (
-              <div className="flex flex-row gap-1">
-                <button
-                  className="bg-neutral-800 rounded-full"
-                  onClick={() => clearAndPlayBackend(song)}
-                >
-                  <Play color="white" />
-                </button>
-              </div>
-            )}
-        </div>
-        <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex flex-row items-center gap-1">
-          <p
-            className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
-            title={song.tags.title}
-          >
-            {song.tags.title}
-          </p>
-        </div>
+        {!isHovering && !isPlaying
+          && (
+            <p className="w-fit">
+              {song.tags.trackNumber ? song.tags.trackNumber : "N/A"}.
+            </p>
+          )}
+        {!isHovering && isPlaying
+          && (
+            <Volume2 />
+          )}
+        {isHovering
+          && (
+            <button
+              className="rounded-full text-center"
+              onClick={() => clearAndPlayBackend(song)}
+            >
+              <Play color="white" />
+            </button>
+          )}
+      </div>
+      <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex flex-row items-center gap-1">
         <p
-          className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
-          title={song.tags.album}
+          className="basis-1/5flex-grow overflow-hidden text-nowrap text-ellipsis"
+          title={song.tags.title}
         >
-          {song.tags.album}
-        </p>
-        <p
-          className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
-          title={song.tags.artist}
-        >
-          {song.tags.artist}
-        </p>
-        <p
-          className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
-          title={song.tags.albumArtist}
-        >
-          {song.tags.albumArtist}
+          {song.tags.title}
         </p>
       </div>
-    </li>
+      <p
+        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
+        title={song.tags.album}
+      >
+        {song.tags.album}
+      </p>
+      <p
+        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
+        title={song.tags.artist}
+      >
+        {song.tags.artist}
+      </p>
+      <p
+        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
+        title={song.tags.albumArtist}
+      >
+        {song.tags.albumArtist}
+      </p>
+    </div>
   );
 }
