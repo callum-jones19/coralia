@@ -7,7 +7,7 @@ import { Duration } from "@tauri-apps/api/http";
 import { getPlayerState } from "../api/importer";
 import QueueListItem from "./QueueListItem";
 
-export default function SideBar() {
+export default function QueueBar() {
   const [queue, setQueue] = useState<Song[]>([]);
   const navigate = useNavigate();
 
