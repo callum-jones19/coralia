@@ -27,25 +27,30 @@ export default function MenuBar() {
 
   return (
     <>
-      <div className="bg-neutral-950 w-24 h-full">
-        <div className="w-20 overflow-auto h-full flex flex-col justify-start gap-4 items-center p-2 pt-3 bg-neutral-900 rounded-b-md m-auto">
+      <div className="bg-neutral-950 w-48 h-full">
+        <div className="w-[92%] overflow-auto h-full flex flex-col justify-between gap-4 items-center p-2 pt-3 bg-neutral-900 rounded-b-md m-auto">
+          <div className="w-full ml-auto flex flex-col gap-2 items-center">
+            <button
+              className="flex flex-row items-center justify-center gap-2 bg-neutral-600 rounded-md w-10/12 p-3"
+              onClick={() => handleClickSongs()}
+            >
+              <Music />
+              <p>Songs</p>
+              </button>
+            <button
+              className="flex flex-row items-center justify-center gap-2 bg-neutral-600 rounded-md w-10/12 p-3"
+              onClick={() => handleClickAlbums()}
+            >
+              <Disc />
+              <p>Albums</p>
+              </button>
+          </div>
           <button
-            className="bg-neutral-600 rounded-md w-10/12 aspect-square"
-            onClick={() => handleClickSongs()}
+              className="flex flex-row items-center justify-center gap-2 bg-neutral-600 rounded-md w-10/12 p-3"
+              onClick={() => handleClickSettings()}
           >
-            <Music className="m-auto" />
-          </button>
-          <button
-            className="bg-neutral-600 rounded-md w-10/12 aspect-square"
-            onClick={() => handleClickAlbums()}
-          >
-            <Disc className="m-auto" />
-          </button>
-          <button
-            className="bg-neutral-600 rounded-md w-10/12 aspect-square"
-            onClick={() => handleClickSettings()}
-          >
-            <Settings className="m-auto" />
+            <Settings />
+            <p>Settings</p>
           </button>
         </div>
       </div>
