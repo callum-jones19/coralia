@@ -12,7 +12,7 @@ export interface SongListItemProps {
 }
 
 export default function SongListItem(
-  { song, colored, currentlyPlayingId, showImage }: SongListItemProps,
+  { song, currentlyPlayingId, showImage }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
@@ -23,12 +23,10 @@ export default function SongListItem(
     <div
       className={`h-full rounded-md  ${
         isPlaying
-          ? "bg-green-800"
+          ? "bg-green-400"
           : isHovering
-          ? "bg-neutral-700"
-          : colored
-          ? "bg-neutral-900"
-          : "bg-neutral-900"
+          ? "bg-neutral-400"
+          : ''
       } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -58,7 +56,7 @@ export default function SongListItem(
               className="rounded-full text-center"
               onClick={() => clearAndPlayBackend(song)}
             >
-              <Play color="white" />
+              <Play />
             </button>
           )}
       </div>

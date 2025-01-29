@@ -48,7 +48,7 @@ export default function PlayButtons() {
           <SkipBack fill="gray" color="gray" size="1em" />
         </button>
         <button
-          className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-gray-500 hover:bg-neutral-700"
+          className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-transparent hover:bg-neutral-400"
           disabled={queueLen === 0}
           onClick={() => {
             if (isPaused) {
@@ -58,8 +58,8 @@ export default function PlayButtons() {
             }
           }}
         >
-          {isPaused && <Play fill="white" size="1em" />}
-          {!isPaused && <Pause size="1em" fill="white" />}
+          {isPaused && <Play fill="black" size="1.2em" />}
+          {!isPaused && <Pause size="1.2em" fill="black" />}
         </button>
         <button
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"
@@ -67,8 +67,8 @@ export default function PlayButtons() {
           onClick={() => skipOneSong()}
         >
           <SkipForward
-            fill={`${queueLen === 0 ? "gray" : "white"}`}
-            color={`${queueLen === 0 ? "gray" : "white"}`}
+            fill={`${queueLen === 0 ? "gray" : "black"}`}
+            color={`${queueLen === 0 ? "gray" : "black"}`}
             size="1em"
           />
         </button>
