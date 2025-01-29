@@ -97,7 +97,7 @@ export default function AlbumView() {
               />
               <div className="flex flex-col justify-between gap-3 w-full pr-3">
                 <button
-                  className="rounded-md self-end bg-neutral-400 h-8 w-8"
+                  className="rounded-md self-end bg-neutral-300 h-8 w-8"
                   onClick={() => handleBackClick()}
                 >
                   <ChevronLeft className="m-auto" />
@@ -110,10 +110,10 @@ export default function AlbumView() {
             </div>
             <div
                   id="controls"
-                  className="w-full flex flex-row gap-3 pl-2"
+                  className="w-full flex flex-row gap-3 pl-3"
                 >
                   <button
-                    className="ml-2 bg-neutral-200 rounded-md p-2"
+                    className="hover:bg-neutral-300 rounded-md p-2"
                     onClick={() => {
                       invoke("clear_queue", {})
                         .then(() => enqueueSongsBackend(songs))
