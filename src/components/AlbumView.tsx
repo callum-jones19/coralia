@@ -68,7 +68,7 @@ export default function AlbumView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full gap-3 pt-3">
       {!album || songs.length === 0 && (
             <>
               <p>
@@ -81,13 +81,13 @@ export default function AlbumView() {
       {album && songs.length > 0
         && (
           <>
-            <button
-              className="w-fit p-2 ml-1 mt-2 rounded-md"
+            {/* <button
+              className="w-fit rounded-md pl-2"
               onClick={() => handleBackClick()}
             >
               <ChevronLeft />
-            </button>
-            <div id="album-header" className="h-fit p-3 flex flex-row gap-3">
+            </button> */}
+            <div id="album-header" className="h-fit flex flex-row gap-3 pl-3 w-full">
               <img
                 alt="Album Art Image"
                 src={albumArtUri}
@@ -95,24 +95,32 @@ export default function AlbumView() {
                 width="250px"
                 className="rounded-md shadow-md aspect-square flex-grow-0 flex-shrink-0"
               />
-              <div className="flex flex-col justify-end gap-3">
-                <p className="font-bold text-4xl">{album.title}</p>
-                <p className="italic text-xl">{album.albumArtist}</p>
+              <div className="flex flex-col justify-between gap-3 w-full pr-3">
+                <button
+                  className="rounded-md self-end bg-neutral-400 h-8 w-8"
+                  onClick={() => handleBackClick()}
+                >
+                  <ChevronLeft className="m-auto" />
+                </button>
+                <div>
+                  <p className="font-bold text-4xl">{album.title}</p>
+                  <p className="italic text-xl">{album.albumArtist}</p>
+                </div>
               </div>
             </div>
             <div
                   id="controls"
-                  className="w-full flex flex-row gap-2"
+                  className="w-full flex flex-row gap-3 pl-2"
                 >
                   <button
-                    className="rounded-full ml-2"
+                    className="ml-2 bg-neutral-200 rounded-md p-2"
                     onClick={() => {
                       invoke("clear_queue", {})
                         .then(() => enqueueSongsBackend(songs))
                         .catch(e => console.error(e));
                     }}
                   >
-                    <Play />
+                    <Play fill="black" />
                   </button>
                   <button
                     disabled
