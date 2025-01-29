@@ -50,7 +50,7 @@ export default function MusicFooter() {
   }, []);
 
   return (
-    <div className="basis-16 pt-3 pb-3 pr-10 pl-10">
+    <div className="basis-16 pt-3 pb-3 pr-10 pl-10 shadow-md bg-neutral-100 m-3 rounded-md">
       <div className="flex flex-col justify-center h-full gap-2">
         <div className="flex flex-row justify-between">
           <PlayButtons />
