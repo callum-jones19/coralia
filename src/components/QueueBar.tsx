@@ -32,7 +32,7 @@ export default function QueueBar() {
 
   return (
     <div className="basis-2/12 h-full flex-grow-0 flex-shrink-0 min-h-0">
-      <div className="h-full w-11/12 m-auto rounded-md p-3 shadow-md bg-neutral-100">
+      <div className="h-full w-11/12 m-auto rounded-md p-3 bg-neutral-100">
         <div className="flex flex-col gap-3 justify-between h-full">
           <h2 className="font-bold">Queue</h2>
           <li className="flex flex-col gap-3 flex-grow overflow-auto">
