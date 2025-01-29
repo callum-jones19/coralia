@@ -22,9 +22,9 @@ export default function VolumeController() {
   return (
     <div id="volume" className="flex flex-row gap-2 items-center p-1">
       <button>
-        {volume >= 50 && <Volume2 color="white" />}
-        {volume < 50 && volume > 0 && <Volume1 color="white" />}
-        {volume === 0 && <VolumeX color="white" />}
+        {volume >= 50 && <Volume2 />}
+        {volume < 50 && volume > 0 && <Volume1 />}
+        {volume === 0 && <VolumeX />}
       </button>
       <input
         id="volume-slider"

@@ -1,10 +1,5 @@
-import { invoke } from "@tauri-apps/api";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { useState } from "react";
-import { Play } from "react-feather";
 import { useNavigate } from "react-router";
-import { enqueueSongsBackend } from "../api/commands";
-import { getAlbumSongs } from "../api/importer";
 import { Album } from "../types";
 
 export interface MusicGridAlbumProps {
@@ -14,8 +9,6 @@ export interface MusicGridAlbumProps {
 export default function MusicGridAlbum(
   { album }: MusicGridAlbumProps,
 ) {
-  const [isHovering, setIsHovering] = useState<boolean>(false);
-
   const imgSrc = album.artwork?.art400
     ? convertFileSrc(album.artwork?.art400)
     : undefined;
@@ -32,8 +25,6 @@ export default function MusicGridAlbum(
   return (
     <div
       className="p-2 w-full h-full flex flex-col justify-center items-center"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
     >
       <div className="p-2 w-full h-3/4 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
         <div className="m-auto relative">
