@@ -9,6 +9,7 @@ import { enqueueSongsBackend } from "../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../api/importer";
 import { Album, Song } from "../types";
 import SongListItem from "./SongListItem";
+import SongListHeader from "./SongListHeader";
 
 export type AlbumViewParams = string;
 
@@ -126,13 +127,7 @@ export default function AlbumView() {
               id="song-list"
               className="basis-1 flex-grow-1 p-3"
             >
-              <li className="border-b-2">
-                <div className="flex flex-row w-full gap-2 p-2">
-                  <p className="flex-grow basis-1/12">#</p>
-                  <p className="flex-grow basis-1/2">Title</p>
-                  <p className="flex-grow basis-1/2">Genre</p>
-                </div>
-              </li>
+              <SongListHeader />
               {songs.map(song => (
                 <div key={song.id} className="h-14">
                   <SongListItem

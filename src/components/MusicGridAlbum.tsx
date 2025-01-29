@@ -46,7 +46,7 @@ export default function MusicGridAlbum(
               onClick={() => navigateToAlbum()}
             />
           )}
-          {isHovering
+          {/* {isHovering
             && (
               <button
                 className="bg-black p-5 rounded-full absolute bottom-3 right-3 shadow-md"
@@ -64,7 +64,7 @@ export default function MusicGridAlbum(
               >
                 <Play />
               </button>
-            )}
+            )} */}
         </div>
         <div className="flex flex-col">
           <button
