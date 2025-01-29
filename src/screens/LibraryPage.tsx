@@ -5,7 +5,7 @@ import LibraryBody from "../components/LibraryBody";
 
 export default function LibraryPage() {
   return (
-    <div className="h-full flex flex-col bg-neutral-50 text-black">
+    <div className="h-full flex flex-col bg-neutral-50 text-black pt-3">
       <div className="flex flex-row flex-grow h-1 flex-shrink">
         <MenuBar />
         <LibraryBody />

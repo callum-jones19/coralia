@@ -45,17 +45,17 @@ export default function MenuBar() {
   return (
     <>
       <div className="basis-2/12 h-full">
-        <div className="w-11/12 overflow-auto h-full flex flex-col justify-between gap-4 items-center p-2 pt-3 rounded-b-md m-auto bg-neutral-200">
+        <div className="w-11/12 overflow-auto h-full flex flex-col justify-between gap-4 items-center p-2 pt-3 rounded-md m-auto bg-neutral-200">
           <div className="w-full flex flex-col gap-2 items-start">
             <button
-              className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-200 ${activeSection !== 'Songs' ? 'text-neutral-400' : 'bg-neutral-200'}`}
+              className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${activeSection !== 'Songs' ? 'hover:bg-neutral-300' : 'bg-neutral-400'}`}
               onClick={() => handleClickSongs()}
             >
               <Music />
               <p>Songs</p>
               </button>
             <button
-              className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-200  ${activeSection !== 'Albums' ? 'text-neutral-400' : 'bg-neutral-200'}`}
+              className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2  ${activeSection !== 'Albums' ? 'hover:bg-neutral-300' : 'bg-neutral-400'}`}
               onClick={() => handleClickAlbums()}
             >
               <Disc />
@@ -63,7 +63,7 @@ export default function MenuBar() {
               </button>
           </div>
           <button
-              className="flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-200"
+              className="flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300"
               onClick={() => handleClickSettings()}
           >
             <Settings />

@@ -44,7 +44,7 @@ export default function FullscreenScreen() {
       unlistenQueue.then(f => f).catch(e => console.log(e));
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [navigate]);
 
   const imgSrc = queue[0]?.artwork
     ? convertFileSrc(queue[0].artwork.fullResArt)

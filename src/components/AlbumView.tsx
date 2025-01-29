@@ -68,7 +68,7 @@ export default function AlbumView() {
   };
 
   return (
-    <div className="flex flex-col basis-9 flex-grow overflow-auto">
+    <div className="flex flex-col h-full">
       {!album || songs.length === 0 && (
             <>
               <p>
@@ -82,7 +82,7 @@ export default function AlbumView() {
         && (
           <>
             <button
-              className="w-fit p-2 ml-3 mt-2 rounded-md"
+              className="w-fit p-2 ml-1 mt-2 rounded-md"
               onClick={() => handleBackClick()}
             >
               <ChevronLeft />
@@ -95,17 +95,17 @@ export default function AlbumView() {
                 width="250px"
                 className="rounded-md shadow-md aspect-square flex-grow-0 flex-shrink-0"
               />
-              <div className="flex flex-col justify-between gap-3">
-                <div>
-                  <p className="font-bold text-4xl">{album.title}</p>
-                  <p className="italic text-xl">{album.albumArtist}</p>
-                </div>
-                <div
+              <div className="flex flex-col justify-end gap-3">
+                <p className="font-bold text-4xl">{album.title}</p>
+                <p className="italic text-xl">{album.albumArtist}</p>
+              </div>
+            </div>
+            <div
                   id="controls"
                   className="w-full flex flex-row gap-2"
                 >
                   <button
-                    className="bg-neutral-950 rounded-full p-4"
+                    className="rounded-full ml-2"
                     onClick={() => {
                       invoke("clear_queue", {})
                         .then(() => enqueueSongsBackend(songs))
@@ -116,18 +116,18 @@ export default function AlbumView() {
                   </button>
                   <button
                     disabled
-                    className="bg-neutral-950 rounded-full p-4 disabled:bg-neutral-800"
+                    className="rounded-full disabled:text-neutral-400"
                   >
                     <Shuffle />
                   </button>
                 </div>
-              </div>
-            </div>
             <ul
               id="song-list"
-              className="basis-1 flex-grow-1 p-3"
+              className="basis-full overflow-auto"
             >
-              <SongListHeader />
+              <div className="sticky top-0 bg-neutral-300 rounded-md">
+                <SongListHeader />
+              </div>
               {songs.map(song => (
                 <div key={song.id} className="h-14">
                   <SongListItem
