@@ -29,8 +29,8 @@ export default function FullscreenScreen() {
     const handleKeyDown = (e: KeyboardEvent) => {
       console.log(e.key);
       if (e.key === "Escape") {
-        const res = navigate("/home");
         appWindow.setFullscreen(false).catch(e => console.error(e));
+        const res = navigate(-1);
         if (res) {
           res.catch(e => console.error(e));
         }
