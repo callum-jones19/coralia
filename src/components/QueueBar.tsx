@@ -32,30 +32,30 @@ export default function QueueBar() {
 
   return (
     <div className="w-2/12 h-full flex-grow-0 flex-shrink-0 rounded-md bg-neutral-100 p-2">
-        <div className="flex flex-col gap-3 justify-between h-full">
-          <h2 className="font-bold">Queue</h2>
-          <li className="flex flex-col gap-3 flex-grow overflow-auto">
-            {queue.length === 0 && <ul>Empty queue</ul>}
-            {queue.map((song, index) => (
-              <QueueListItem key={index} song={song} index={index} />
-            ))}
-          </li>
-          <div className="flex flex-col gap-3">
-            {imgSrc && (
-              <img
-                alt="Currently playing song album art"
-                src={imgSrc}
-                className="w-full aspect-square rounded-lg hover:cursor-pointer"
-                onClick={() => {
-                  const navRes = navigate(`album/${queue[0].album}`);
-                  if (navRes) {
-                    navRes.catch(e => console.error(e));
-                  }
-                }}
-              />
-            )}
-          </div>
+      <div className="h-full flex flex-col gap-3 justify-between">
+        <h2 className="font-bold">Queue</h2>
+        <div className="h-full w-full overflow-auto flex flex-col gap-2">
+          {queue.length === 0 && <i>Empty queue</i>}
+          {queue.map((song, index) => (
+            <QueueListItem key={index} song={song} index={index} />
+          ))}
         </div>
+        <div className="flex flex-col gap-3">
+          {imgSrc && (
+            <img
+              alt="Currently playing song album art"
+              src={imgSrc}
+              className="w-full aspect-square rounded-lg hover:cursor-pointer"
+              onClick={() => {
+                const navRes = navigate(`album/${queue[0].album}`);
+                if (navRes) {
+                  navRes.catch(e => console.error(e));
+                }
+              }}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

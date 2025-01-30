@@ -15,9 +15,9 @@ export default function QueueListItem({ song, index }: QueueListItem) {
     : undefined;
   const [isHovering, setisHovering] = useState<boolean>(false);
   return (
-    <ul
+    <div
       key={`${song.filePath}-${index}`}
-      className="flex flex-row gap-2 items-center justify-start max-w-full"
+      className="w-full flex flex-row gap-2 items-center"
       onMouseEnter={() => setisHovering(true)}
       onMouseLeave={() => setisHovering(false)}
     >
@@ -30,10 +30,10 @@ export default function QueueListItem({ song, index }: QueueListItem) {
         loading="lazy"
         alt="album art"
         src={queueImgSrc}
-        className="w-6 aspect-square"
+        className="w-6 aspect-square rounded-sm"
       />
       <p
-        className="basis-2 text-nowrap"
+        className="text-nowrap overflow-hidden text-ellipsis"
         title={song.tags.title}
       >
         {song.tags.title}
@@ -47,6 +47,6 @@ export default function QueueListItem({ song, index }: QueueListItem) {
             <X/>
           </button>
         )}
-    </ul>
+    </div>
   );
 }
