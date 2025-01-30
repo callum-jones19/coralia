@@ -26,7 +26,7 @@ export default function SongListItem(
           ? "text-green-700 font-bold"
           : isHovering
           ? "bg-neutral-400"
-          : ''
+          : ""
       } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}

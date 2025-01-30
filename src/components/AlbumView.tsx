@@ -8,8 +8,8 @@ import { useParams } from "react-router";
 import { enqueueSongsBackend } from "../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../api/importer";
 import { Album, Song } from "../types";
-import SongListItem from "./SongListItem";
 import SongListHeader from "./SongListHeader";
+import SongListItem from "./SongListItem";
 
 export type AlbumViewParams = string;
 
@@ -72,7 +72,10 @@ export default function AlbumView() {
       {album && songs.length > 0
         && (
           <>
-            <div id="album-header" className="h-fit flex flex-row gap-3 pl-3 w-full">
+            <div
+              id="album-header"
+              className="h-fit flex flex-row gap-3 pl-3 w-full"
+            >
               <img
                 alt="Album Art Image"
                 src={albumArtUri}
@@ -86,26 +89,26 @@ export default function AlbumView() {
               </div>
             </div>
             <div
-                  id="controls"
-                  className="w-full flex flex-row gap-3 pl-3"
-                >
-                  <button
-                    className="hover:bg-neutral-300 rounded-md p-2"
-                    onClick={() => {
-                      invoke("clear_queue", {})
-                        .then(() => enqueueSongsBackend(songs))
-                        .catch(e => console.error(e));
-                    }}
-                  >
-                    <Play fill="black" />
-                  </button>
-                  <button
-                    disabled
-                    className="rounded-full disabled:text-neutral-400"
-                  >
-                    <Shuffle />
-                  </button>
-                </div>
+              id="controls"
+              className="w-full flex flex-row gap-3 pl-3"
+            >
+              <button
+                className="hover:bg-neutral-300 rounded-md p-2"
+                onClick={() => {
+                  invoke("clear_queue", {})
+                    .then(() => enqueueSongsBackend(songs))
+                    .catch(e => console.error(e));
+                }}
+              >
+                <Play fill="black" />
+              </button>
+              <button
+                disabled
+                className="rounded-full disabled:text-neutral-400"
+              >
+                <Shuffle />
+              </button>
+            </div>
             <ul
               id="song-list"
               className="basis-full overflow-auto"

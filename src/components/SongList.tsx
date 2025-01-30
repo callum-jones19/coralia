@@ -6,8 +6,8 @@ import { areEqual, FixedSizeList } from "react-window";
 import { getPlayerState } from "../api/importer";
 import { useSongs } from "../Contexts";
 import { Song } from "../types";
-import SongListItem from "./SongListItem";
 import SongListHeader from "./SongListHeader";
+import SongListItem from "./SongListItem";
 
 interface SongListData {
   songs: Song[];

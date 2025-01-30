@@ -23,9 +23,7 @@ export default function MusicGridAlbum(
   };
 
   return (
-    <div
-      className="p-2 w-full h-full flex flex-col justify-center items-center"
-    >
+    <div className="p-2 w-full h-full flex flex-col justify-center items-center">
       <div className="p-2 w-full h-3/4 rounded-md flex flex-col justify-between min-h-0 min-w-0 flex-grow">
         <div className="m-auto relative">
           {imgSrc && (
@@ -37,7 +35,8 @@ export default function MusicGridAlbum(
               onClick={() => navigateToAlbum()}
             />
           )}
-          {/* {isHovering
+          {
+            /* {isHovering
             && (
               <button
                 className="bg-black p-5 rounded-full absolute bottom-3 right-3 shadow-md"
@@ -55,7 +54,8 @@ export default function MusicGridAlbum(
               >
                 <Play />
               </button>
-            )} */}
+            )} */
+          }
         </div>
         <div className="flex flex-col">
           <button

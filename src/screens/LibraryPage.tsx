@@ -1,7 +1,7 @@
+import LibraryBody from "../components/LibraryBody";
 import MenuBar from "../components/MenuBar";
 import MusicFooter from "../components/MusicFooter";
 import QueueBar from "../components/QueueBar";
-import LibraryBody from "../components/LibraryBody";
 
 export default function LibraryPage() {
   return (

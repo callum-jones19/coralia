@@ -41,10 +41,10 @@ export default function QueueListItem({ song, index }: QueueListItem) {
       {isHovering
         && (
           <button
-          className=""
+            className=""
             onClick={() => removeFromQueue(index)}
           >
-            <X/>
+            <X />
           </button>
         )}
     </div>
