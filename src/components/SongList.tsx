@@ -26,7 +26,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
   return (
     <div
       style={style}
-      // className="[&_*]:outline-green-300 [&_*]:outline [&_*]:outline-2"
+    // className="[&_*]:outline-green-300 [&_*]:outline [&_*]:outline-2"
     >
       <SongListItem
         song={song}
@@ -68,26 +68,39 @@ export default function SongList() {
 
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
-      <div className="w-full mr-10">
-        <SongListHeader />
-      </div>
       {songs.length > 0 && (
-        <div className="basis-full">
-          <ReactVirtualizedAutoSizer>
-            {({ height, width }) => (
-              <FixedSizeList
-                height={height}
-                itemCount={songs.length}
-                itemSize={60}
-                width={width}
-                itemData={data}
-                overscanCount={5}
-              >
-                {Row}
-              </FixedSizeList>
-            )}
-          </ReactVirtualizedAutoSizer>
-        </div>
+        <table className="basis-full w-full">
+          <colgroup>
+            <col span={1} className="w-20"></col>
+            <col span={1} className="w-20"></col>
+            <col span={1} className="w-20"></col>
+            <col span={1} className="w-20"></col>
+            <col span={1} className="w-20"></col>
+          </colgroup>
+          <tr className="basis-20">
+            <th className="text-start">Track #</th>
+            <th className="text-start">Title</th>
+            <th className="text-start">Album</th>
+            <th className="text-start">Artist</th>
+            <th className="text-start">Album Artist</th>
+          </tr>
+          <div className="basis-1/2 w-full">
+            <ReactVirtualizedAutoSizer>
+              {({ height, width }) => (
+                <FixedSizeList
+                  height={height}
+                  itemCount={songs.length}
+                  itemSize={60}
+                  width={width}
+                  itemData={data}
+                  overscanCount={5}
+                >
+                  {Row}
+                </FixedSizeList>
+              )}
+            </ReactVirtualizedAutoSizer>
+          </div>
+        </table>
       )}
       {songs.length === 0 && (
         <div className="h-full w-full flex flex-col justify-center">

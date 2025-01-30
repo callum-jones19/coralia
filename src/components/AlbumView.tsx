@@ -8,7 +8,6 @@ import { useParams } from "react-router";
 import { enqueueSongsBackend } from "../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../api/importer";
 import { Album, Song } from "../types";
-import SongListHeader from "./SongListHeader";
 import SongListItem from "./SongListItem";
 
 export type AlbumViewParams = string;
@@ -59,7 +58,7 @@ export default function AlbumView() {
     : "";
 
   return (
-    <div className="flex flex-col h-full gap-3 pt-3">
+    <div className="flex flex-col h-full gap-3 overflow-auto">
       {!album || songs.length === 0 && (
             <>
               <p>
@@ -74,7 +73,7 @@ export default function AlbumView() {
           <>
             <div
               id="album-header"
-              className="h-fit flex flex-row gap-3 pl-3 w-full"
+              className="h-fit flex flex-row gap-3 w-full"
             >
               <img
                 alt="Album Art Image"
@@ -83,14 +82,14 @@ export default function AlbumView() {
                 width="250px"
                 className="rounded-md shadow-md aspect-square flex-grow-0 flex-shrink-0"
               />
-              <div className="flex flex-col justify-end gap-3 w-full pr-3">
+              <div className="flex flex-col justify-end gap-3 pr-3">
                 <p className="font-bold text-4xl">{album.title}</p>
                 <p className="italic text-xl">{album.albumArtist}</p>
               </div>
             </div>
             <div
               id="controls"
-              className="w-full flex flex-row gap-3 pl-3"
+              className="w-full flex flex-row gap-3"
             >
               <button
                 className="hover:bg-neutral-300 rounded-md p-2"
@@ -109,23 +108,33 @@ export default function AlbumView() {
                 <Shuffle />
               </button>
             </div>
-            <ul
+            <table
               id="song-list"
-              className="basis-full overflow-auto"
+              className="flex-grow text-start"
             >
-              <div className="sticky top-0 bg-neutral-300 rounded-md">
-                <SongListHeader />
-              </div>
+              <colgroup>
+                <col span={1} className="w-20"></col>
+                <col span={1} className="w-20"></col>
+                <col span={1} className="w-20"></col>
+                <col span={1} className="w-20"></col>
+                <col span={1} className="w-20"></col>
+              </colgroup>
+              <tr>
+                <th className="text-start">Track #</th>
+                <th className="text-start">Title</th>
+                <th className="text-start">Album</th>
+                <th className="text-start">Artist</th>
+                <th className="text-start">Album Artist</th>
+              </tr>
               {songs.map(song => (
-                <div key={song.id} className="h-14">
                   <SongListItem
+                    key={song.id}
                     song={song}
                     colored={false}
                     currentlyPlayingId={currentSong?.id}
                   />
-                </div>
               ))}
-            </ul>
+            </table>
           </>
         )}
     </div>
