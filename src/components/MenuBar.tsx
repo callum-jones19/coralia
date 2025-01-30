@@ -61,13 +61,13 @@ export default function MenuBar() {
       <div className="basis-2/12 h-full">
         <div className="w-11/12 h-full flex flex-col justify-between bg-neutral-100 gap-4 items-center p-2 pt-3 rounded-md m-auto">
           <div className="w-full flex flex-col gap-2 items-start">
-            <div className="w-full flex flex-row justify-between gap-2">
-              <button className="hover:bg-neutral-300 bg-neutral-200 p-2 rounded-md" onClick={handleClickBack}><ChevronLeft/></button>
-              <button className="bg-neutral-200 flex-grow rounded-md flex flex-row items-center gap-2 text-neutral-600">
-                <Search className="ml-2"/>
-                <p>Search</p>
-              </button>
-              <button className="hover:bg-neutral-300 bg-neutral-200 p-2 rounded-md" onClick={handleClickForward}><ChevronRight /></button>
+            <div className="w-full flex flex-row justify-between gap-2 flex-wrap">
+              <button className="hover:bg-neutral-300 bg-neutral-200 p-2 rounded-md flex-grow" onClick={handleClickBack}><ChevronLeft className="m-auto" /></button>
+              <button className="hover:bg-neutral-300 bg-neutral-200 p-2 rounded-md flex-grow" onClick={handleClickForward}><ChevronRight className="m-auto" /></button>
+              <input
+                className="bg-neutral-200 basis-full rounded-md items-center gap-2 flex-wrap text-neutral-600 p-2 min-w-0 overflow-hidden"
+                placeholder="Search"
+              />
             </div>
             <button
               className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${activeSection !== 'Songs' ? 'hover:bg-neutral-200' : 'bg-neutral-300'}`}
