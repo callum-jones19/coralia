@@ -52,7 +52,7 @@ export default function MusicFooter() {
   return (
     <div className="basis-16 pt-3 pb-3 pr-10 pl-10 bg-neutral-100 m-3 rounded-md">
       <div className="flex flex-col justify-center h-full gap-2">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-center flex-wrap gap-3">
           <PlayButtons />
           <SongInfoFooter currentSong={currentSong} />
           <div className="flex flex-row items-center gap-2">
