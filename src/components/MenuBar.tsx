@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Disc,
+  Heart,
   Music,
   Settings,
 } from "react-feather";
@@ -104,6 +106,18 @@ export default function MenuBar() {
           >
             <Disc />
             <p>Albums</p>
+          </button>
+          <button
+            className="flex flex-row items-center justify-between gap-2 w-full rounded-md p-2 disabled:text-neutral-400"
+            disabled
+          >
+            <div className="flex flex-row gap-2">
+              <Heart />
+              <p>Playlists</p>
+            </div>
+            <button>
+              <ChevronDown />
+            </button>
           </button>
         </div>
         <button
