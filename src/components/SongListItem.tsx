@@ -20,12 +20,18 @@ export default function SongListItem(
   const isPlaying = currentlyPlayingId === song.id;
 
   return (
-    <tr
-      className="h-10"
+    <div
+      className={`h-full rounded-md  ${
+        isPlaying
+          ? "text-green-700 font-bold"
+          : isHovering
+          ? "bg-neutral-400"
+          : ""
+      } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <td className="flex flex-row items-center h-full">
+      <div className="basis-1/5 flex flex-row justify-start items-center pl-2">
         {showImage && (
           <img
             loading="lazy"
@@ -36,7 +42,12 @@ export default function SongListItem(
             className="rounded-sm mr-2"
           />
         )}
-        {!isHovering && !isPlaying && <p>{song.tags.trackNumber ? song.tags.trackNumber : "N/A"}.</p>}
+        {!isHovering && !isPlaying
+          && (
+            <p className="w-fit">
+              {song.tags.trackNumber ? song.tags.trackNumber : "N/A"}.
+            </p>
+          )}
         {!isHovering && isPlaying
           && <Volume2 />}
         {isHovering
@@ -48,25 +59,33 @@ export default function SongListItem(
               <Play />
             </button>
           )}
-      </td>
-      <td>
-        {song.tags.title}
-      </td>
-      <td
+      </div>
+      <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex flex-row items-center gap-1">
+        <p
+          className="basis-1/5flex-grow overflow-hidden text-nowrap text-ellipsis"
+          title={song.tags.title}
+        >
+          {song.tags.title}
+        </p>
+      </div>
+      <p
+        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
         title={song.tags.album}
       >
         {song.tags.album}
-      </td>
-      <td
+      </p>
+      <p
+        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
         title={song.tags.artist}
       >
         {song.tags.artist}
-      </td>
-      <td
+      </p>
+      <p
+        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
         title={song.tags.albumArtist}
       >
         {song.tags.albumArtist}
-      </td>
-    </tr>
+      </p>
+    </div>
   );
 }
