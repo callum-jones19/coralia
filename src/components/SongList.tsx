@@ -21,7 +21,17 @@ interface RowProps {
 }
 
 const Row = memo(({ data, index, style }: RowProps) => {
-  const song = data.songs[index];
+  const song = data.songs[index - 1];
+
+  if (index === 0) {
+    return (
+      <>
+        <div style={style}>
+          <SongListHeader />
+        </div>
+      </>
+    );
+  }
 
   return (
     <div
@@ -30,7 +40,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
     >
       <SongListItem
         song={song}
-        colored={index % 2 === 0}
+        colored={false}
         currentlyPlayingId={data.currentlyPlayingId}
         showImage
       />
@@ -68,16 +78,13 @@ export default function SongList() {
 
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
-      <div className="w-full mr-10">
-        <SongListHeader />
-      </div>
       {songs.length > 0 && (
-        <div className="basis-full">
+          <div className="basis-full relative">
           <ReactVirtualizedAutoSizer>
             {({ height, width }) => (
               <FixedSizeList
                 height={height}
-                itemCount={songs.length}
+                itemCount={songs.length + 1}
                 itemSize={60}
                 width={width}
                 itemData={data}
