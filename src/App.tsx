@@ -43,7 +43,7 @@ export default function App() {
               >
                 <Route
                   index
-                  element={<SongList />}
+                  element={<SongList songs={songs} />}
                 />
                 <Route
                   path="albums"

@@ -59,7 +59,7 @@ export default function AlbumView() {
     : "";
 
   return (
-    <div className="flex flex-col h-full gap-3 pt-3">
+    <div className="flex flex-col h-full gap-3 overflow-auto">
       {!album || songs.length === 0 && (
             <>
               <p>
@@ -74,7 +74,7 @@ export default function AlbumView() {
           <>
             <div
               id="album-header"
-              className="h-fit flex flex-row gap-3 pl-3 w-full"
+              className="h-fit flex flex-row gap-3 pl-3 pt-3 w-full"
             >
               <img
                 alt="Album Art Image"
@@ -111,9 +111,9 @@ export default function AlbumView() {
             </div>
             <ul
               id="song-list"
-              className="basis-full overflow-auto"
+              className="basis-full max-w-full"
             >
-              <div className="sticky top-0 bg-neutral-300 rounded-md">
+              <div className="h-10 sticky top-0">
                 <SongListHeader />
               </div>
               {songs.map(song => (

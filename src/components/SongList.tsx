@@ -4,7 +4,6 @@ import { CSSProperties, memo, useEffect, useState } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
 import { getPlayerState } from "../api/importer";
-import { useSongs } from "../Contexts";
 import { Song } from "../types";
 import SongListHeader from "./SongListHeader";
 import SongListItem from "./SongListItem";
@@ -49,9 +48,11 @@ const Row = memo(({ data, index, style }: RowProps) => {
 }, areEqual);
 Row.displayName = "SongRow";
 
-export default function SongList() {
-  const songs = useSongs();
+export interface SongListProps {
+  songs: Song[];
+}
 
+export default function SongList({ songs }: SongListProps) {
   const [queue, setQueue] = useState<Song[]>([]);
 
   useEffect(() => {
