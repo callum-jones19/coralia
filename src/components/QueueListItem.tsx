@@ -17,7 +17,7 @@ export default function QueueListItem({ song, index }: QueueListItem) {
   return (
     <ul
       key={`${song.filePath}-${index}`}
-      className="flex flex-row gap-2 w-full items-center"
+      className="flex flex-row gap-2 items-center justify-start max-w-full"
       onMouseEnter={() => setisHovering(true)}
       onMouseLeave={() => setisHovering(false)}
     >
@@ -33,7 +33,7 @@ export default function QueueListItem({ song, index }: QueueListItem) {
         className="w-6 aspect-square"
       />
       <p
-        className="overflow-hidden text-nowrap text-ellipsis flex-grow"
+        className="basis-2 text-nowrap"
         title={song.tags.title}
       >
         {song.tags.title}
@@ -41,9 +41,10 @@ export default function QueueListItem({ song, index }: QueueListItem) {
       {isHovering
         && (
           <button
+          className=""
             onClick={() => removeFromQueue(index)}
           >
-            <X scale={2} />
+            <X/>
           </button>
         )}
     </ul>

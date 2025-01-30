@@ -58,8 +58,7 @@ export default function MenuBar() {
 
   return (
     <>
-      <div className="basis-2/12 h-full">
-        <div className="w-11/12 h-full flex flex-col justify-between bg-neutral-100 gap-4 items-center p-2 pt-3 rounded-md m-auto">
+      <div className="basis-2/12 h-full bg-neutral-100 rounded-md">
           <div className="w-full flex flex-col gap-2 items-start">
             <div className="w-full flex flex-row justify-between gap-2 flex-wrap">
               <button className="hover:bg-neutral-300 bg-neutral-200 p-2 rounded-md flex-grow" onClick={handleClickBack}><ChevronLeft className="m-auto" /></button>
@@ -91,7 +90,6 @@ export default function MenuBar() {
             <Settings />
             <p>Settings</p>
           </button>
-        </div>
       </div>
     </>
   );

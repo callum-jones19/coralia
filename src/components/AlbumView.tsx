@@ -3,8 +3,8 @@ import { listen } from "@tauri-apps/api/event";
 import { Duration } from "@tauri-apps/api/http";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
-import { ChevronLeft, Play, Shuffle } from "react-feather";
-import { useNavigate, useParams } from "react-router";
+import { Play, Shuffle } from "react-feather";
+import { useParams } from "react-router";
 import { enqueueSongsBackend } from "../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../api/importer";
 import { Album, Song } from "../types";
@@ -58,15 +58,6 @@ export default function AlbumView() {
     ? convertFileSrc(album.artwork.art400)
     : "";
 
-  const navigate = useNavigate();
-  const handleBackClick = () => {
-    // TODO
-    const t = navigate(-1);
-    if (t) {
-      t.catch(e => console.error(e));
-    }
-  };
-
   return (
     <div className="flex flex-col h-full gap-3 pt-3">
       {!album || songs.length === 0 && (
@@ -81,12 +72,6 @@ export default function AlbumView() {
       {album && songs.length > 0
         && (
           <>
-            {/* <button
-              className="w-fit rounded-md pl-2"
-              onClick={() => handleBackClick()}
-            >
-              <ChevronLeft />
-            </button> */}
             <div id="album-header" className="h-fit flex flex-row gap-3 pl-3 w-full">
               <img
                 alt="Album Art Image"
@@ -95,17 +80,9 @@ export default function AlbumView() {
                 width="250px"
                 className="rounded-md shadow-md aspect-square flex-grow-0 flex-shrink-0"
               />
-              <div className="flex flex-col justify-between gap-3 w-full pr-3">
-                <button
-                  className="rounded-md self-end bg-neutral-300 h-8 w-8"
-                  onClick={() => handleBackClick()}
-                >
-                  <ChevronLeft className="m-auto" />
-                </button>
-                <div>
-                  <p className="font-bold text-4xl">{album.title}</p>
-                  <p className="italic text-xl">{album.albumArtist}</p>
-                </div>
+              <div className="flex flex-col justify-end gap-3 w-full pr-3">
+                <p className="font-bold text-4xl">{album.title}</p>
+                <p className="italic text-xl">{album.albumArtist}</p>
               </div>
             </div>
             <div
