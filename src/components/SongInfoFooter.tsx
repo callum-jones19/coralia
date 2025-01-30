@@ -13,7 +13,7 @@ export default function SongInfoFooter({ currentSong }: SongInfoFooterProps) {
             ? (currentSong.tags.title ? currentSong.tags.title : "N/A")
             : "~"}
         </p>
-        <p className="font-light">
+        <p>
           {currentSong
             ? (currentSong.tags.artist !== null
               ? currentSong.tags.artist
