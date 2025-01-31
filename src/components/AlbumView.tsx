@@ -74,19 +74,18 @@ export default function AlbumView() {
           <>
             <div
               id="album-header"
-              className="h-fit flex flex-row gap-3 pl-3 pt-3 w-full"
+              className="flex flex-row flex-grow gap-3 pl-3 pt-3 flex-wrap justify-start"
             >
               <img
                 alt="Album Art Image"
                 src={albumArtUri}
                 height="250px"
                 width="250px"
-                className="rounded-md shadow-md aspect-square flex-grow-0 flex-shrink-0"
+                className="rounded-md shadow-md"
               />
-              <div className="flex flex-col justify-end gap-3 w-full pr-3">
-                {/* <p className="font-bold text-4xl">{album.title}</p> */}
-                <p className="font-bold text-4xl">test</p>
-                <p className="italic text-xl">{album.albumArtist}</p>
+              <div className="flex flex-col justify-end gap-1 overflow-hidden">
+                <p className="font-bold text-3xl text-nowrap overflow-hidden text-ellipsis">{album.title}</p>
+                <i className="text-xl text-nowrap overflow-hidden text-ellipsis">{album.albumArtist}</i>
               </div>
             </div>
             <div
