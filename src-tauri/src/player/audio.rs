@@ -322,8 +322,6 @@ impl Player {
             );
             self.state_update_tx.send(queue_change_state).unwrap();
         };
-
-        self.play();
     }
 
     /// Change the sink volume.

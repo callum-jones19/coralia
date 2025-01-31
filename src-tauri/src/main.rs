@@ -90,6 +90,7 @@ fn create_and_run_audio_player(
                 );
                 player.clear();
                 player.add_to_queue(&song);
+                player.play();
             }
             PlayerCommand::TrySeek(duration) => {
                 info!("Player Command Handler: Received request to seek the current audio source to {}.", &duration.as_secs());
