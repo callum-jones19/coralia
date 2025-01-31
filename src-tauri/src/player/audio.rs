@@ -112,21 +112,26 @@ fn handle_sink_song_end(
             }
 
             // Do we need to pull a new song into the sink from the
-            // queue?
-            // FIXME something is grabbing the lock in here
-            if let Some(s) = song_queue_locked.get(2) {
-                let open_status =
-                    open_song_into_sink(&mut sink_locked, sink_songs_ctrl2, s, &sink_song_end_tx);
+            // queue? If yes, do it as many times to fill out the buffer
+            while sink_locked.len() < 6 {
+                if let Some(s) = song_queue_locked.get(2) {
+                    let open_status = open_song_into_sink(
+                        &mut sink_locked,
+                        sink_songs_ctrl2.clone(),
+                        s,
+                        &sink_song_end_tx,
+                    );
 
-                match open_status {
-                    Ok(_) => {}
-                    Err(_) => {
-                        println!(
-                            "Removing song {} from queue - could not decode into sink",
-                            &s.tags.title
-                        );
-                        // Remove the song from the Song queue
-                        song_queue_locked.remove(2);
+                    match open_status {
+                        Ok(_) => {}
+                        Err(_) => {
+                            println!(
+                                "Removing song {} from queue - could not decode into sink",
+                                &s.tags.title
+                            );
+                            // Remove the song from the Song queue
+                            song_queue_locked.remove(2);
+                        }
                     }
                 }
             }
@@ -328,12 +333,24 @@ impl Player {
 
     /// Signal the sink to start playing.
     pub fn play(&mut self) {
-        let sink = self.audio_sink.lock().unwrap();
-        sink.play();
-        let curr_pos = sink.get_pos();
-        self.state_update_tx
-            .send(PlayerStateUpdate::SongPlay(curr_pos))
-            .unwrap();
+        let curr_pos = {
+            let sink = self.audio_sink.lock().unwrap();
+            println!("{}", sink.len());
+            if sink.len() != 0 {
+                sink.play();
+                Some(sink.get_pos().clone())
+            } else {
+                None
+            }
+        };
+
+        match curr_pos {
+            Some(pos) => self
+                .state_update_tx
+                .send(PlayerStateUpdate::SongPlay(pos))
+                .unwrap(),
+            None => {}
+        }
     }
 
     /// Clear the sink and songs queue of every source and song
