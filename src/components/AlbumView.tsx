@@ -84,7 +84,8 @@ export default function AlbumView() {
                 className="rounded-md shadow-md aspect-square flex-grow-0 flex-shrink-0"
               />
               <div className="flex flex-col justify-end gap-3 w-full pr-3">
-                <p className="font-bold text-4xl">{album.title}</p>
+                {/* <p className="font-bold text-4xl">{album.title}</p> */}
+                <p className="font-bold text-4xl">test</p>
                 <p className="italic text-xl">{album.albumArtist}</p>
               </div>
             </div>
@@ -111,7 +112,7 @@ export default function AlbumView() {
             </div>
             <ul
               id="song-list"
-              className="basis-full max-w-full"
+              className="basis-full w-full"
             >
               <div className="h-10 sticky top-0">
                 <SongListHeader />
