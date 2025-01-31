@@ -1,53 +1,72 @@
 import { CSSProperties, memo } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
-import { areEqual, FixedSizeGrid } from "react-window";
+import { areEqual, FixedSizeList } from "react-window";
 import { useAlbums } from "../Contexts";
 import { Album } from "../types";
 import MusicGridAlbum from "./MusicGridAlbum";
 
+interface RowData {
+  albums: Album[];
+  albumsPerRow: number;
+}
+
 interface RowProps {
-  data: Album[];
-  columnIndex: number;
-  rowIndex: number;
+  data: RowData;
+  index: number;
   style: CSSProperties;
 }
-const ALBUMS_PER_ROW = 8;
 
-const Cell = memo(({ data, columnIndex, rowIndex, style }: RowProps) => {
-  console.log(data);
-  const albumIndex = (rowIndex * ALBUMS_PER_ROW) + columnIndex;
-  const album = data[albumIndex];
+const Row = memo(({ data, index, style }: RowProps) => {
+  // const albumIndex = (rowIndex * ALBUMS_PER_ROW) + columnIndex;
+  const { albums, albumsPerRow } = data;
+  const rowAlbums = albums.slice(index * albumsPerRow, index * albumsPerRow + albumsPerRow);
 
   return (
     <div style={style}>
-      <MusicGridAlbum album={album} />
+      <div id="grid-row" className="h-full w-full flex flex-row justify-between">
+        {rowAlbums.map(album => (<MusicGridAlbum key={album.id} album={album} />))}
+      </div>
     </div>
   );
 }, areEqual);
-Cell.displayName = "AlbumRow";
+Row.displayName = "AlbumRow";
 
 export default function MusicGrid() {
   const albums = useAlbums();
+
+
 
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
       {albums.length > 0
         && (
           <ReactVirtualizedAutoSizer>
-            {({ height, width }) => (
-              <FixedSizeGrid
-                columnCount={ALBUMS_PER_ROW}
-                rowCount={albums.length / ALBUMS_PER_ROW}
+            {({ height, width }) => {
+              console.log(height, width);
+              const tileSize = 200;
+
+              const itemsPerRow = Math.floor(width / tileSize);
+              console.log(itemsPerRow);
+
+              const tileContainerSize = width / itemsPerRow;
+              console.log(tileContainerSize);
+
+              const numberOfRows = albums.length / itemsPerRow;
+              const rowData: RowData = {
+                albums: albums,
+                albumsPerRow: itemsPerRow,
+              }
+              return (
+              <FixedSizeList
                 height={height}
                 width={width}
-                columnWidth={(width / ALBUMS_PER_ROW) - ALBUMS_PER_ROW}
-                rowHeight={(width / ALBUMS_PER_ROW) + 55}
-                itemData={albums}
-                overscanRowCount={1}
+                itemData={rowData}
+                itemCount={numberOfRows}
+                itemSize={tileSize}
               >
-                {Cell}
-              </FixedSizeGrid>
-            )}
+                {Row}
+              </FixedSizeList>
+            )}}
           </ReactVirtualizedAutoSizer>
         )}
       {albums.length === 0

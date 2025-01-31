@@ -85,10 +85,10 @@ export default function SongList({ songs }: SongListProps) {
             {({ height, width }) => (
               <FixedSizeList
                 height={height}
-                itemCount={songs.length + 1}
-                itemSize={60}
                 width={width}
                 itemData={data}
+                itemCount={songs.length + 1}
+                itemSize={60}
                 overscanCount={5}
               >
                 {Row}
