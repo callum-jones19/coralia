@@ -115,9 +115,6 @@ export default function MenuBar() {
               <Heart />
               <p>Playlists</p>
             </div>
-            <button>
-              <ChevronDown />
-            </button>
           </button>
         </div>
         <button
