@@ -43,7 +43,7 @@ export default function MusicGrid() {
           <ReactVirtualizedAutoSizer>
             {({ height, width }) => {
               console.log(height, width);
-              const tileSize = 200;
+              const tileSize = 250;
 
               const itemsPerRow = Math.floor(width / tileSize);
               console.log(itemsPerRow);
