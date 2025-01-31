@@ -177,8 +177,10 @@ impl Library {
         ordered_songs
     }
 
-    pub fn get_all_albums(&self) -> Vec<Album> {
-        self.albums.clone().into_values().collect()
+    pub fn get_all_albums_sorted(&self) -> Vec<Album> {
+        let mut ordered_albums: Vec<Album> = self.albums.clone().into_values().collect();
+        ordered_albums.sort_by(|a, b| a.title.cmp(&b.title));
+        ordered_albums
     }
 }
 

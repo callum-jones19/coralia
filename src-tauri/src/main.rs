@@ -413,8 +413,8 @@ async fn get_album(state_mutex: State<'_, Mutex<AppState>>, album_id: usize) -> 
 #[tauri::command]
 async fn get_library_albums(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Album>, ()> {
     let state = state_mutex.lock().unwrap();
-    let mut albums = state.library.get_all_albums().clone();
-    albums.sort_by(|a, b| a.title.cmp(&b.title));
+    let mut albums = state.library.get_all_albums_sorted().clone();
+    albums.sort_by(|a, b| a.title.to_lowercase().cmp(&b.title.to_lowercase()));
     Ok(albums)
 }
 
