@@ -390,15 +390,13 @@ async fn get_album_songs(
         })
         .collect();
 
-    let res = match songs {
+    match songs {
         Ok(mut songs) => {
             songs.sort_by(|a, b| a.tags.track_number.cmp(&b.tags.track_number));
             Ok(songs)
         }
         Err(_) => Err(()),
-    };
-
-    res
+    }
 }
 
 #[tauri::command]
@@ -406,7 +404,7 @@ async fn get_album(state_mutex: State<'_, Mutex<AppState>>, album_id: usize) -> 
     let state = state_mutex.lock().unwrap();
     match state.library.albums.get(&album_id) {
         Some(album) => Ok(album.clone()),
-        None => return Err(()),
+        None => Err(()),
     }
 }
 

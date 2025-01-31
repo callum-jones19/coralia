@@ -1,4 +1,3 @@
-use core::panic;
 use std::{
     collections::VecDeque,
     fs::File,
@@ -314,7 +313,7 @@ impl Player {
             }
             let queue_change_state = PlayerStateUpdate::QueueUpdate(
                 songs_queue_locked.clone(),
-                audio_sink_locked.get_pos().clone(),
+                audio_sink_locked.get_pos(),
             );
             self.state_update_tx.send(queue_change_state).unwrap();
         };

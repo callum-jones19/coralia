@@ -6,7 +6,6 @@ use std::{
     path::PathBuf,
 };
 
-use dirs::cache_dir;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::program_cache_dir;
@@ -165,14 +164,10 @@ impl Library {
 
     pub fn get_all_songs_sorted_album(&self) -> Vec<Song> {
         let mut ordered_songs: Vec<Song> = self.songs.clone().into_values().collect();
-        ordered_songs.sort_by(|a, b| {
-            match a.tags.album.cmp(&b.tags.album) {
-                std::cmp::Ordering::Less => return std::cmp::Ordering::Less,
-                std::cmp::Ordering::Equal => {
-                    return a.tags.track_number.cmp(&b.tags.track_number);
-                }
-                std::cmp::Ordering::Greater => return std::cmp::Ordering::Greater,
-            };
+        ordered_songs.sort_by(|a, b| match a.tags.album.cmp(&b.tags.album) {
+            std::cmp::Ordering::Less => std::cmp::Ordering::Less,
+            std::cmp::Ordering::Equal => a.tags.track_number.cmp(&b.tags.track_number),
+            std::cmp::Ordering::Greater => std::cmp::Ordering::Greater,
         });
         ordered_songs
     }

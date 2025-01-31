@@ -14,14 +14,9 @@ use serde::{Deserialize, Serialize};
 
 use super::song::Song;
 
-struct FolderArt {
-    path: PathBuf,
-    image_format: ImageFormat,
-}
-
 /// Get the path of the album art that sits in the song and album folders as
 /// separate image files, if it exists
-fn find_folder_art(song_path: &Path) -> Option<FolderArt> {
+fn find_folder_art(song_path: &Path) -> Option<PathBuf> {
     let art_file_names = vec![
         "folder", "Folder", "cover", "Cover", "front", "Front", "artwork", "Artwork",
     ];
@@ -46,15 +41,9 @@ fn find_folder_art(song_path: &Path) -> Option<FolderArt> {
         // Check if a jpg cover exists
         // FIXME exists is error prone
         if jpg_full_path.exists() {
-            return Some(FolderArt {
-                path: jpg_full_path.to_owned(),
-                image_format: ImageFormat::Jpeg,
-            });
+            return Some(jpg_full_path.to_owned());
         } else if png_full_path.exists() {
-            return Some(FolderArt {
-                path: png_full_path.to_owned(),
-                image_format: ImageFormat::Png,
-            });
+            return Some(png_full_path.to_owned());
         }
     }
 
@@ -113,13 +102,12 @@ impl Artwork {
 
         let artwork = match try_folder_art {
             Some(folder_art) => {
-                let mut img = ImageReader::open(&folder_art.path).unwrap();
+                let mut img = ImageReader::open(&folder_art).unwrap();
                 let img_format = img.format().unwrap();
 
                 let image_cache_path = get_album_art_folder().unwrap();
-                let cached_art_name = song.id.to_string()
-                    + "."
-                    + folder_art.path.extension().unwrap().to_str().unwrap();
+                let cached_art_name =
+                    song.id.to_string() + "." + folder_art.extension().unwrap().to_str().unwrap();
 
                 let mut thumnail_cached_path = image_cache_path.clone();
                 thumnail_cached_path.push("thumnails");
@@ -138,7 +126,7 @@ impl Artwork {
 
                 if !full_cached_path.exists() {
                     println!("Generating full-size cached image");
-                    fs::copy(&folder_art.path, &full_cached_path).unwrap();
+                    fs::copy(&folder_art, &full_cached_path).unwrap();
                 }
 
                 if !thumnail_cached_path.exists() || !midsize_cached_path.exists() {
