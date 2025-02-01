@@ -43,19 +43,6 @@ export default function Seekbar() {
   };
 
   useEffect(() => {
-    const unlistenSongChange = listen<Song | undefined>(
-      "song-end",
-      e => {
-        const newCurrentSong = e.payload;
-        if (newCurrentSong) {
-          setCurrentSong(newCurrentSong);
-        } else {
-          setCurrentSong(null);
-        }
-        setSongPos(0);
-      },
-    );
-
     const eventPauseRes = listen<SongInfo>("is-paused", (e) => {
       const { paused, position } = e.payload;
       // Remove an interval that already existed.
@@ -66,8 +53,12 @@ export default function Seekbar() {
     const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
       const newQueue = e.payload[0];
       const syncedSongPos = e.payload[1];
-      console.log(newQueue);
-      setCurrentSong(newQueue[0]);
+      const newCurrSong = newQueue[0];
+      if (newCurrSong) {
+        setCurrentSong(newQueue[0]);
+      } else {
+        setCurrentSong(null);
+      }
       setSongPos(syncedSongPos.secs + (syncedSongPos.nanos / 1000000000));
     });
 
@@ -89,9 +80,6 @@ export default function Seekbar() {
       .catch(e => console.error(e));
 
     return () => {
-      unlistenSongChange
-        .then(f => f)
-        .catch(e => console.log(e));
       eventPauseRes
         .then(f => f)
         .catch(e => console.log(e));
