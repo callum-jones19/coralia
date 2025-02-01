@@ -74,7 +74,6 @@ fn open_song_into_sink(
 
     // Append the song and its end callback signaler into the queue
     sink.append(controlled);
-
     sink.append(callback_source);
 
     Ok(())
@@ -113,7 +112,9 @@ fn handle_sink_song_end(
 
             // Do we need to pull a new song into the sink from the
             // queue? If yes, do it as many times to fill out the buffer
-            while sink_locked.len() < 6 {
+
+            while sink_locked.len() < 6 && song_queue_locked.len() > 2 {
+                println!("!");
                 if let Some(s) = song_queue_locked.get(2) {
                     let open_status = open_song_into_sink(
                         &mut sink_locked,
@@ -150,7 +151,10 @@ fn handle_sink_song_end(
             let new_queue = song_queue_locked.clone();
 
             state_update_tx
-                .send(PlayerStateUpdate::SongEnd(new_queue))
+                .send(PlayerStateUpdate::SongEnd(new_queue.clone()))
+                .unwrap();
+            state_update_tx
+                .send(PlayerStateUpdate::QueueUpdate(new_queue, Duration::ZERO))
                 .unwrap();
         }
     }

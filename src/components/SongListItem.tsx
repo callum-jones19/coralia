@@ -1,7 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { Play, Volume2 } from "react-feather";
-import { clearAndPlayBackend } from "../api/commands";
+import { clearAndPlayBackend, enqueueSongBackend } from "../api/commands";
 import { Song } from "../types";
 
 export interface SongListItemProps {
@@ -30,6 +30,7 @@ export default function SongListItem(
       } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onDoubleClick={() => enqueueSongBackend(song)}
     >
       <div className="basis-1/5 flex flex-row justify-start items-center pl-2">
         {showImage && (
