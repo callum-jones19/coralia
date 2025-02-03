@@ -39,12 +39,8 @@ export const skipOneSong = () => {
 };
 
 export const removeFromQueue = (queueIndex: number) => {
-  if (queueIndex === 0) {
-    skipOneSong();
-  } else {
-    invoke("remove_song_from_queue", { skipIndex: queueIndex })
-      .catch(e => console.error(e));
-  }
+  invoke("remove_song_from_queue", { skipIndex: queueIndex })
+    .catch(e => console.error(e));
 };
 
 export const setVolumeBackend = (newVolume: number) => {

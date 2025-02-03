@@ -37,29 +37,29 @@ fn open_song_into_sink(
     song_end_tx: &Sender<()>,
 ) -> Result<(), DecoderError> {
     // Open the file.
-
     let song_file = BufReader::new(File::open(&song.file_path).unwrap());
 
+    // Decode the file into a source
     let song_source = match Decoder::new(song_file) {
         Ok(src) => src,
         Err(e) => return Err(e),
     };
 
+    // Wrap it in a Stoppable.
+    let stoppable_source = song_source.stoppable();
+
+    // FIXME eject a true statement out of the list after the song has been skipped
     let skip: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
-
-    let skip_inner = skip.clone();
-
-    let controlled = song_source.periodic_access(Duration::from_millis(5), move |src| {
-        if skip_inner.load(Ordering::SeqCst) {
-            src.stoppable();
+    let skip_inner = Arc::clone(&skip);
+    let controlled_src = stoppable_source.periodic_access(Duration::from_millis(5), move |src| {
+        let should_stop = skip_inner.load(Ordering::SeqCst);
+        if should_stop {
+            src.stop();
         }
     });
 
     // Add a control for this new source in the sink. It should be index-aligned
     // (ignoring the EmptyCallback elements).
-
-    // It's getting stuck here. Which means BEFORE this is run, the
-    // sink_song_controls are getting locked and not freed.
     let mut sink_song_controls_locked = sink_songs_controls.lock().unwrap();
     sink_song_controls_locked.push_back(skip);
 
@@ -73,8 +73,11 @@ fn open_song_into_sink(
         }));
 
     // Append the song and its end callback signaler into the queue
-    sink.append(controlled);
+    sink.append(controlled_src);
     sink.append(callback_source);
+
+    println!("{:?}", sink.len());
+    println!("{:?}", sink_song_controls_locked);
 
     Ok(())
 }
@@ -149,6 +152,8 @@ fn handle_sink_song_end(
 
             // Signal to the Player Event System that a song has ended
             let new_queue = song_queue_locked.clone();
+            let songs: Vec<&String> = new_queue.iter().map(|song| &song.tags.title).collect();
+            println!("{:?}", songs);
 
             state_update_tx
                 .send(PlayerStateUpdate::SongEnd(new_queue.clone()))
@@ -359,9 +364,11 @@ impl Player {
     pub fn clear(&mut self) {
         let sink_locked = self.audio_sink.lock().unwrap();
         let mut songs_queue_locked = self.songs_queue.lock().unwrap();
+        let mut song_ctrls_locked = self.sink_songs_controls.lock().unwrap();
 
         sink_locked.clear();
         songs_queue_locked.clear();
+        song_ctrls_locked.clear();
     }
 
     /// Signal the sink to pause
