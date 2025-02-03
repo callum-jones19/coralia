@@ -32,7 +32,6 @@ use crate::data::song::Song;
 /// empty callback source that would also need to call this function.
 fn open_song_into_sink(
     sink: &mut Sink,
-    sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
     song: &Song,
     song_end_tx: &Sender<()>,
 ) -> Result<(), DecoderError> {
@@ -60,8 +59,6 @@ fn open_song_into_sink(
 
     // Add a control for this new source in the sink. It should be index-aligned
     // (ignoring the EmptyCallback elements).
-    let mut sink_song_controls_locked = sink_songs_controls.lock().unwrap();
-    sink_song_controls_locked.push_back(skip);
 
     // Create a callback
     let song_end_tx = song_end_tx.clone();
@@ -76,9 +73,6 @@ fn open_song_into_sink(
     sink.append(controlled_src);
     sink.append(callback_source);
 
-    println!("{:?}", sink.len());
-    println!("{:?}", sink_song_controls_locked);
-
     Ok(())
 }
 
@@ -92,7 +86,6 @@ fn open_song_into_sink(
 fn handle_sink_song_end(
     sink_song_end_rx: Receiver<()>,
     sink: Arc<Mutex<Sink>>,
-    sink_songs_ctrl: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
     song_queue: Arc<Mutex<VecDeque<Song>>>,
     state_update_tx: Sender<PlayerStateUpdate>,
     sink_song_end_tx: Sender<()>,
@@ -101,17 +94,11 @@ fn handle_sink_song_end(
         // Sleep this thread until a song ends
         sink_song_end_rx.recv().unwrap();
         {
-            let sink_songs_ctrl2 = Arc::clone(&sink_songs_ctrl);
-
             let mut song_queue_locked = song_queue.lock().unwrap();
             let mut sink_locked = sink.lock().unwrap();
 
-            {
-                // Pop the old song out of the queue
-                let mut sink_songs_ctrls_locked = sink_songs_ctrl.lock().unwrap();
-                song_queue_locked.pop_front();
-                sink_songs_ctrls_locked.pop_front();
-            }
+            // Pop the old song out of the queue
+            song_queue_locked.pop_front();
 
             // Do we need to pull a new song into the sink from the
             // queue? If yes, do it as many times to fill out the buffer
@@ -119,12 +106,7 @@ fn handle_sink_song_end(
             while sink_locked.len() < 6 && song_queue_locked.len() > 2 {
                 println!("!");
                 if let Some(s) = song_queue_locked.get(2) {
-                    let open_status = open_song_into_sink(
-                        &mut sink_locked,
-                        sink_songs_ctrl2.clone(),
-                        s,
-                        &sink_song_end_tx,
-                    );
+                    let open_status = open_song_into_sink(&mut sink_locked, s, &sink_song_end_tx);
 
                     match open_status {
                         Ok(_) => {}
@@ -209,7 +191,6 @@ pub struct Player {
     audio_sink: Arc<Mutex<Sink>>,
     // We need a list of sources to track what is currently in the sink,
     // as the sink gives us no info about the sources inside it.
-    sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>>,
     songs_queue: Arc<Mutex<VecDeque<Song>>>,
     player_event_tx: Sender<()>,
     state_update_tx: Sender<PlayerStateUpdate>,
@@ -243,7 +224,6 @@ impl Player {
             Arc::new(Mutex::new(VecDeque::new()));
 
         // Spawn the thread that runs whenever a song source in the sink ends.
-        let sink_songs_ctrl_2 = Arc::clone(&sink_songs_controls);
         let songs_queue_2 = Arc::clone(&songs_queue);
         let sink2 = Arc::clone(&sink_wrapped);
         let state_update_tx2 = state_update_tx.clone();
@@ -252,7 +232,6 @@ impl Player {
             handle_sink_song_end(
                 sink_song_end_rx,
                 sink2,
-                sink_songs_ctrl_2,
                 songs_queue_2,
                 state_update_tx2,
                 sink_song_end_tx2,
@@ -265,7 +244,6 @@ impl Player {
             _stream_handle: stream_handle,
             audio_sink: sink_wrapped,
             songs_queue,
-            sink_songs_controls,
             player_event_tx: sink_song_end_tx,
             state_update_tx,
         }
@@ -274,13 +252,7 @@ impl Player {
     /// Take a Song struct and open it manually into the sink
     fn song_into_sink(&mut self, song: &Song) -> Result<(), DecoderError> {
         let mut sink = self.audio_sink.lock().unwrap();
-        let sink_songs_ctrls_2 = Arc::clone(&self.sink_songs_controls);
-        open_song_into_sink(
-            &mut sink,
-            sink_songs_ctrls_2,
-            song,
-            &self.player_event_tx.clone(),
-        )?;
+        open_song_into_sink(&mut sink, song, &self.player_event_tx.clone())?;
         Ok(())
     }
 
@@ -364,11 +336,9 @@ impl Player {
     pub fn clear(&mut self) {
         let sink_locked = self.audio_sink.lock().unwrap();
         let mut songs_queue_locked = self.songs_queue.lock().unwrap();
-        let mut song_ctrls_locked = self.sink_songs_controls.lock().unwrap();
 
         sink_locked.clear();
         songs_queue_locked.clear();
-        song_ctrls_locked.clear();
     }
 
     /// Signal the sink to pause
@@ -390,27 +360,7 @@ impl Player {
     /// If a song does not exist at this index, return None.
     /// If a song does exist, return the Song that was removed.
     pub fn remove_song_from_queue(&mut self, song_index: usize) -> Option<Song> {
-        let mut song_queue = self.songs_queue.lock().unwrap();
-        let sink = self.audio_sink.lock().unwrap();
-
-        let skipped_song = song_queue.remove(song_index);
-
-        if song_index < 3 {
-            let sink_song_controls = self.sink_songs_controls.lock().unwrap();
-            let sink_song_ctr = sink_song_controls.get(song_index);
-
-            if let Some(ctrl) = sink_song_ctr {
-                ctrl.store(true, Ordering::SeqCst);
-            }
-        }
-
-        if skipped_song.is_some() {
-            let queue_change_state =
-                PlayerStateUpdate::QueueUpdate(song_queue.clone(), sink.get_pos());
-            self.state_update_tx.send(queue_change_state).unwrap();
-        }
-
-        skipped_song
+        todo!()
     }
 
     /// Try to seek the currently playing sound in the sink to the given Duration
