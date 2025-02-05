@@ -382,6 +382,9 @@ impl Player {
 
         sink_locked.clear();
         songs_queue_locked.clear();
+        self.state_update_tx
+            .send(PlayerStateUpdate::SongPause(Duration::ZERO))
+            .unwrap();
     }
 
     /// Signal the sink to pause
