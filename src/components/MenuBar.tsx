@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Disc,
@@ -9,6 +8,7 @@ import {
   Settings,
 } from "react-feather";
 import { useLocation, useNavigate } from "react-router";
+import SearchBar from "./SearchBar";
 
 type ActiveSection = "Songs" | "Albums";
 
@@ -80,10 +80,7 @@ export default function MenuBar() {
             >
               <ChevronRight className="m-auto" />
             </button>
-            <input
-              className="bg-neutral-200 basis-full rounded-md items-center gap-2 flex-wrap text-neutral-600 p-2 min-w-0 overflow-hidden"
-              placeholder="Search"
-            />
+            <SearchBar />
           </div>
           <button
             className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${

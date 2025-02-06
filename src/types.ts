@@ -57,3 +57,8 @@ export interface CachedPlayerState {
   currentVolume: number;
   isPaused: boolean;
 }
+
+export interface SearchResults {
+  albumIds: number[];
+  songIds: number[];
+}
