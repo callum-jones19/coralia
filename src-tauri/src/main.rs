@@ -10,7 +10,7 @@ use std::{
     time::Duration,
 };
 
-use data::{album::Album, library::Library, song::Song};
+use data::{album::Album, library::{Library, SearchResults}, song::Song};
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
 use serde::Serialize;
@@ -211,7 +211,8 @@ fn main() {
             get_album_songs,
             get_album,
             enqueue_songs,
-            clear_queue
+            clear_queue,
+            search_library
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -430,4 +431,12 @@ async fn get_player_state(
     let updated_state = tx.recv().unwrap();
 
     Ok(updated_state)
+}
+
+#[tauri::command]
+async fn search_library(state_mutex: State<'_, Mutex<AppState>>, query: String) -> Result<SearchResults, ()> {
+    let state = state_mutex.lock().unwrap();
+    let search_res = state.library.search(&query);
+
+    Ok(search_res)
 }

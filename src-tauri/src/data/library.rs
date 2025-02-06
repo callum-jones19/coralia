@@ -12,6 +12,14 @@ use crate::utils::program_cache_dir;
 
 use super::{album::Album, artwork::Artwork, song::Song};
 
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SearchResults {
+    pub album_ids: Vec<usize>,
+    pub song_ids: Vec<usize>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Library {
@@ -176,6 +184,27 @@ impl Library {
         let mut ordered_albums: Vec<Album> = self.albums.clone().into_values().collect();
         ordered_albums.sort_by(|a, b| a.title.cmp(&b.title));
         ordered_albums
+    }
+
+    pub fn search(&self, search_str: &String) -> SearchResults {
+        let matching_albums: Vec<usize> = self
+            .albums
+            .iter()
+            .filter(|(_, album)| album.title.to_lowercase().contains(&search_str.to_lowercase()))
+            .map(|(album_id, _)| *album_id)
+            .collect();
+
+        let matching_songs: Vec<usize> = self
+            .songs
+            .iter()
+            .filter(|(_, song)| song.tags.title.to_lowercase().contains(&search_str.to_lowercase()))
+            .map(|(song_id, _)| *song_id)
+            .collect();
+
+        SearchResults {
+            album_ids: matching_albums,
+            song_ids: matching_songs,
+        }
     }
 }
 
