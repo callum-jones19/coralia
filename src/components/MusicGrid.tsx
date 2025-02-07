@@ -1,7 +1,6 @@
 import { CSSProperties, memo } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
-import { useAlbums } from "../Contexts";
 import { Album } from "../types";
 import MusicGridAlbum from "./MusicGridAlbum";
 
@@ -33,9 +32,10 @@ Row.displayName = "AlbumRow";
 
 export interface MusicGridProps {
   albums: Album[];
+  emptyString?: string;
 }
 
-export default function MusicGrid({ albums }: MusicGridProps) {
+export default function MusicGrid({ albums, emptyString }: MusicGridProps) {
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
       {albums.length > 0
@@ -73,7 +73,8 @@ export default function MusicGrid({ albums }: MusicGridProps) {
         && (
           <div className="h-full w-full flex flex-col justify-center">
             <p className="w-fit ml-auto mr-auto">
-              <i>No albums detected...</i>
+              {!emptyString && <i>No albums detected...</i>}
+              {emptyString && <i>{emptyString}</i>}
             </p>
           </div>
         )}

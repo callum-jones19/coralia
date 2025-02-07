@@ -50,9 +50,10 @@ Row.displayName = "SongRow";
 
 export interface SongListProps {
   songs: Song[];
+  emptyString?: string;
 }
 
-export default function SongList({ songs }: SongListProps) {
+export default function SongList({ songs, emptyString }: SongListProps) {
   const [queue, setQueue] = useState<Song[]>([]);
 
   useEffect(() => {
@@ -100,7 +101,8 @@ export default function SongList({ songs }: SongListProps) {
       {songs.length === 0 && (
         <div className="h-full w-full flex flex-col justify-center">
           <p className="w-fit ml-auto mr-auto">
-            <i>Song library empty...</i>
+            {!emptyString && <i>Song library empty...</i>}
+            {emptyString && <i>{emptyString}</i>}
           </p>
         </div>
       )}
