@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { searchLibrary } from "../api/importer";
 import { SearchResults } from "../types";
 import { X } from "react-feather";
@@ -10,6 +10,7 @@ export interface SearchBarProps {
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [query, setQuery] = useState<null | string>(null);
 
   const handleInputChage = (e: ChangeEvent<HTMLInputElement>) => {
@@ -19,9 +20,11 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
     if (searchQuery !== null) {
       searchLibrary(searchQuery)
         .then(res => {
-          const t = navigate('/home/search');
-          if (t) {
-            t.catch(e => console.error(e));
+          if (location.pathname !== '/home/search') {
+            const t = navigate('/home/search');
+            if (t) {
+              t.catch(e => console.error(e));
+            }
           }
           onSearch(res);
         })
@@ -41,9 +44,9 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <div className="flex flex-row rounded-md items-center w-full">
+    <div className="flex flex-row rounded-md items-center w-full bg-white ">
       <input
-        className=" basis-full items-center text-black p-2 min-w-0 rounded-l-md"
+        className=" basis-full items-center text-black p-2 min-w-0 rounded-md"
         placeholder="Search"
         value={query ? query : ''}
         onChange={handleInputChage}
