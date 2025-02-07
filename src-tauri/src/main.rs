@@ -125,6 +125,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
         let state_update = player_event_rx.recv().unwrap();
         match state_update {
             PlayerStateUpdate::SongEnd(new_queue) => {
+                info!("Player Events: song ended.");
                 handle
                     .emit_all("queue-length-change", &new_queue.len())
                     .unwrap();
@@ -134,6 +135,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     .unwrap();
             }
             PlayerStateUpdate::SongPlay(song_pos) => {
+                info!("Player Events: sink playback started.");
                 let payload = PlayEventData {
                     paused: false,
                     position: song_pos,
@@ -141,6 +143,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                 handle.emit_all("is-paused", payload).unwrap();
             }
             PlayerStateUpdate::SongPause(song_pos) => {
+                info!("Player Events: sink playback paused.");
                 let payload = PlayEventData {
                     paused: true,
                     position: song_pos,
@@ -150,6 +153,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     .unwrap();
             }
             PlayerStateUpdate::QueueUpdate(updated_queue, current_song_position) => {
+                info!("Player Events: song queue updated.");
                 handle
                     .emit_all("queue-length-change", &updated_queue.len())
                     .unwrap();

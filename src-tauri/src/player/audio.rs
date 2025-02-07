@@ -11,6 +11,7 @@ use std::{
     time::Duration,
 };
 
+use log::{error, info, warn};
 use rodio::{
     decoder::DecoderError,
     source::{EmptyCallback, SeekError},
@@ -100,26 +101,11 @@ fn handle_sink_song_end(
         // Sleep this thread until a song ends
         sink_song_end_rx.recv().unwrap();
         {
-            println!("=============================================");
             let mut song_queue_locked = song_queue.lock().unwrap();
             let mut sink_locked = sink.lock().unwrap();
 
             // Pop the song that just finished out of the queue
-            println!(
-                "{:?}",
-                &song_queue_locked
-                    .iter()
-                    .map(|s| &s.song.tags.title)
-                    .collect::<Vec<&String>>()
-            );
-            let finished_song = song_queue_locked.pop_front();
-            println!(
-                "{:?}",
-                &song_queue_locked
-                    .iter()
-                    .map(|s| &s.song.tags.title)
-                    .collect::<Vec<&String>>()
-            );
+            song_queue_locked.pop_front();
             // Do we need to pull a new song into the sink from the
             // queue? If yes, do it as many times to fill out the buffer
             while sink_locked.len() < 6 {
@@ -139,7 +125,7 @@ fn handle_sink_song_end(
                 match open_status {
                     Ok(_) => {}
                     Err(_) => {
-                        println!(
+                        info!(
                             "Removing song {} from queue - could not decode into sink",
                             &next_song.song.tags.title
                         );
@@ -320,14 +306,15 @@ impl Player {
     /// Should not add to queue if tried to open into sink and failed
     /// due to decode error.
     pub fn add_to_queue(&mut self, song: &Song) -> Result<(), String> {
+        info!("Player internals: adding song to queue");
         // If required, try to add this song into the sink buffer
         let mut player_song = PlayerSong::new(song.clone());
         let songs_in_sink = self.number_songs_in_sink();
-        println!("Songs in sink: {}", &songs_in_sink);
         {
             let mut songs_queue = self.songs_queue.lock().unwrap();
             let mut audio_sink = self.audio_sink.lock().unwrap();
             if songs_in_sink < 3 {
+                info!("Player internals: adding decoded song file into sink buffer.");
                 let res = open_song_into_sink(
                     &mut audio_sink,
                     &mut player_song,
@@ -335,7 +322,13 @@ impl Player {
                 );
                 match res {
                     Ok(_) => {}
-                    Err(e) => return Err(e.to_string()),
+                    Err(e) => {
+                        error!(
+                            "Sink internals: could not add decoded song into sink buffer. {}",
+                            e.to_string()
+                        );
+                        return Err(e.to_string());
+                    }
                 }
             }
 
@@ -347,33 +340,6 @@ impl Player {
         }
 
         Ok(())
-        // let mut should_add_to_queue = true;
-        // if self.number_songs_in_sink() < 3 {
-        //     let added_successfully = match &self.song_into_sink(song) {
-        //         Ok(_) => true,
-        //         Err(_) => {
-        //             println!(
-        //                 "Skipping adding song {} to queue - could not decode",
-        //                 &song.tags.title
-        //             );
-        //             false
-        //         }
-        //     };
-        //     should_add_to_queue = added_successfully;
-        // }
-
-        // {
-        //     let mut songs_queue_locked = self.songs_queue.lock().unwrap();
-        //     let audio_sink_locked = self.audio_sink.lock().unwrap();
-        //     if should_add_to_queue {
-        //         songs_queue_locked.push_back(song.clone());
-        //     }
-        //     let queue_change_state = PlayerStateUpdate::QueueUpdate(
-        //         songs_queue_locked.clone(),
-        //         audio_sink_locked.get_pos(),
-        //     );
-        //     self.state_update_tx.send(queue_change_state).unwrap();
-        // };
     }
 
     /// Change the sink volume.
@@ -387,9 +353,11 @@ impl Player {
             let sink = self.audio_sink.lock().unwrap();
             println!("{}", sink.len());
             if sink.len() != 0 {
+                info!("Sink internals: Sink state set to play");
                 sink.play();
                 Some(sink.get_pos().clone())
             } else {
+                info!("Sink internals: Sink buffer empty, so not starting playback");
                 None
             }
         };
@@ -405,6 +373,7 @@ impl Player {
 
     /// Clear the sink and songs queue of every source and song
     pub fn clear(&mut self) {
+        info!("Sink internals: Clearing sink and queue");
         let sink_locked = self.audio_sink.lock().unwrap();
         let mut songs_queue_locked = self.songs_queue.lock().unwrap();
 
@@ -417,6 +386,7 @@ impl Player {
 
     /// Signal the sink to pause
     pub fn pause(&mut self) {
+        info!("Sink internals: Sink state set to pause");
         let sink = self.audio_sink.lock().unwrap();
         sink.pause();
         let curr_pos = sink.get_pos();
@@ -427,6 +397,7 @@ impl Player {
 
     /// Skip the currently playing source in the sink
     pub fn skip_current_song(&mut self) {
+        info!("Sink internals: Skipping current song in buffer");
         self.audio_sink.lock().unwrap().skip_one();
     }
 
@@ -434,19 +405,18 @@ impl Player {
     /// If a song does not exist at this index, return None.
     /// If a song does exist, return the Song that was removed.
     pub fn remove_song_from_queue(&mut self, song_index: usize) -> Option<Song> {
+        info!("Sink internals: Removing song at index {song_index} from queue");
         let mut songs_queue = self.songs_queue.lock().unwrap();
         let sink = self.audio_sink.lock().unwrap();
-        println!("1");
         let song = match songs_queue.remove(song_index) {
             Some(s) => s,
             None => return None,
         };
-        println!("2, {}", &song.song.tags.title);
 
         if let Some(sink_ctrls) = song.sink_controls {
+            info!("Sink internals: Marking song in sink as stopped");
             sink_ctrls.store(true, Ordering::SeqCst);
         }
-        println!("3");
 
         // Send the event to the frontend
         let songs_data = songs_queue.clone().into_iter().map(|s| s.song).collect();
