@@ -220,7 +220,12 @@ impl Library {
                     None => false,
                 };
 
-                title_match || artist_match
+                let album_match = match &song.tags.album {
+                    Some(album) => album.to_lowercase().contains(&search_str.to_lowercase()),
+                    None => todo!(),
+                };
+
+                title_match || artist_match || album_match
             })
             .map(|(_, song)| song.clone())
             .collect();
