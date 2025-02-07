@@ -19,7 +19,7 @@ pub struct SearchResults {
     pub songs: Vec<Song>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Library {
     pub root_dirs: Vec<PathBuf>,

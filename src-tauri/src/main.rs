@@ -232,8 +232,9 @@ fn main() {
 #[tauri::command]
 async fn add_library_directories(
     state_mutex: State<'_, Mutex<AppState>>,
+    app_handle: AppHandle,
     root_dirs: Vec<PathBuf>,
-) -> Result<(), ()> {
+) -> Result<(), tauri::Error> {
     let mut state = state_mutex.lock().unwrap();
     state.library.add_new_folders(root_dirs);
     state.library.scan_library_songs();
@@ -241,15 +242,21 @@ async fn add_library_directories(
 
     state.library.save_library_to_cache();
 
-    Ok(())
+    let res = app_handle.emit_all("library_update", state.library.clone());
+
+    res
 }
 
 #[tauri::command]
-async fn clear_library_and_cache(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+async fn clear_library_and_cache(
+    state_mutex: State<'_, Mutex<AppState>>,
+    app_handle: AppHandle,
+) -> Result<(), tauri::Error> {
     let mut state = state_mutex.lock().unwrap();
     state.library.clear_library();
+    let res = app_handle.emit_all("library_update", state.library.clone());
 
-    Ok(())
+    res
 }
 
 #[tauri::command]
