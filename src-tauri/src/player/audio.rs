@@ -407,14 +407,18 @@ impl Player {
     pub fn remove_song_from_queue(&mut self, song_index: usize) -> Option<Song> {
         info!("Sink internals: Removing song at index {song_index} from queue");
         let mut songs_queue = self.songs_queue.lock().unwrap();
-
+        let sink = self.audio_sink.lock().unwrap();
         // Handle edge case of removing the first song.
         if song_index == 0 {
-            self.skip_current_song();
-            return;
+            match songs_queue.get(song_index) {
+                Some(s) => {
+                    sink.skip_one();
+                    return Some(s.song.clone());
+                }
+                None => return None,
+            }
         }
 
-        let sink = self.audio_sink.lock().unwrap();
         let song = match songs_queue.remove(song_index) {
             Some(s) => s,
             None => return None,
