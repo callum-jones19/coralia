@@ -6,7 +6,6 @@ export default function SettingsScreen() {
   const resetLibrary = () => {
     resetLibraryBackend()
       .then(() => {
-        console.log("fuck");
         const t = navigate("/");
         if (t) {
           t.catch(e => console.error(e));
