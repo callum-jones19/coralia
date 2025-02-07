@@ -1,7 +1,12 @@
 import { useNavigate } from "react-router";
 import { searchLibrary } from "../api/importer";
+import { SearchResults } from "../types";
 
-export default function SearchBar() {
+export interface SearchBarProps {
+  onSearch: (searchRes: SearchResults) => void;
+}
+
+export default function SearchBar({ onSearch }: SearchBarProps) {
   const navigate = useNavigate();
 
   return (
@@ -12,7 +17,12 @@ export default function SearchBar() {
         const searchQuery = e.target.value === '' ? null : e.target.value;
 
         if (searchQuery !== null) {
-          navigate('/home/search');
+          searchLibrary(searchQuery)
+            .then(res => {
+              navigate('/home/search');
+              onSearch(res);
+            })
+            .catch(e => console.error(e));
         } else {
           navigate('/home');
         }

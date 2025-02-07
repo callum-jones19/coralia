@@ -9,10 +9,15 @@ import {
 } from "react-feather";
 import { useLocation, useNavigate } from "react-router";
 import SearchBar from "./SearchBar";
+import { SearchResults } from "../types";
 
 type ActiveSection = "Songs" | "Albums";
 
-export default function MenuBar() {
+export interface MenuBarProps {
+  onSearch: (searchRes: SearchResults) => void;
+}
+
+export default function MenuBar({ onSearch }: MenuBarProps) {
   const navigate = useNavigate();
   const loc = useLocation();
 
@@ -80,7 +85,7 @@ export default function MenuBar() {
             >
               <ChevronRight className="m-auto" />
             </button>
-            <SearchBar />
+            <SearchBar onSearch={onSearch} />
           </div>
           <button
             className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${

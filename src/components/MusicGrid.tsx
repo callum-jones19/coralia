@@ -31,11 +31,11 @@ const Row = memo(({ data, index, style }: RowProps) => {
 }, areEqual);
 Row.displayName = "AlbumRow";
 
-export default function MusicGrid() {
-  const albums = useAlbums();
+export interface MusicGridProps {
+  albums: Album[];
+}
 
-
-
+export default function MusicGrid({ albums }: MusicGridProps) {
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
       {albums.length > 0

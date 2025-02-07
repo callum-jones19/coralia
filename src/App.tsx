@@ -9,12 +9,14 @@ import FullscreenScreen from "./screens/FullscreenScreen";
 import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import { Album, Song } from "./types";
+import { Album, SearchResults, Song } from "./types";
 import SearchView from "./components/SearchView";
 
 export default function App() {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [songs, setSongs] = useState<Song[]>([]);
+
+  const [searchRes, setSearchRes] = useState<SearchResults | null>(null);
 
   useEffect(() => {
     getLibrarySongs()
@@ -40,7 +42,7 @@ export default function App() {
               />
               <Route
                 path="home"
-                element={<LibraryPage />}
+                element={<LibraryPage onSearch={searchRes => setSearchRes(searchRes)} />}
               >
                 <Route
                   index
@@ -48,11 +50,16 @@ export default function App() {
                 />
                 <Route
                   path="albums"
-                  element={<MusicGrid />}
+                  element={<MusicGrid albums={albums} />}
                 />
                 <Route
                   path="search"
-                  element={<SearchView />}
+                  element={
+                    <SearchView
+                      albums={searchRes ? searchRes.albums : []}
+                      songs={searchRes ? searchRes.songs : []}
+                    />
+                  }
                 />
                 <Route
                   path="album/:albumId"
