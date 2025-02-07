@@ -3,9 +3,7 @@ import { Song } from "../types";
 import { Duration } from "@tauri-apps/api/http";
 
 export const resetLibraryBackend = () => {
-  console.log("test2");
   const tmp = invoke<void>("clear_library_and_cache", {});
-  console.log(tmp);
   return tmp;
 };
 
