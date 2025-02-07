@@ -10,7 +10,11 @@ use std::{
     time::Duration,
 };
 
-use data::{album::Album, library::{Library, SearchResults}, song::Song};
+use data::{
+    album::Album,
+    library::{Library, SearchResults},
+    song::Song,
+};
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
 use serde::Serialize;
@@ -212,7 +216,9 @@ fn main() {
             get_album,
             enqueue_songs,
             clear_queue,
-            search_library
+            search_library,
+            get_songs,
+            get_albums
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -411,6 +417,44 @@ async fn get_album(state_mutex: State<'_, Mutex<AppState>>, album_id: usize) -> 
 }
 
 #[tauri::command]
+async fn get_albums(
+    state_mutex: State<'_, Mutex<AppState>>,
+    album_ids: Vec<usize>,
+) -> Result<Vec<Album>, ()> {
+    let state = state_mutex.lock().unwrap();
+
+    let mut found_albums = Vec::new();
+    for aid in album_ids {
+        let found_album = match state.library.albums.get(&aid) {
+            Some(album) => album,
+            None => return Err(()),
+        };
+        found_albums.push(found_album.clone());
+    }
+
+    Ok(found_albums)
+}
+
+#[tauri::command]
+async fn get_songs(
+    state_mutex: State<'_, Mutex<AppState>>,
+    song_ids: Vec<usize>,
+) -> Result<Vec<Song>, ()> {
+    let state = state_mutex.lock().unwrap();
+
+    let mut found_songs = Vec::new();
+    for aid in song_ids {
+        let found_song = match state.library.songs.get(&aid) {
+            Some(song) => song,
+            None => return Err(()),
+        };
+        found_songs.push(found_song.clone());
+    }
+
+    Ok(found_songs)
+}
+
+#[tauri::command]
 async fn get_library_albums(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Album>, ()> {
     let state = state_mutex.lock().unwrap();
     let mut albums = state.library.get_all_albums_sorted().clone();
@@ -434,7 +478,10 @@ async fn get_player_state(
 }
 
 #[tauri::command]
-async fn search_library(state_mutex: State<'_, Mutex<AppState>>, query: String) -> Result<SearchResults, ()> {
+async fn search_library(
+    state_mutex: State<'_, Mutex<AppState>>,
+    query: String,
+) -> Result<SearchResults, ()> {
     let state = state_mutex.lock().unwrap();
     let search_res = state.library.search(&query);
 
