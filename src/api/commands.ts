@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
-import { Duration, SearchResults, Song } from "../types";
+import { Song } from "../types";
+import { Duration } from "@tauri-apps/api/http";
 
 export const resetLibraryBackend = () => {
   console.log("test2");
@@ -60,8 +61,3 @@ export const seekCurrentSong = (seekAmount: Duration) => {
     .catch(e => console.error(e));
 };
 
-export const searchLibrary = (query: string) => {
-  invoke<SearchResults>("search_library", { query: query })
-    .then(search_res => console.log(search_res))
-    .catch(e => console.error(e));
-}

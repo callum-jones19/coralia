@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Album, CachedPlayerState, Song } from "../types";
+import { Album, CachedPlayerState, SearchResults, Song } from "../types";
 
 export const getAlbumSongs = async (albumId: number) => {
   return invoke<Song[]>("get_album_songs", { albumId: albumId })
@@ -25,10 +25,27 @@ export const getPlayerState = async () => {
   return invoke<CachedPlayerState>("get_player_state", {});
 };
 
-export const readLibFromCache = () => {
+export const readLibFromCache = async () => {
   const res = invoke<boolean>("load_library_from_cache")
     .then(result => result)
     .catch(e => console.error(e));
 
   return res;
 };
+
+export const searchLibrary = async (query: string) => {
+  return invoke<SearchResults>("search_library", { query: query })
+}
+
+// export const getAlbums = async (aids: number[]) => {
+//   return invoke<Album[]>("get_albums", { albumIds: aids })
+//     .then(albums => albums)
+//     .catch(e => console.error(e));
+// }
+
+// export const getSongs = async (sids: number[]) => {
+//   return invoke<Song[]>("get_songs", { songIds: sids })
+//     .then(songs => songs)
+//     .catch(e => console.error(e));
+// }
+

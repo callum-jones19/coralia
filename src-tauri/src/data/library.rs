@@ -12,12 +12,11 @@ use crate::utils::program_cache_dir;
 
 use super::{album::Album, artwork::Artwork, song::Song};
 
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchResults {
-    pub album_ids: Vec<usize>,
-    pub song_ids: Vec<usize>,
+    pub albums: Vec<Album>,
+    pub songs: Vec<Song>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -187,24 +186,31 @@ impl Library {
     }
 
     pub fn search(&self, search_str: &String) -> SearchResults {
-        let matching_albums: Vec<usize> = self
+        let albums: Vec<Album> = self
             .albums
             .iter()
-            .filter(|(_, album)| album.title.to_lowercase().contains(&search_str.to_lowercase()))
-            .map(|(album_id, _)| *album_id)
+            .filter(|(_, album)| {
+                album
+                    .title
+                    .to_lowercase()
+                    .contains(&search_str.to_lowercase())
+            })
+            .map(|(_, album)| album.clone())
             .collect();
 
-        let matching_songs: Vec<usize> = self
+        let songs: Vec<Song> = self
             .songs
             .iter()
-            .filter(|(_, song)| song.tags.title.to_lowercase().contains(&search_str.to_lowercase()))
-            .map(|(song_id, _)| *song_id)
+            .filter(|(_, song)| {
+                song.tags
+                    .title
+                    .to_lowercase()
+                    .contains(&search_str.to_lowercase())
+            })
+            .map(|(_, song)| song.clone())
             .collect();
 
-        SearchResults {
-            album_ids: matching_albums,
-            song_ids: matching_songs,
-        }
+        SearchResults { albums, songs }
     }
 }
 

@@ -10,6 +10,7 @@ import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { Album, Song } from "./types";
+import SearchView from "./components/SearchView";
 
 export default function App() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -48,6 +49,10 @@ export default function App() {
                 <Route
                   path="albums"
                   element={<MusicGrid />}
+                />
+                <Route
+                  path="search"
+                  element={<SearchView />}
                 />
                 <Route
                   path="album/:albumId"

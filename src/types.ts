@@ -59,6 +59,6 @@ export interface CachedPlayerState {
 }
 
 export interface SearchResults {
-  albumIds: number[];
-  songIds: number[];
+  albums: Album[];
+  songs: Song[];
 }
