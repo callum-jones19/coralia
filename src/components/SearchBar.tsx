@@ -13,9 +13,9 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   const [query, setQuery] = useState<null | string>(null);
 
   return (
-    <div className="basis-full flex flex-row bg-neutral-200 rounded-md items-center max-w-full">
+    <div className="basis-full flex flex-row bg-neutral-200 rounded-md items-center">
       <input
-        className=" basis-full items-center text-neutral-600 p-2 min-w-0 overflow-hidden"
+        className=" basis-1 items-center text-neutral-600 p-2 min-w-0 overflow-hidden"
         placeholder="Search"
         value={query ? query : ''}
         onChange={e => {
@@ -46,13 +46,18 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           }
         }}
       />
-      {query && <button onClick={() => {
-        const t = navigate('/home');
-        if (t) t.catch(e => console.error(e))
-        setQuery(null);
-      }}>
-        <X />
-      </button>}
+      {query &&
+        <button
+          onClick={() => {
+            const t = navigate('/home');
+            if (t) t.catch(e => console.error(e))
+            setQuery(null);
+          }}
+          className="min-w-0 bg-neutral-200"
+        >
+          <X />
+        </button>
+      }
     </div>
   )
 }

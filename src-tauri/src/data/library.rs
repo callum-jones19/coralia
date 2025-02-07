@@ -190,10 +190,17 @@ impl Library {
             .albums
             .iter()
             .filter(|(_, album)| {
-                album
+                let title_match = album
                     .title
                     .to_lowercase()
-                    .contains(&search_str.to_lowercase())
+                    .contains(&search_str.to_lowercase());
+
+                let artist_match = album
+                    .album_artist
+                    .to_lowercase()
+                    .contains(&search_str.to_lowercase());
+
+                title_match || artist_match
             })
             .map(|(_, album)| album.clone())
             .collect();
@@ -202,10 +209,18 @@ impl Library {
             .songs
             .iter()
             .filter(|(_, song)| {
-                song.tags
+                let title_match = song
+                    .tags
                     .title
                     .to_lowercase()
-                    .contains(&search_str.to_lowercase())
+                    .contains(&search_str.to_lowercase());
+
+                let artist_match = match &song.tags.artist {
+                    Some(artist) => artist.to_lowercase().contains(&search_str.to_lowercase()),
+                    None => false,
+                };
+
+                title_match || artist_match
             })
             .map(|(_, song)| song.clone())
             .collect();

@@ -85,8 +85,8 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
             >
               <ChevronRight className="m-auto" />
             </button>
-            <SearchBar onSearch={onSearch} />
           </div>
+          <SearchBar onSearch={onSearch} />
           <button
             className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${
               activeSection !== "Songs"
