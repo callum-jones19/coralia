@@ -19,12 +19,18 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         if (searchQuery !== null) {
           searchLibrary(searchQuery)
             .then(res => {
-              navigate('/home/search');
+              const t = navigate('/home/search');
+              if (t) {
+                t.catch(e => console.error(e));
+              }
               onSearch(res);
             })
             .catch(e => console.error(e));
         } else {
-          navigate('/home');
+          const t = navigate('/home');
+          if (t) {
+            t.catch(e => console.error(e));
+          }
         }
 
         if (searchQuery !== null) {
