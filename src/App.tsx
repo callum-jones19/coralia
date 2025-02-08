@@ -9,8 +9,9 @@ import FullscreenScreen from "./screens/FullscreenScreen";
 import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import { Album, SearchResults, Song } from "./types";
+import { Album, Library, SearchResults, Song } from "./types";
 import SearchView from "./components/SearchView";
+import { listen } from "@tauri-apps/api/event";
 
 export default function App() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -19,6 +20,12 @@ export default function App() {
   const [searchRes, setSearchRes] = useState<SearchResults | null>(null);
 
   useEffect(() => {
+    listen<Library>("library_update", e => {
+      setAlbums(e.payload.albums);
+      setSongs(e.payload.songs);
+    })
+    .catch(e => console.error(e));
+
     getLibrarySongs()
       .then(libSongs => {
         setSongs(libSongs);

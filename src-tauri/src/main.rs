@@ -12,7 +12,7 @@ use std::{
 
 use data::{
     album::Album,
-    library::{Library, SearchResults},
+    library::{ExportedLibrary, Library, SearchResults},
     song::Song,
 };
 use log::info;
@@ -228,6 +228,21 @@ fn main() {
         .expect("Error while running tauri application!");
 }
 
+fn export_library(
+    albums: &Vec<Album>,
+    songs: &Vec<Song>,
+    root_dirs: &Vec<PathBuf>,
+    app_handle: &AppHandle,
+) -> Result<(), tauri::Error> {
+    let export_library = ExportedLibrary {
+        albums: albums.clone(),
+        root_dirs: root_dirs.clone(),
+        songs: songs.clone(),
+    };
+
+    app_handle.emit_all("library_update", export_library)
+}
+
 // ============================== Commands =====================================
 #[tauri::command]
 async fn add_library_directories(
@@ -242,9 +257,11 @@ async fn add_library_directories(
 
     state.library.save_library_to_cache();
 
-    let res = app_handle.emit_all("library_update", state.library.clone());
+    let albums: Vec<Album> = state.library.albums.clone().into_values().collect();
+    let songs: Vec<Song> = state.library.songs.clone().into_values().collect();
+    let root_dirs = &state.library.root_dirs;
 
-    res
+    export_library(&albums, &songs, &root_dirs, &app_handle)
 }
 
 #[tauri::command]
@@ -254,9 +271,12 @@ async fn clear_library_and_cache(
 ) -> Result<(), tauri::Error> {
     let mut state = state_mutex.lock().unwrap();
     state.library.clear_library();
-    let res = app_handle.emit_all("library_update", state.library.clone());
 
-    res
+    let albums: Vec<Album> = state.library.albums.clone().into_values().collect();
+    let songs: Vec<Song> = state.library.songs.clone().into_values().collect();
+    let root_dirs = &state.library.root_dirs;
+
+    export_library(&albums, &songs, &root_dirs, &app_handle)
 }
 
 #[tauri::command]

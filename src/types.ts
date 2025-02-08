@@ -62,3 +62,9 @@ export interface SearchResults {
   albums: Album[];
   songs: Song[];
 }
+
+export interface Library {
+  albums: Album[];
+  songs: Song[];
+  root_dirs: string[];
+}

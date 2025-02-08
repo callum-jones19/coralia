@@ -21,6 +21,14 @@ pub struct SearchResults {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct ExportedLibrary {
+    pub root_dirs: Vec<PathBuf>,
+    pub songs: Vec<Song>,
+    pub albums: Vec<Album>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Library {
     pub root_dirs: Vec<PathBuf>,
     pub songs: HashMap<usize, Song>,
