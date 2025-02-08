@@ -63,7 +63,7 @@ fn create_and_run_audio_player(
                     "Player Command Handler: Received request to enqueue song {} into the player.",
                     &song.tags.title
                 );
-                player.add_to_queue(&song);
+                player.add_to_queue(&song).unwrap();
             }
             PlayerCommand::Play => {
                 info!("Player Command Handler: Received request to set sink to play.");
@@ -93,7 +93,7 @@ fn create_and_run_audio_player(
                     &song.tags.title
                 );
                 player.clear();
-                player.add_to_queue(&song);
+                player.add_to_queue(&song).unwrap();
                 player.play();
             }
             PlayerCommand::TrySeek(duration) => {
