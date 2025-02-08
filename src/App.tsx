@@ -20,12 +20,14 @@ export default function App() {
   const [searchRes, setSearchRes] = useState<SearchResults | null>(null);
 
   useEffect(() => {
-    listen<Library>("library_update", e => {
+    // Watch for any updates to the library while the app is running
+    const unlistenLibrary = listen<Library>("library_update", e => {
       setAlbums(e.payload.albums);
       setSongs(e.payload.songs);
     })
     .catch(e => console.error(e));
 
+    // Fetch the library on initial load.
     getLibrarySongs()
       .then(libSongs => {
         setSongs(libSongs);
@@ -35,6 +37,12 @@ export default function App() {
     getLibraryAlbums()
       .then(libAlbums => setAlbums(libAlbums))
       .catch(e => console.error(e));
+
+    return () => {
+      unlistenLibrary
+        .then(f => f)
+        .catch(e => console.error(e));
+    }
   }, []);
 
   return (
