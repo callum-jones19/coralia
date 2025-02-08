@@ -251,9 +251,11 @@ async fn add_library_directories(
     // Emit scan events
     app_handle.emit_all("library_song_scan_begin", {}).unwrap();
     state.library.scan_library_songs(&app_handle);
+    app_handle.emit_all("library_song_scan_end", {}).unwrap();
 
     app_handle.emit_all("library_album_scan_begin", {}).unwrap();
     state.library.scan_library_albums(&app_handle);
+    app_handle.emit_all("library_album_scan_end", {}).unwrap();
 
     state.library.save_library_to_cache();
 
