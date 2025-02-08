@@ -40,8 +40,8 @@ export default function LibraryBody() {
           <>
             <div className="h-full w-full flex flex-col justify-center gap-4 items-center">
               <Loader className="animate-spin" />
-              {isScanningSongs && <p>Scanning songs...</p>}
-              {isScanningAlbums && <p>Scanning albums...</p>}
+              {isScanningSongs && <p>Scanning library songs...</p>}
+              {isScanningAlbums && <p>Scanning library albums...</p>}
             </div>
           </>
         }
