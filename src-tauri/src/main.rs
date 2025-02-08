@@ -228,16 +228,11 @@ fn main() {
         .expect("Error while running tauri application!");
 }
 
-fn export_library(
-    albums: &Vec<Album>,
-    songs: &Vec<Song>,
-    root_dirs: &Vec<PathBuf>,
-    app_handle: &AppHandle,
-) -> Result<(), tauri::Error> {
+fn export_library(library: &Library, app_handle: &AppHandle) -> Result<(), tauri::Error> {
     let export_library = ExportedLibrary {
-        albums: albums.clone(),
-        root_dirs: root_dirs.clone(),
-        songs: songs.clone(),
+        albums: library.get_all_albums_sorted(),
+        root_dirs: library.root_dirs.clone(),
+        songs: library.get_all_songs_sorted().clone(),
     };
 
     app_handle.emit_all("library_update", export_library)
@@ -252,16 +247,13 @@ async fn add_library_directories(
 ) -> Result<(), tauri::Error> {
     let mut state = state_mutex.lock().unwrap();
     state.library.add_new_folders(root_dirs);
+
     state.library.scan_library_songs();
     state.library.scan_library_albums();
 
     state.library.save_library_to_cache();
 
-    let albums: Vec<Album> = state.library.albums.clone().into_values().collect();
-    let songs: Vec<Song> = state.library.songs.clone().into_values().collect();
-    let root_dirs = &state.library.root_dirs;
-
-    export_library(&albums, &songs, &root_dirs, &app_handle)
+    export_library(&state.library, &app_handle)
 }
 
 #[tauri::command]
@@ -272,11 +264,7 @@ async fn clear_library_and_cache(
     let mut state = state_mutex.lock().unwrap();
     state.library.clear_library();
 
-    let albums: Vec<Album> = state.library.albums.clone().into_values().collect();
-    let songs: Vec<Song> = state.library.songs.clone().into_values().collect();
-    let root_dirs = &state.library.root_dirs;
-
-    export_library(&albums, &songs, &root_dirs, &app_handle)
+    export_library(&state.library, &app_handle)
 }
 
 #[tauri::command]
@@ -407,7 +395,7 @@ async fn get_library_songs_sorted(
     state_mutex: State<'_, Mutex<AppState>>,
 ) -> Result<Vec<Song>, ()> {
     let state = state_mutex.lock().unwrap();
-    Ok(state.library.get_all_songs_sorted_album())
+    Ok(state.library.get_all_songs_sorted())
 }
 
 #[tauri::command]
