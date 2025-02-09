@@ -318,6 +318,7 @@ async fn clear_library_and_cache(
 ) -> Result<(), tauri::Error> {
     let mut state = state_mutex.lock().unwrap();
     state.library.clear_library();
+    state.command_tx.send(PlayerCommand::Clear);
 
     export_library(&state.library, &app_handle)
 }
