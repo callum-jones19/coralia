@@ -143,7 +143,11 @@ impl Library {
             }
         }
 
-        for album in albums.values_mut() {
+        self.albums = albums;
+    }
+
+    pub fn cache_library_artwork(&mut self) {
+        for album in self.albums.values_mut() {
             let artwork = match album.album_songs.first() {
                 Some(first_song_id) => {
                     let song = self.songs.get(first_song_id).unwrap();
@@ -161,8 +165,6 @@ impl Library {
                 }
             }
         }
-
-        self.albums = albums;
     }
 
     pub fn save_library_to_cache(&self) {
