@@ -68,3 +68,10 @@ export interface Library {
   songs: Song[];
   root_dirs: string[];
 }
+
+export type LibraryStatus = "Empty"
+  | "Loading"
+  | "ScanningSongs"
+  | "IndexingAlbums"
+  | "CachingArtwork"
+  | "Completed";

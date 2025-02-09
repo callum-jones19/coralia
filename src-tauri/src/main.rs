@@ -12,12 +12,12 @@ use std::{
 
 use data::{
     album::Album,
-    library::{ExportedLibrary, Library, SearchResults},
+    library::{self, ExportedLibrary, Library, SearchResults},
     song::Song,
 };
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager, State};
 
 mod data;
@@ -47,6 +47,21 @@ struct PlayEventData {
 struct AppState {
     command_tx: Sender<PlayerCommand>,
     library: Library,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+enum LibraryStatus {
+    Empty,
+    Loading,
+    ScanningSongs,
+    IndexingAlbums,
+    CachingArtwork,
+    Completed,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct LibraryState {
+    current_status: LibraryStatus,
 }
 
 fn create_and_run_audio_player(
@@ -200,6 +215,9 @@ fn main() {
             command_tx: player_cmd_tx,
             library: music_library,
         }))
+        .manage(Mutex::new(LibraryState {
+            current_status: LibraryStatus::Empty,
+        }))
         .invoke_handler(tauri::generate_handler![
             add_library_directories,
             enqueue_song,
@@ -222,7 +240,8 @@ fn main() {
             clear_queue,
             search_library,
             get_songs,
-            get_albums
+            get_albums,
+            get_library_state
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -241,18 +260,54 @@ fn export_library(library: &Library, app_handle: &AppHandle) -> Result<(), tauri
 // ============================== Commands =====================================
 #[tauri::command]
 async fn add_library_directories(
-    state_mutex: State<'_, Mutex<AppState>>,
+    app_state: State<'_, Mutex<AppState>>,
+    library_state: State<'_, Mutex<LibraryState>>,
     app_handle: AppHandle,
     root_dirs: Vec<PathBuf>,
 ) -> Result<(), tauri::Error> {
-    let mut state = state_mutex.lock().unwrap();
+    // Begin loading sequence
+    let mut state = app_state.lock().unwrap();
+    {
+        let mut library_state = library_state.lock().unwrap();
+        library_state.current_status = LibraryStatus::Loading;
+        app_handle.emit_all::<LibraryStatus>("library_status_change", LibraryStatus::Loading)?
+    }
     state.library.add_new_folders(root_dirs);
 
-    // Emit scan events
+    // Begin scanning songs
+    {
+        let mut library_state = library_state.lock().unwrap();
+        library_state.current_status = LibraryStatus::ScanningSongs;
+        app_handle
+            .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::ScanningSongs)?
+    }
     state.library.scan_library_songs(&app_handle);
+
+    // Begin indexing albums
+    {
+        let mut library_state = library_state.lock().unwrap();
+        library_state.current_status = LibraryStatus::IndexingAlbums;
+        app_handle
+            .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::IndexingAlbums)?
+    }
     state.library.scan_library_albums(&app_handle);
+
+    // Begin caching artwork
+    {
+        let mut library_state = library_state.lock().unwrap();
+        library_state.current_status = LibraryStatus::CachingArtwork;
+        app_handle
+            .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::CachingArtwork)?
+    }
     state.library.cache_library_artwork();
     state.library.save_library_to_cache();
+
+    // Mark as completed
+    {
+        let mut library_state = library_state.lock().unwrap();
+        library_state.current_status = LibraryStatus::Completed;
+        app_handle.emit_all::<LibraryStatus>("library_status_change", LibraryStatus::Completed)?
+    }
 
     export_library(&state.library, &app_handle)
 }
@@ -385,6 +440,14 @@ async fn seek_current_song(
 }
 
 // ============================= Senders =======================================
+#[tauri::command]
+async fn get_library_state(
+    state_mutex: State<'_, Mutex<LibraryState>>,
+) -> Result<LibraryStatus, ()> {
+    let state = state_mutex.lock().unwrap();
+    Ok(state.current_status.clone())
+}
+
 #[tauri::command]
 async fn get_library_songs(state_mutex: State<'_, Mutex<AppState>>) -> Result<Vec<Song>, ()> {
     let state = state_mutex.lock().unwrap();

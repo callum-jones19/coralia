@@ -1,47 +1,45 @@
+import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Loader } from "react-feather";
 import { Outlet } from "react-router";
+import { LibraryStatus } from "../types";
 
 export default function LibraryBody() {
-  const [isScanningSongs, setIsScanningSongs] = useState<boolean>(false);
-  const [isScanningAlbums, setIsScanningAlbums] = useState<boolean>(false);
+  const [libraryState, setLibraryState] = useState<LibraryStatus>("Empty");
 
   useEffect(() => {
-    const unlistenScanSongsBegin = listen("library_song_scan_begin", () => {
-      setIsScanningSongs(true);
+    const unlistenLibStatusChange = listen<LibraryStatus>("library_status_change", e => {
+      console.log(e.payload);
+      setLibraryState(e.payload);
     });
 
-    const unlistenScanSongsEnd = listen("library_song_scan_end", () => {
-      setIsScanningSongs(false);
-    });
-
-    const unlistenScanAlbumsBegin = listen("library_album_scan_begin", () => {
-      setIsScanningAlbums(true);
-    });
-
-    const unlistenScanAlbumsEnd = listen("library_album_scan_end", () => {
-      setIsScanningAlbums(false);
-    });
+    // After registering the listener, we want to do an initial grab of the state
+    // This means we will get the state that may have been updated since
+    // registering the listener already
+    invoke<LibraryStatus>("get_library_state", {})
+      .then(d => {
+        setLibraryState(d);
+        console.log(d);
+      })
+      .catch(e => console.error(e));
 
     return () => {
-      unlistenScanSongsBegin.then(f => f).catch(e => console.error(e));
-      unlistenScanSongsEnd.then(f => f).catch(e => console.error(e));
-      unlistenScanAlbumsBegin.then(f => f).catch(e => console.error(e));
-      unlistenScanAlbumsEnd.then(f => f).catch(e => console.error(e));
+      unlistenLibStatusChange.then(f => f).catch(e => console.error(e));
     }
   }, []);
 
   return (
     <>
       <div className="bg-neutral-100 basis-1/2 min-w-0 flex-grow rounded-md h-full">
-        {!isScanningAlbums && !isScanningSongs && <Outlet />}
-        {(isScanningSongs || isScanningAlbums) &&
+        {libraryState === 'Completed' && <Outlet />}
+        {libraryState !== 'Completed' &&
           <>
             <div className="h-full w-full flex flex-col justify-center gap-4 items-center">
               <Loader className="animate-spin" />
-              {isScanningSongs && <p>Scanning library songs...</p>}
-              {isScanningAlbums && <p>Scanning library albums...</p>}
+              {libraryState === 'ScanningSongs' && <p>Scanning library songs...</p>}
+              {libraryState === 'IndexingAlbums' && <p>Indexing library albums...</p>}
+              {libraryState === 'CachingArtwork' && <p>Caching library artwork...</p>}
             </div>
           </>
         }
