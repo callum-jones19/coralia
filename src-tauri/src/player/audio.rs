@@ -325,6 +325,12 @@ impl Player {
                             "Sink internals: could not add decoded song into sink buffer. {}",
                             e.to_string()
                         );
+                        // Broadcast the new queue anyway
+                        let song_data_queue =
+                            songs_queue.clone().into_iter().map(|s| s.song).collect();
+                        let queue_change_state =
+                            PlayerStateUpdate::QueueUpdate(song_data_queue, audio_sink.get_pos());
+                        self.state_update_tx.send(queue_change_state).unwrap();
                         return Err(e.to_string());
                     }
                 }
