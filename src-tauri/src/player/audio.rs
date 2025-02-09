@@ -11,7 +11,7 @@ use std::{
     time::Duration,
 };
 
-use log::{error, info, warn};
+use log::{error, info};
 use rodio::{
     decoder::DecoderError,
     source::{EmptyCallback, SeekError},
@@ -252,8 +252,6 @@ impl Player {
         // controls for the sources inside the sink.
         let sink_wrapped = Arc::new(Mutex::new(sink));
         let songs_queue = Arc::new(Mutex::new(VecDeque::<PlayerSong>::new()));
-        let sink_songs_controls: Arc<Mutex<VecDeque<Arc<AtomicBool>>>> =
-            Arc::new(Mutex::new(VecDeque::new()));
 
         // Spawn the thread that runs whenever a song source in the sink ends.
         let songs_queue_2 = Arc::clone(&songs_queue);
@@ -355,19 +353,17 @@ impl Player {
             if sink.len() != 0 {
                 info!("Sink internals: Sink state set to play");
                 sink.play();
-                Some(sink.get_pos().clone())
+                Some(sink.get_pos())
             } else {
                 info!("Sink internals: Sink buffer empty, so not starting playback");
                 None
             }
         };
 
-        match curr_pos {
-            Some(pos) => self
-                .state_update_tx
+        if let Some(pos) = curr_pos {
+            self.state_update_tx
                 .send(PlayerStateUpdate::SongPlay(pos))
-                .unwrap(),
-            None => {}
+                .unwrap();
         }
     }
 

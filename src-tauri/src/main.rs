@@ -12,7 +12,7 @@ use std::{
 
 use data::{
     album::Album,
-    library::{self, ExportedLibrary, Library, SearchResults},
+    library::{ExportedLibrary, Library, SearchResults},
     song::Song,
 };
 use log::info;
@@ -280,7 +280,7 @@ async fn add_library_directories(
         app_handle
             .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::ScanningSongs)?
     }
-    state.library.scan_library_songs(&app_handle);
+    state.library.scan_library_songs();
 
     // Begin indexing albums
     {
@@ -289,7 +289,7 @@ async fn add_library_directories(
         app_handle
             .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::IndexingAlbums)?
     }
-    state.library.scan_library_albums(&app_handle);
+    state.library.scan_library_albums();
 
     // Begin caching artwork
     {
@@ -318,7 +318,7 @@ async fn clear_library_and_cache(
 ) -> Result<(), tauri::Error> {
     let mut state = state_mutex.lock().unwrap();
     state.library.clear_library();
-    state.command_tx.send(PlayerCommand::Clear);
+    state.command_tx.send(PlayerCommand::Clear).unwrap();
 
     export_library(&state.library, &app_handle)
 }

@@ -7,7 +7,6 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager};
 
 use crate::utils::program_cache_dir;
 
@@ -94,7 +93,7 @@ impl Library {
 
     /// Given the root directory of this library, scan it recursively for songs,
     // and then update the library to reflect this.
-    pub fn scan_library_songs(&mut self, app_handle: &AppHandle) {
+    pub fn scan_library_songs(&mut self) {
         let mut all_lib_songs: Vec<Song> = Vec::new();
 
         for d in &self.root_dirs {
@@ -109,7 +108,7 @@ impl Library {
             };
 
             // Loop over every file in this directory
-            let mut dir_songs = scan_songs_recursively(paths, &app_handle);
+            let mut dir_songs = scan_songs_recursively(paths);
             all_lib_songs.append(&mut dir_songs);
         }
 
@@ -120,7 +119,7 @@ impl Library {
         self.songs = res;
     }
 
-    pub fn scan_library_albums(&mut self, app_handle: &AppHandle) {
+    pub fn scan_library_albums(&mut self) {
         let mut albums: HashMap<usize, Album> = HashMap::new();
 
         for song in self.songs.values_mut() {
@@ -196,7 +195,7 @@ impl Library {
         ordered_albums
     }
 
-    pub fn search(&self, search_str: &String) -> SearchResults {
+    pub fn search(&self, search_str: &str) -> SearchResults {
         let albums: Vec<Album> = self
             .albums
             .iter()
@@ -250,7 +249,7 @@ pub struct ScanSongEvent {
     song_title: String,
 }
 
-fn scan_songs_recursively(paths: fs::ReadDir, app_handle: &AppHandle) -> Vec<Song> {
+fn scan_songs_recursively(paths: fs::ReadDir) -> Vec<Song> {
     let mut folder_songs: Vec<Song> = Vec::new();
 
     for path in paths {
@@ -267,7 +266,7 @@ fn scan_songs_recursively(paths: fs::ReadDir, app_handle: &AppHandle) -> Vec<Son
                 Ok(p) => p,
                 Err(_) => todo!(),
             };
-            let mut sub_songs = scan_songs_recursively(recurse_paths, &app_handle);
+            let mut sub_songs = scan_songs_recursively(recurse_paths);
             folder_songs.append(&mut sub_songs);
         } else {
             // Try to add to library
@@ -276,10 +275,6 @@ fn scan_songs_recursively(paths: fs::ReadDir, app_handle: &AppHandle) -> Vec<Son
                 Ok(s) => s,
                 Err(_) => continue,
             };
-            let payload = ScanSongEvent {
-                song_title: new_song.clone().tags.title,
-            };
-            app_handle.emit_all("scan_new_song_to_lib", payload);
             folder_songs.push(new_song);
         }
     }
