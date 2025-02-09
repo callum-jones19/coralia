@@ -6,7 +6,7 @@ import { Outlet } from "react-router";
 import { LibraryStatus } from "../types";
 
 export default function LibraryBody() {
-  const [libraryState, setLibraryState] = useState<LibraryStatus>("Empty");
+  const [libraryState, setLibraryState] = useState<LibraryStatus | null>(null);
 
   useEffect(() => {
     const unlistenLibStatusChange = listen<LibraryStatus>("library_status_change", e => {
@@ -31,19 +31,21 @@ export default function LibraryBody() {
 
   return (
     <>
-      <div className="bg-neutral-100 basis-1/2 min-w-0 flex-grow rounded-md h-full">
-        {libraryState === 'Completed' && <Outlet />}
-        {libraryState !== 'Completed' &&
-          <>
-            <div className="h-full w-full flex flex-col justify-center gap-4 items-center">
-              <Loader className="animate-spin" />
-              {libraryState === 'ScanningSongs' && <p>Scanning library songs...</p>}
-              {libraryState === 'IndexingAlbums' && <p>Indexing library albums...</p>}
-              {libraryState === 'CachingArtwork' && <p>Caching library artwork...</p>}
-            </div>
-          </>
-        }
-      </div>
+      {libraryState !== null &&
+        <div className="bg-neutral-100 basis-1/2 min-w-0 flex-grow rounded-md h-full">
+          {libraryState === 'NotScanning' && <Outlet />}
+          {libraryState !== 'NotScanning' &&
+            <>
+              <div className="h-full w-full flex flex-col justify-center gap-4 items-center">
+                <Loader className="animate-spin" />
+                {libraryState === 'ScanningSongs' && <p>Scanning library songs...</p>}
+                {libraryState === 'IndexingAlbums' && <p>Indexing library albums...</p>}
+                {libraryState === 'CachingArtwork' && <p>Caching library artwork...</p>}
+              </div>
+            </>
+          }
+        </div>
+      }
     </>
   );
 }

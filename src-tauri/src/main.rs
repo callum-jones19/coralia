@@ -51,12 +51,11 @@ struct AppState {
 
 #[derive(Clone, Serialize, Deserialize)]
 enum LibraryStatus {
-    Empty,
     Loading,
     ScanningSongs,
     IndexingAlbums,
     CachingArtwork,
-    Completed,
+    NotScanning,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -216,7 +215,7 @@ fn main() {
             library: music_library,
         }))
         .manage(Mutex::new(LibraryState {
-            current_status: LibraryStatus::Empty,
+            current_status: LibraryStatus::NotScanning,
         }))
         .invoke_handler(tauri::generate_handler![
             add_library_directories,
@@ -305,8 +304,8 @@ async fn add_library_directories(
     // Mark as completed
     {
         let mut library_state = library_state.lock().unwrap();
-        library_state.current_status = LibraryStatus::Completed;
-        app_handle.emit_all::<LibraryStatus>("library_status_change", LibraryStatus::Completed)?
+        library_state.current_status = LibraryStatus::NotScanning;
+        app_handle.emit_all::<LibraryStatus>("library_status_change", LibraryStatus::NotScanning)?
     }
 
     export_library(&state.library, &app_handle)

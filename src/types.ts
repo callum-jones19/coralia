@@ -69,9 +69,8 @@ export interface Library {
   root_dirs: string[];
 }
 
-export type LibraryStatus = "Empty"
-  | "Loading"
+export type LibraryStatus = "Loading"
   | "ScanningSongs"
   | "IndexingAlbums"
   | "CachingArtwork"
-  | "Completed";
+  | "NotScanning";
