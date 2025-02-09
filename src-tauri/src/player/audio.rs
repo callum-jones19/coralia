@@ -411,15 +411,6 @@ impl Player {
         let mut songs_queue = self.songs_queue.lock().unwrap();
         let sink = self.audio_sink.lock().unwrap();
         // Handle edge case of removing the first song.
-        if song_index == 0 {
-            match songs_queue.get(song_index) {
-                Some(s) => {
-                    sink.skip_one();
-                    return Some(s.song.clone());
-                }
-                None => return None,
-            }
-        }
 
         let song = match songs_queue.remove(song_index) {
             Some(s) => s,
@@ -432,7 +423,13 @@ impl Player {
         }
 
         // Send the event to the frontend
-        let songs_data = songs_queue.clone().into_iter().map(|s| s.song).collect();
+        let songs_data: VecDeque<Song> = songs_queue.clone().into_iter().map(|s| s.song).collect();
+        if songs_data.len() == 0 {
+            sink.pause();
+            self.state_update_tx
+                .send(PlayerStateUpdate::SongPause(Duration::ZERO))
+                .unwrap();
+        }
         self.state_update_tx
             .send(PlayerStateUpdate::QueueUpdate(songs_data, sink.get_pos()))
             .unwrap();
