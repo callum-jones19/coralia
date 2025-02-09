@@ -33,7 +33,7 @@ export default function QueueListItem({ song, index }: QueueListItem) {
         className="w-6 aspect-square rounded-sm"
       />
       <p
-        className="text-nowrap overflow-hidden text-ellipsis flex-grow"
+        className="text-nowrap overflow-hidden text-ellipsis flex-grow min-w-0"
         title={song.tags.title}
       >
         {song.tags.title}
