@@ -169,7 +169,10 @@ fn handle_sink_song_end(
                     .collect();
 
                 state_update_tx
-                    .send(PlayerStateUpdate::SongEnd(new_queue.clone()))
+                    .send(PlayerStateUpdate::SongEnd(
+                        new_queue.clone(),
+                        new_prev_queue.clone(),
+                    ))
                     .unwrap();
                 state_update_tx
                     .send(PlayerStateUpdate::QueueUpdate(
@@ -227,7 +230,7 @@ fn handle_sink_song_end(
 /// An enum of possible events that we may want to send out of the player
 /// thread for major events that could occur within the Player structure.
 pub enum PlayerStateUpdate {
-    SongEnd(VecDeque<Song>),
+    SongEnd(VecDeque<Song>, Vec<Song>),
     SongPlay(Duration),
     SongPause(Duration),
     QueueUpdate(VecDeque<Song>, Vec<Song>, Duration),

@@ -140,14 +140,17 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
     loop {
         let state_update = player_event_rx.recv().unwrap();
         match state_update {
-            PlayerStateUpdate::SongEnd(new_queue) => {
+            PlayerStateUpdate::SongEnd(new_queue, prev_songs) => {
                 info!("Player Events: song ended.");
                 handle
                     .emit_all("queue-length-change", &new_queue.len())
                     .unwrap();
                 handle.emit_all("song-end", &new_queue.front()).unwrap();
                 handle
-                    .emit_all("queue-change", (&new_queue, Some(Duration::ZERO)))
+                    .emit_all(
+                        "queue-change",
+                        (&new_queue, &prev_songs, Some(Duration::ZERO)),
+                    )
                     .unwrap();
             }
             PlayerStateUpdate::SongPlay(song_pos) => {
