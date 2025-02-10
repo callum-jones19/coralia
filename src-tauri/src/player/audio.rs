@@ -49,9 +49,9 @@ fn open_song_into_sink(
     let stoppable_source = song_source.stoppable();
 
     // FIXME eject a true statement out of the list after the song has been skipped
-    let skip: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
-    song.sink_controls = Some(skip.clone());
-    let skip_inner = skip.clone();
+    let stop: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
+    song.sink_controls = Some(stop.clone());
+    let skip_inner = stop.clone();
     let controlled_src = stoppable_source.periodic_access(Duration::from_millis(5), move |src| {
         let should_stop = skip_inner.load(Ordering::SeqCst);
         if should_stop {
@@ -67,7 +67,7 @@ fn open_song_into_sink(
     // ended naturally. If it was stopped, it should not fire.
     let song_end_tx = song_end_tx.clone();
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
-        let was_skipped = skip.load(Ordering::SeqCst);
+        let was_skipped = stop.load(Ordering::SeqCst);
         if !was_skipped {
             match song_end_tx.send(()) {
                 Ok(_) => println!("Successfully sent song end event"),
@@ -224,6 +224,7 @@ pub struct Player {
     // We need a list of sources to track what is currently in the sink,
     // as the sink gives us no info about the sources inside it.
     songs_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
+    current_song_index: usize,
     player_event_tx: Sender<()>,
     state_update_tx: Sender<PlayerStateUpdate>,
 }
@@ -274,6 +275,7 @@ impl Player {
             _stream_handle: stream_handle,
             audio_sink: sink_wrapped,
             songs_queue,
+            current_song_index: 0,
             player_event_tx: sink_song_end_tx,
             state_update_tx,
         }
