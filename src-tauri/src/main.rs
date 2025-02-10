@@ -168,7 +168,11 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     .emit_all::<PlayEventData>("is-paused", payload)
                     .unwrap();
             }
-            PlayerStateUpdate::QueueUpdate(updated_queue, current_song_position) => {
+            PlayerStateUpdate::QueueUpdate(
+                updated_queue,
+                updated_prev_songs,
+                current_song_position,
+            ) => {
                 info!("Player Events: song queue updated.");
                 handle
                     .emit_all("queue-length-change", &updated_queue.len())
@@ -176,7 +180,8 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
 
                 // We want to send both the queue, but also the playback info
                 // of the current song.
-                let queue_change_payload = (updated_queue, current_song_position);
+                let queue_change_payload =
+                    (updated_queue, updated_prev_songs, current_song_position);
                 handle
                     .emit_all("queue-change", queue_change_payload)
                     .unwrap();

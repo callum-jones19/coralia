@@ -6,7 +6,7 @@ import { Song } from "../types";
 
 export interface QueueListItem {
   song: Song;
-  index: number;
+  index?: number;
 }
 
 export default function QueueListItem({ song, index }: QueueListItem) {
@@ -22,8 +22,9 @@ export default function QueueListItem({ song, index }: QueueListItem) {
       onMouseLeave={() => setisHovering(false)}
     >
       <div className="basis-6 flex-grow-0 flex-shrink-0">
+        {index === undefined && <p>~~</p>}
         {index === 0 && <Volume1 size="1em" />}
-        {index !== 0
+        {index !== undefined && index !== 0
           && <p>{index}.</p>}
       </div>
       <img
@@ -39,7 +40,7 @@ export default function QueueListItem({ song, index }: QueueListItem) {
         {song.tags.title}
       </p>
       {isHovering
-        && (
+        && index !== undefined && (
           <button
             className=""
             onClick={() => removeFromQueue(index)}

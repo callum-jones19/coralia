@@ -53,6 +53,7 @@ export interface Album {
 
 export interface CachedPlayerState {
   songsQueue: Song[];
+  prevSongsQueue: Song[];
   currentSongPos: Duration;
   currentVolume: number;
   isPaused: boolean;

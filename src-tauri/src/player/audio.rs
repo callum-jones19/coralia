@@ -162,11 +162,21 @@ fn handle_sink_song_end(
                     .map(|song| song.song)
                     .collect();
 
+                let new_prev_queue: Vec<Song> = prev_songs_queue_locked
+                    .clone()
+                    .into_iter()
+                    .map(|song| song.song)
+                    .collect();
+
                 state_update_tx
                     .send(PlayerStateUpdate::SongEnd(new_queue.clone()))
                     .unwrap();
                 state_update_tx
-                    .send(PlayerStateUpdate::QueueUpdate(new_queue, Duration::ZERO))
+                    .send(PlayerStateUpdate::QueueUpdate(
+                        new_queue,
+                        new_prev_queue,
+                        Duration::ZERO,
+                    ))
                     .unwrap();
             }
             EndCause::Stopped => {
@@ -220,7 +230,7 @@ pub enum PlayerStateUpdate {
     SongEnd(VecDeque<Song>),
     SongPlay(Duration),
     SongPause(Duration),
-    QueueUpdate(VecDeque<Song>, Duration),
+    QueueUpdate(VecDeque<Song>, Vec<Song>, Duration),
 }
 
 /// Stores a snapshot of the player state at a given moment
@@ -364,6 +374,7 @@ impl Player {
         let songs_in_sink = self.number_songs_in_sink();
         {
             let mut songs_queue = self.songs_queue.lock().unwrap();
+            let mut prev_songs_queue = self.previous_songs.lock().unwrap();
             let mut audio_sink = self.audio_sink.lock().unwrap();
             if songs_in_sink < 3 {
                 info!("Player internals: adding decoded song file into sink buffer.");
@@ -382,8 +393,16 @@ impl Player {
                         // Broadcast the new queue anyway
                         let song_data_queue =
                             songs_queue.clone().into_iter().map(|s| s.song).collect();
-                        let queue_change_state =
-                            PlayerStateUpdate::QueueUpdate(song_data_queue, audio_sink.get_pos());
+                        let prev_songs = prev_songs_queue
+                            .clone()
+                            .into_iter()
+                            .map(|s| s.song)
+                            .collect();
+                        let queue_change_state = PlayerStateUpdate::QueueUpdate(
+                            song_data_queue,
+                            prev_songs,
+                            audio_sink.get_pos(),
+                        );
                         self.state_update_tx.send(queue_change_state).unwrap();
                         return Err(e.to_string());
                     }
@@ -392,8 +411,14 @@ impl Player {
 
             songs_queue.push_back(player_song.clone());
             let song_data_queue = songs_queue.clone().into_iter().map(|s| s.song).collect();
+            let prev_songs = prev_songs_queue
+                .clone()
+                .into_iter()
+                .map(|s| s.song)
+                .collect();
+
             let queue_change_state =
-                PlayerStateUpdate::QueueUpdate(song_data_queue, audio_sink.get_pos());
+                PlayerStateUpdate::QueueUpdate(song_data_queue, prev_songs, audio_sink.get_pos());
             self.state_update_tx.send(queue_change_state).unwrap();
         }
 
@@ -459,12 +484,15 @@ impl Player {
         self.audio_sink.lock().unwrap().skip_one();
     }
 
+    pub fn go_back_one_song(&mut self) {}
+
     /// Remove a song from the queue given its index.
     /// If a song does not exist at this index, return None.
     /// If a song does exist, return the Song that was removed.
     pub fn remove_song_from_queue(&mut self, song_index: usize) -> Option<Song> {
         info!("Sink internals: Removing song at index {song_index} from queue");
         let mut songs_queue = self.songs_queue.lock().unwrap();
+        let mut prev_songs_queue = self.previous_songs.lock().unwrap();
         let sink = self.audio_sink.lock().unwrap();
         // Handle edge case of removing the first song.
 
@@ -480,6 +508,11 @@ impl Player {
 
         // Send the event to the frontend
         let songs_data: VecDeque<Song> = songs_queue.clone().into_iter().map(|s| s.song).collect();
+        let prev_songs_data: Vec<Song> = prev_songs_queue
+            .clone()
+            .into_iter()
+            .map(|s| s.song)
+            .collect();
         if songs_data.len() == 0 {
             sink.pause();
             self.state_update_tx
@@ -492,11 +525,19 @@ impl Player {
         // from the queue.
         if song_index != 0 {
             self.state_update_tx
-                .send(PlayerStateUpdate::QueueUpdate(songs_data, sink.get_pos()))
+                .send(PlayerStateUpdate::QueueUpdate(
+                    songs_data,
+                    prev_songs_data,
+                    sink.get_pos(),
+                ))
                 .unwrap();
         } else {
             self.state_update_tx
-                .send(PlayerStateUpdate::QueueUpdate(songs_data, Duration::ZERO))
+                .send(PlayerStateUpdate::QueueUpdate(
+                    songs_data,
+                    prev_songs_data,
+                    Duration::ZERO,
+                ))
                 .unwrap();
         }
 
