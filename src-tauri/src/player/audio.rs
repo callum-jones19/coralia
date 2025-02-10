@@ -95,6 +95,7 @@ fn handle_sink_song_end(
     sink_song_end_rx: Receiver<EndCause>,
     sink: Arc<Mutex<Sink>>,
     song_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
+    prev_song_queue: Arc<Mutex<Vec<PlayerSong>>>,
     state_update_tx: Sender<PlayerStateUpdate>,
     sink_song_end_tx: Sender<EndCause>,
 ) {
@@ -105,9 +106,16 @@ fn handle_sink_song_end(
             EndCause::EndOfSong => {
                 let mut song_queue_locked = song_queue.lock().unwrap();
                 let mut sink_locked = sink.lock().unwrap();
+                let mut prev_songs_queue_locked = prev_song_queue.lock().unwrap();
 
                 // Pop the song that just finished out of the queue
-                song_queue_locked.pop_front();
+                let finished_song = song_queue_locked.pop_front();
+                match finished_song {
+                    Some(finished_song) => {
+                        prev_songs_queue_locked.push(finished_song);
+                    }
+                    None => println!("Should this ever even happen?"),
+                }
                 // Do we need to pull a new song into the sink from the
                 // queue? If yes, do it as many times to fill out the buffer
                 while sink_locked.len() < 6 {
@@ -268,7 +276,7 @@ pub struct Player {
     // We need a list of sources to track what is currently in the sink,
     // as the sink gives us no info about the sources inside it.
     songs_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
-    current_song_index: usize,
+    previous_songs: Arc<Mutex<Vec<PlayerSong>>>,
     player_event_tx: Sender<EndCause>,
     state_update_tx: Sender<PlayerStateUpdate>,
 }
@@ -297,17 +305,20 @@ impl Player {
         // controls for the sources inside the sink.
         let sink_wrapped = Arc::new(Mutex::new(sink));
         let songs_queue = Arc::new(Mutex::new(VecDeque::<PlayerSong>::new()));
+        let prev_songs = Arc::new(Mutex::new(Vec::new()));
 
         // Spawn the thread that runs whenever a song source in the sink ends.
         let songs_queue_2 = Arc::clone(&songs_queue);
         let sink2 = Arc::clone(&sink_wrapped);
         let state_update_tx2 = state_update_tx.clone();
         let sink_song_end_tx2 = sink_song_end_tx.clone();
+        let prev_songs_2 = Arc::clone(&prev_songs);
         thread::spawn(move || {
             handle_sink_song_end(
                 sink_song_end_rx,
                 sink2,
                 songs_queue_2,
+                prev_songs_2,
                 state_update_tx2,
                 sink_song_end_tx2,
             );
@@ -319,18 +330,11 @@ impl Player {
             _stream_handle: stream_handle,
             audio_sink: sink_wrapped,
             songs_queue,
-            current_song_index: 0,
+            previous_songs: prev_songs,
             player_event_tx: sink_song_end_tx,
             state_update_tx,
         }
     }
-
-    // /// Take a Song struct and open it manually into the sink
-    // fn song_into_sink(&mut self, song: &Song) -> Result<(), DecoderError> {
-    //     let mut sink = self.audio_sink.lock().unwrap();
-    //     open_song_into_sink(&mut sink, song, &self.player_event_tx.clone())?;
-    //     Ok(())
-    // }
 
     /// Gets number of actual songs in the sink, ignoring non-song sources
     /// such as `EmptyCallback`. This prevents us accidentally
@@ -424,9 +428,11 @@ impl Player {
         info!("Sink internals: Clearing sink and queue");
         let sink_locked = self.audio_sink.lock().unwrap();
         let mut songs_queue_locked = self.songs_queue.lock().unwrap();
+        let mut prev_songs_locked = self.previous_songs.lock().unwrap();
 
         sink_locked.clear();
         songs_queue_locked.clear();
+        prev_songs_locked.clear();
         self.state_update_tx
             .send(PlayerStateUpdate::SongPause(Duration::ZERO))
             .unwrap();
@@ -476,9 +482,19 @@ impl Player {
                 .send(PlayerStateUpdate::SongPause(Duration::ZERO))
                 .unwrap();
         }
-        self.state_update_tx
-            .send(PlayerStateUpdate::QueueUpdate(songs_data, sink.get_pos()))
-            .unwrap();
+
+        // If we removed the first song we just want to reset the position
+        // because we are emitting the event a moment before we remove the song
+        // from the queue.
+        if song_index != 0 {
+            self.state_update_tx
+                .send(PlayerStateUpdate::QueueUpdate(songs_data, sink.get_pos()))
+                .unwrap();
+        } else {
+            self.state_update_tx
+                .send(PlayerStateUpdate::QueueUpdate(songs_data, Duration::ZERO))
+                .unwrap();
+        }
 
         Some(song.song)
     }
