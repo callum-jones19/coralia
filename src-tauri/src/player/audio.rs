@@ -21,6 +21,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::song::Song;
 
+enum EndCause {
+    EndOfSong,
+    Stopped,
+}
+
 /// Take a Song, and open its file path into a decoded Rodio Source.
 /// Place this source into the end of the sink.
 /// At the same time, also place a control for this source in an index-aligned
@@ -34,7 +39,7 @@ use crate::data::song::Song;
 fn open_song_into_sink(
     sink: &mut Sink,
     song: &mut PlayerSong,
-    song_end_tx: &Sender<()>,
+    song_end_tx: &Sender<EndCause>,
 ) -> Result<(), DecoderError> {
     // Open the file.
     let song_file = BufReader::new(File::open(&song.song.file_path).unwrap());
@@ -59,20 +64,16 @@ fn open_song_into_sink(
         }
     });
 
-    // Add a control for this new source in the sink. It should be index-aligned
-    // (ignoring the EmptyCallback elements).
-
     // Create a callback
     // We only want the song end callback to be triggered if the source actually
-    // ended naturally. If it was stopped, it should not fire.
+    // ended naturally. If it was stopped (removed from queue), it should not fire.
     let song_end_tx = song_end_tx.clone();
     let callback_source: EmptyCallback<f32> = EmptyCallback::new(Box::new(move || {
-        let was_skipped = stop.load(Ordering::SeqCst);
-        if !was_skipped {
-            match song_end_tx.send(()) {
-                Ok(_) => println!("Successfully sent song end event"),
-                Err(e) => println!("{:?}", e),
-            }
+        let was_stopped = stop.load(Ordering::SeqCst);
+        if was_stopped {
+            song_end_tx.send(EndCause::Stopped).unwrap();
+        } else {
+            song_end_tx.send(EndCause::EndOfSong).unwrap();
         }
     }));
 
@@ -91,73 +92,116 @@ fn open_song_into_sink(
 /// buffer limit. If it is, it will trigger a new source to be added into the
 /// sink out of the current Song queue.
 fn handle_sink_song_end(
-    sink_song_end_rx: Receiver<()>,
+    sink_song_end_rx: Receiver<EndCause>,
     sink: Arc<Mutex<Sink>>,
     song_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
     state_update_tx: Sender<PlayerStateUpdate>,
-    sink_song_end_tx: Sender<()>,
+    sink_song_end_tx: Sender<EndCause>,
 ) {
     loop {
         // Sleep this thread until a song ends
-        sink_song_end_rx.recv().unwrap();
-        {
-            let mut song_queue_locked = song_queue.lock().unwrap();
-            let mut sink_locked = sink.lock().unwrap();
+        let song_end_cause = sink_song_end_rx.recv().unwrap();
+        match song_end_cause {
+            EndCause::EndOfSong => {
+                let mut song_queue_locked = song_queue.lock().unwrap();
+                let mut sink_locked = sink.lock().unwrap();
 
-            // Pop the song that just finished out of the queue
-            song_queue_locked.pop_front();
-            // Do we need to pull a new song into the sink from the
-            // queue? If yes, do it as many times to fill out the buffer
-            while sink_locked.len() < 6 {
-                println!("!");
-                // Fetch the closest not-in-sink song.
-                let next_not_buffered_song = song_queue_locked
-                    .iter_mut()
-                    .find(|s| s.sink_controls.is_none());
-                let next_song = match next_not_buffered_song {
-                    Some(s) => s,
-                    None => break,
-                };
+                // Pop the song that just finished out of the queue
+                song_queue_locked.pop_front();
+                // Do we need to pull a new song into the sink from the
+                // queue? If yes, do it as many times to fill out the buffer
+                while sink_locked.len() < 6 {
+                    println!("!");
+                    // Fetch the closest not-in-sink song.
+                    let next_not_buffered_song = song_queue_locked
+                        .iter_mut()
+                        .find(|s| s.sink_controls.is_none());
+                    let next_song = match next_not_buffered_song {
+                        Some(s) => s,
+                        None => break,
+                    };
 
-                let open_status =
-                    open_song_into_sink(&mut sink_locked, next_song, &sink_song_end_tx);
+                    let open_status =
+                        open_song_into_sink(&mut sink_locked, next_song, &sink_song_end_tx);
 
-                match open_status {
-                    Ok(_) => {}
-                    Err(_) => {
-                        info!(
-                            "Removing song {} from queue - could not decode into sink",
-                            &next_song.song.tags.title
-                        );
-                        // Remove the song from the Song queue
-                        song_queue_locked.remove(2);
+                    match open_status {
+                        Ok(_) => {}
+                        Err(_) => {
+                            info!(
+                                "Removing song {} from queue - could not decode into sink",
+                                &next_song.song.tags.title
+                            );
+                            // Remove the song from the Song queue
+                            song_queue_locked.remove(2);
+                        }
                     }
                 }
-            }
 
-            if song_queue_locked.len() == 0 {
-                sink_locked.pause();
+                if song_queue_locked.len() == 0 {
+                    sink_locked.pause();
 
-                let pos = sink_locked.get_pos();
+                    let pos = sink_locked.get_pos();
+
+                    state_update_tx
+                        .send(PlayerStateUpdate::SongPause(pos))
+                        .unwrap();
+                }
+
+                // Signal to the Player Event System that a song has ended
+                let new_queue: VecDeque<Song> = song_queue_locked
+                    .clone()
+                    .into_iter()
+                    .map(|song| song.song)
+                    .collect();
 
                 state_update_tx
-                    .send(PlayerStateUpdate::SongPause(pos))
+                    .send(PlayerStateUpdate::SongEnd(new_queue.clone()))
+                    .unwrap();
+                state_update_tx
+                    .send(PlayerStateUpdate::QueueUpdate(new_queue, Duration::ZERO))
                     .unwrap();
             }
+            EndCause::Stopped => {
+                let mut song_queue_locked = song_queue.lock().unwrap();
+                let mut sink_locked = sink.lock().unwrap();
 
-            // Signal to the Player Event System that a song has ended
-            let new_queue: VecDeque<Song> = song_queue_locked
-                .clone()
-                .into_iter()
-                .map(|song| song.song)
-                .collect();
+                while sink_locked.len() < 6 {
+                    println!("!");
+                    // Fetch the closest not-in-sink song.
+                    let next_not_buffered_song = song_queue_locked
+                        .iter_mut()
+                        .find(|s| s.sink_controls.is_none());
+                    let next_song = match next_not_buffered_song {
+                        Some(s) => s,
+                        None => break,
+                    };
 
-            state_update_tx
-                .send(PlayerStateUpdate::SongEnd(new_queue.clone()))
-                .unwrap();
-            state_update_tx
-                .send(PlayerStateUpdate::QueueUpdate(new_queue, Duration::ZERO))
-                .unwrap();
+                    let open_status =
+                        open_song_into_sink(&mut sink_locked, next_song, &sink_song_end_tx);
+
+                    match open_status {
+                        Ok(_) => {}
+                        Err(_) => {
+                            info!(
+                                "Removing song {} from queue - could not decode into sink",
+                                &next_song.song.tags.title
+                            );
+                            // Remove the song from the Song queue
+                            song_queue_locked.remove(2);
+                        }
+                    }
+                }
+
+                if song_queue_locked.len() == 0 {
+                    sink_locked.pause();
+
+                    let pos = sink_locked.get_pos();
+
+                    state_update_tx
+                        .send(PlayerStateUpdate::SongPause(pos))
+                        .unwrap();
+                }
+            }
         }
     }
 }
@@ -225,7 +269,7 @@ pub struct Player {
     // as the sink gives us no info about the sources inside it.
     songs_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
     current_song_index: usize,
-    player_event_tx: Sender<()>,
+    player_event_tx: Sender<EndCause>,
     state_update_tx: Sender<PlayerStateUpdate>,
 }
 
@@ -247,7 +291,7 @@ impl Player {
         // Setup channel messenger for when a song in the sink ends,
         // on which we will wake up the thread that pulls a new song into the
         // sink.
-        let (sink_song_end_tx, sink_song_end_rx) = channel::<()>();
+        let (sink_song_end_tx, sink_song_end_rx) = channel::<EndCause>();
 
         // Setup multithreading types for the sink, songs queue, and the
         // controls for the sources inside the sink.
