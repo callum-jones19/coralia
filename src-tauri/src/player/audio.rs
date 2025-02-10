@@ -228,6 +228,7 @@ pub enum PlayerStateUpdate {
 #[serde(rename_all = "camelCase")]
 pub struct CachedPlayerState {
     songs_queue: VecDeque<Song>,
+    prev_songs_queue: Vec<Song>,
     current_song_pos: Duration,
     current_volume: f32,
     is_paused: bool,
@@ -237,14 +238,17 @@ impl CachedPlayerState {
     pub fn new(player: &Player) -> Self {
         let locked_songs = player.songs_queue.lock().unwrap();
         let locked_sink = player.audio_sink.lock().unwrap();
+        let locked_prev_songs = player.previous_songs.lock().unwrap();
 
         let queue: VecDeque<Song> = locked_songs.iter().map(|s| s.song.clone()).collect();
+        let prev_queue: Vec<Song> = locked_prev_songs.iter().map(|s| s.song.clone()).collect();
 
         CachedPlayerState {
             songs_queue: queue,
             current_song_pos: locked_sink.get_pos(),
             current_volume: locked_sink.volume(),
             is_paused: locked_sink.is_paused(),
+            prev_songs_queue: prev_queue,
         }
     }
 }
