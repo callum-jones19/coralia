@@ -1,13 +1,14 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Pause, Play, SkipBack, SkipForward } from "react-feather";
-import { pausePlayer, playPlayer, skipOneSong } from "../api/commands";
+import { goBackOneSong, pausePlayer, playPlayer, skipOneSong } from "../api/commands";
 import { getPlayerState } from "../api/importer";
 import { SongInfo } from "../types";
 
 export default function PlayButtons() {
   const [isPaused, setIsPaused] = useState<boolean>(true);
   const [queueLen, setQueueLen] = useState<number>(0);
+  const [prevSongsLen, setPrevSongsLen] = useState<number>(0);
 
   useEffect(() => {
     const unlistenPause = listen<SongInfo>("is-paused", (e) => {
@@ -16,9 +17,10 @@ export default function PlayButtons() {
       setIsPaused(paused);
     }).catch(e => console.error(e));
 
-    const unlistenQueueLen = listen<number>("queue-length-change", (e) => {
+    const unlistenQueueLen = listen<[number, number]>("queue-length-change", (e) => {
       const newQueueLen = e.payload;
-      setQueueLen(newQueueLen);
+      setQueueLen(newQueueLen[0]);
+      setPrevSongsLen(newQueueLen[1]);
     }).catch(e => console.error(e));
 
     getPlayerState()
@@ -39,13 +41,16 @@ export default function PlayButtons() {
       <div className="flex flex-row items-center gap-1">
         <button
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"
-          disabled
+          disabled={prevSongsLen === 0}
           onClick={() => {
-            // todo
+            goBackOneSong();
           }}
         >
-          {/* <SkipBack fill={`${queueLen === 0 || ? 'gray' : 'white'}`} color={`${queueLen === 0 ? 'gray' : 'white'}`} size='1em' /> */}
-          <SkipBack fill="gray" color="gray" size="1em" />
+          <SkipBack
+            fill={`${prevSongsLen === 0 ? "gray" : "black"}`}
+            color={`${prevSongsLen === 0 ? "gray" : "black"}`}
+            size="1em"
+          />
         </button>
         <button
           className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-transparent hover:bg-neutral-400"

@@ -1,7 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { Play, Volume2 } from "react-feather";
-import { addToQueueNext, clearAndPlayBackend, enqueueSongBackend } from "../api/commands";
+import { addToQueueNext, clearAndPlayBackend  } from "../api/commands";
 import { Song } from "../types";
 
 export interface SongListItemProps {

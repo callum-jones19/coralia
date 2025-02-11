@@ -32,6 +32,7 @@ enum PlayerCommand {
     Pause,
     SetVolume(u8),
     SkipOne,
+    GoBackOne,
     RemoveAtIndex(usize),
     TrySeek(Duration),
     GetPlayerState(Sender<CachedPlayerState>),
@@ -140,6 +141,9 @@ fn create_and_run_audio_player(
                 );
                 player.add_to_queue_next(&song);
             }
+            PlayerCommand::GoBackOne => {
+                player.go_back();
+            }
         }
     }
 }
@@ -151,7 +155,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
             PlayerStateUpdate::SongEnd(new_queue, prev_songs) => {
                 info!("Player Events: song ended.");
                 handle
-                    .emit_all("queue-length-change", &new_queue.len())
+                    .emit_all("queue-length-change", [&new_queue.len(), &prev_songs.len()])
                     .unwrap();
                 handle.emit_all("song-end", &new_queue.front()).unwrap();
                 handle
@@ -186,7 +190,10 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
             ) => {
                 info!("Player Events: song queue updated.");
                 handle
-                    .emit_all("queue-length-change", &updated_queue.len())
+                    .emit_all(
+                        "queue-length-change",
+                        [&updated_queue.len(), &updated_prev_songs.len()],
+                    )
                     .unwrap();
 
                 // We want to send both the queue, but also the playback info
@@ -259,7 +266,8 @@ fn main() {
             get_songs,
             get_albums,
             get_library_state,
-            add_to_queue_next
+            add_to_queue_next,
+            skip_back
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -372,6 +380,13 @@ async fn add_to_queue_next(state_mutex: State<'_, Mutex<AppState>>, song: Song) 
         .command_tx
         .send(PlayerCommand::AddToQueueNext(Box::new(song)))
         .unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn skip_back(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::GoBackOne).unwrap();
     Ok(())
 }
 

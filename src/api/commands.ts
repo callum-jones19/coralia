@@ -42,6 +42,11 @@ export const skipOneSong = () => {
     .catch(e => console.error(e));
 };
 
+export const goBackOneSong = () => {
+  invoke("skip_back", {})
+    .catch(e => console.error(e));
+};
+
 export const removeFromQueue = (queueIndex: number) => {
   invoke("remove_song_from_queue", { skipIndex: queueIndex })
     .catch(e => console.error(e));

@@ -432,7 +432,7 @@ impl Player {
     pub fn add_to_queue_next(&mut self, song_to_insert: &Song) {
         let mut audio_sink = self.audio_sink.lock().unwrap();
         let mut songs_queue = self.songs_queue.lock().unwrap();
-        let mut prev_songs = self.previous_songs.lock().unwrap();
+        let prev_songs = self.previous_songs.lock().unwrap();
 
         let song_to_insert = PlayerSong::new(song_to_insert.clone());
 
@@ -560,15 +560,28 @@ impl Player {
     /// If the song is more than 5 seconds deep, go back to the start of the song.
     /// Otherwise, jump pack to the previously playing song.
     pub fn go_back(&mut self) {
-        let prev_song = {
+        let (current_song, prev_song) = {
+            let queue = self.songs_queue.lock().unwrap();
+            let curr = match queue.get(0) {
+                Some(q) => q.clone(),
+                None => todo!(),
+            };
+
             let mut prev_songs = self.previous_songs.lock().unwrap();
-            match prev_songs.pop() {
+            let prev = match prev_songs.pop() {
                 Some(s) => s,
                 None => return,
-            }
+            };
+
+            info!("curr: {:?}, prev: {:?}", curr, prev);
+            (curr, prev)
         };
 
         self.add_to_queue_next(&prev_song.song);
+        // We don't want to just skip - if we do, it will go back into the prev
+        // queue.
+        self.remove_song_from_queue(0);
+        self.add_to_queue_next(&current_song.song);
     }
 
     /// Remove a song from the queue given its index.
@@ -577,7 +590,7 @@ impl Player {
     pub fn remove_song_from_queue(&mut self, song_index: usize) -> Option<Song> {
         info!("Sink internals: Removing song at index {song_index} from queue");
         let mut songs_queue = self.songs_queue.lock().unwrap();
-        let mut prev_songs_queue = self.previous_songs.lock().unwrap();
+        let prev_songs_queue = self.previous_songs.lock().unwrap();
         let sink = self.audio_sink.lock().unwrap();
         // Handle edge case of removing the first song.
 
