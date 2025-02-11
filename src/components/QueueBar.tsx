@@ -42,10 +42,13 @@ export default function QueueBar() {
   return (
     <div className="basis-52 h-full flex-grow-0 flex-shrink-0 rounded-md bg-neutral-100 p-2 overflow-hidden">
       <div className="h-full flex flex-col gap-3 justify-between">
-        <div className="flex flex-row items-center gap-2 bg-green-400">
-          <button onClick={() => setIsViewingQueue(true)}>Queue</button>
-          <button onClick={() => setIsViewingQueue(false)}>Playing History</button>
-        </div>
+        <button
+          onClick={() => setIsViewingQueue(!isViewingQueue)}
+          className="text-start font-bold bg-white p-1 rounded-md pl-2"
+        >
+
+          {isViewingQueue ? 'Queue' : 'Playing History'}
+        </button>
         {isViewingQueue &&
           <div className="h-full w-full overflow-auto flex flex-col gap-2">
             {queue.length === 0 && <i>Empty queue</i>}
@@ -57,7 +60,7 @@ export default function QueueBar() {
         }
         {!isViewingQueue &&
           <div className="h-full w-full overflow-auto flex flex-col gap-2">
-            {queue.length === 0 && <i>No Playing History</i>}
+            {queue.length === 0 && prevQueue.length === 0 && <i>No Playing History</i>}
             {prevQueue.map((song, index) => (
               <QueueListItem key={index} song={song} />
               ))

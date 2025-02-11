@@ -377,7 +377,7 @@ impl Player {
         let songs_in_sink = self.number_songs_in_sink();
         {
             let mut songs_queue = self.songs_queue.lock().unwrap();
-            let mut prev_songs_queue = self.previous_songs.lock().unwrap();
+            let prev_songs_queue = self.previous_songs.lock().unwrap();
             let mut audio_sink = self.audio_sink.lock().unwrap();
             if songs_in_sink < 3 {
                 info!("Player internals: adding decoded song file into sink buffer.");
@@ -426,6 +426,65 @@ impl Player {
         }
 
         Ok(())
+    }
+
+    // Add to queue after the currently playing song
+    pub fn add_next(&mut self, song_to_insert: Song) {
+        let mut audio_sink = self.audio_sink.lock().unwrap();
+        let mut songs_queue = self.songs_queue.lock().unwrap();
+
+        let song_to_insert = PlayerSong::new(song_to_insert);
+
+        // Flush out the current songs in the sink
+        for song in songs_queue.iter_mut() {
+            match &song.sink_controls {
+                Some(ctr) => {
+                    ctr.store(true, Ordering::SeqCst);
+                    song.sink_controls = None;
+                }
+                None => break,
+            }
+        }
+
+        // Now place the given song after the current playing one.
+        songs_queue.insert(1, song_to_insert);
+
+        // Now refill the buffer
+        while audio_sink.len() < 6 {
+            println!("!");
+            // Fetch the closest not-in-sink song.
+            let find_nonbuffered_song_i = songs_queue
+                .iter_mut()
+                .position(|s| s.sink_controls.is_none());
+
+            let next_nonbuffered_song_i = match find_nonbuffered_song_i {
+                Some(i) => i,
+                None => break,
+            };
+
+            let next_nonbuffered_song = match songs_queue.get_mut(next_nonbuffered_song_i) {
+                Some(s) => s,
+                None => break,
+            };
+
+            let open_status = open_song_into_sink(
+                &mut audio_sink,
+                next_nonbuffered_song,
+                &self.player_event_tx,
+            );
+
+            match open_status {
+                Ok(_) => {}
+                Err(_) => {
+                    info!(
+                        "Removing song {} from queue - could not decode into sink",
+                        &next_nonbuffered_song.song.tags.title
+                    );
+                    // Remove the song from the Song queue
+                    songs_queue.remove(next_nonbuffered_song_i);
+                }
+            }
+        }
     }
 
     /// Change the sink volume.
@@ -487,7 +546,19 @@ impl Player {
         self.audio_sink.lock().unwrap().skip_one();
     }
 
-    pub fn go_back_one_song(&mut self) {}
+    /// If the song is more than 5 seconds deep, go back to the start of the song.
+    /// Otherwise, jump pack to the previously playing song.
+    pub fn go_back(&mut self) {
+        let prev_song = {
+            let mut prev_songs = self.previous_songs.lock().unwrap();
+            match prev_songs.pop() {
+                Some(s) => s,
+                None => return,
+            }
+        };
+
+        self.add_next(prev_song.song);
+    }
 
     /// Remove a song from the queue given its index.
     /// If a song does not exist at this index, return None.
