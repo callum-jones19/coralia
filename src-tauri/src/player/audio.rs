@@ -370,7 +370,7 @@ impl Player {
     /// will pull more into the sink as other songs finish playing.
     /// Should not add to queue if tried to open into sink and failed
     /// due to decode error.
-    pub fn add_to_queue(&mut self, song: &Song) -> Result<(), String> {
+    pub fn add_to_queue_end(&mut self, song: &Song) -> Result<(), String> {
         info!("Player internals: adding song to queue");
         // If required, try to add this song into the sink buffer
         let mut player_song = PlayerSong::new(song.clone());
@@ -429,11 +429,11 @@ impl Player {
     }
 
     // Add to queue after the currently playing song
-    pub fn add_next(&mut self, song_to_insert: Song) {
+    pub fn add_to_queue_next(&mut self, song_to_insert: &Song) {
         let mut audio_sink = self.audio_sink.lock().unwrap();
         let mut songs_queue = self.songs_queue.lock().unwrap();
 
-        let song_to_insert = PlayerSong::new(song_to_insert);
+        let song_to_insert = PlayerSong::new(song_to_insert.clone());
 
         // Flush out the current songs in the sink
         for song in songs_queue.iter_mut() {
@@ -557,7 +557,7 @@ impl Player {
             }
         };
 
-        self.add_next(prev_song.song);
+        self.add_to_queue_next(&prev_song.song);
     }
 
     /// Remove a song from the queue given its index.

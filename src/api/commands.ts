@@ -13,7 +13,12 @@ export const addLibraryFolders = (folders: string[]) => {
 };
 
 export const enqueueSongBackend = (song: Song) => {
-  invoke("enqueue_song", { song: song })
+  invoke("add_to_queue_end", { song: song })
+    .catch(e => console.error(e));
+};
+
+export const addToQueueNext = (song: Song) => {
+  invoke("add_to_queue_next", { song: song })
     .catch(e => console.error(e));
 };
 

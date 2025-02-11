@@ -26,7 +26,8 @@ mod utils;
 
 enum PlayerCommand {
     EmptyAndPlay(Box<Song>),
-    Enqueue(Box<Song>),
+    AddToQueueEnd(Box<Song>),
+    AddToQueueNext(Box<Song>),
     Play,
     Pause,
     SetVolume(u8),
@@ -72,12 +73,12 @@ fn create_and_run_audio_player(
     loop {
         let command = player_cmd_rx.recv().unwrap();
         match command {
-            PlayerCommand::Enqueue(song) => {
+            PlayerCommand::AddToQueueEnd(song) => {
                 info!(
                     "Player Command Handler: Received request to enqueue song {} into the player.",
                     &song.tags.title
                 );
-                player.add_to_queue(&song).unwrap();
+                player.add_to_queue_end(&song).unwrap();
             }
             PlayerCommand::Play => {
                 info!("Player Command Handler: Received request to set sink to play.");
@@ -107,7 +108,7 @@ fn create_and_run_audio_player(
                     &song.tags.title
                 );
                 player.clear();
-                match player.add_to_queue(&song) {
+                match player.add_to_queue_end(&song) {
                     Ok(_) => player.play(),
                     Err(e) => {}
                 }
@@ -131,6 +132,13 @@ fn create_and_run_audio_player(
             PlayerCommand::Clear => {
                 info!("Player Command Handler: Received request to clear the player queue.");
                 player.clear();
+            }
+            PlayerCommand::AddToQueueNext(song) => {
+                info!(
+                    "Player Command Handler: Received request to enqueue song {} into the player.",
+                    &song.tags.title
+                );
+                player.add_to_queue_next(&song);
             }
         }
     }
@@ -229,7 +237,7 @@ fn main() {
         }))
         .invoke_handler(tauri::generate_handler![
             add_library_directories,
-            enqueue_song,
+            add_to_queue_end,
             clear_queue_and_play,
             play,
             pause,
@@ -250,7 +258,8 @@ fn main() {
             search_library,
             get_songs,
             get_albums,
-            get_library_state
+            get_library_state,
+            add_to_queue_next
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -347,11 +356,21 @@ async fn load_library_from_cache(state_mutex: State<'_, Mutex<AppState>>) -> Res
 }
 
 #[tauri::command]
-async fn enqueue_song(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
+async fn add_to_queue_end(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
     let state = state_mutex.lock().unwrap();
     state
         .command_tx
-        .send(PlayerCommand::Enqueue(Box::new(song)))
+        .send(PlayerCommand::AddToQueueEnd(Box::new(song)))
+        .unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+async fn add_to_queue_next(state_mutex: State<'_, Mutex<AppState>>, song: Song) -> Result<(), ()> {
+    let state = state_mutex.lock().unwrap();
+    state
+        .command_tx
+        .send(PlayerCommand::AddToQueueNext(Box::new(song)))
         .unwrap();
     Ok(())
 }
@@ -365,7 +384,7 @@ async fn enqueue_songs(
     for song in songs {
         state
             .command_tx
-            .send(PlayerCommand::Enqueue(Box::new(song)))
+            .send(PlayerCommand::AddToQueueEnd(Box::new(song)))
             .unwrap();
     }
     Ok(())
