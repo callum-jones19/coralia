@@ -432,11 +432,13 @@ impl Player {
     pub fn add_to_queue_next(&mut self, song_to_insert: &Song) {
         let mut audio_sink = self.audio_sink.lock().unwrap();
         let mut songs_queue = self.songs_queue.lock().unwrap();
+        let mut prev_songs = self.previous_songs.lock().unwrap();
 
         let song_to_insert = PlayerSong::new(song_to_insert.clone());
 
-        // Flush out the current songs in the sink
-        for song in songs_queue.iter_mut() {
+        // Flush out the current songs in the sink after the currently playing
+        // one
+        for song in songs_queue.iter_mut().skip(1) {
             match &song.sink_controls {
                 Some(ctr) => {
                     ctr.store(true, Ordering::SeqCst);
@@ -449,6 +451,9 @@ impl Player {
         // Now place the given song after the current playing one.
         songs_queue.insert(1, song_to_insert);
 
+        // FIXME - the sink won't actually empty when we mark the above as skipped
+        // is this even necessary here? Also, we need to apply the changes made
+        // here to which index is removed elsewhere.
         // Now refill the buffer
         while audio_sink.len() < 6 {
             println!("!");
@@ -485,6 +490,12 @@ impl Player {
                 }
             }
         }
+
+        let exported_songs = songs_queue.clone().into_iter().map(|s| s.song).collect();
+        let exported_prev = prev_songs.clone().into_iter().map(|s| s.song).collect();
+        let queue_change_state =
+            PlayerStateUpdate::QueueUpdate(exported_songs, exported_prev, audio_sink.get_pos());
+        self.state_update_tx.send(queue_change_state).unwrap();
     }
 
     /// Change the sink volume.
