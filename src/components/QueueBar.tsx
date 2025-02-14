@@ -23,7 +23,6 @@ export default function QueueBar() {
       .catch(e => console.error(e));
 
     const unlistenQueue = listen<[Song[], Song[],Duration]>("queue-change", e => {
-      console.log(e.payload);
       const newQueue = e.payload[0];
       const newPrev = e.payload[1];
       setQueue(newQueue);

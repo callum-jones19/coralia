@@ -188,7 +188,10 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                 updated_prev_songs,
                 current_song_position,
             ) => {
-                info!("Player Events: song queue updated.");
+                info!(
+                    "Player Events: song queue updated. {:?}",
+                    current_song_position
+                );
                 handle
                     .emit_all(
                         "queue-length-change",

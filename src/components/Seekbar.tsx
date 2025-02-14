@@ -50,20 +50,23 @@ export default function Seekbar() {
     })
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
+    const unlistenQueue = listen<[Song[], Song[], Duration]>("queue-change", e => {
       const newQueue = e.payload[0];
-      const syncedSongPos = e.payload[1];
+      const syncedSongPos = e.payload[2];
       const newCurrSong = newQueue[0];
       if (newCurrSong) {
         setCurrentSong(newQueue[0]);
       } else {
         setCurrentSong(null);
       }
+      console.log(syncedSongPos);
+      console.log(syncedSongPos.secs + (syncedSongPos.nanos / 1000000000));
       setSongPos(syncedSongPos.secs + (syncedSongPos.nanos / 1000000000));
     });
 
     getPlayerState()
       .then(playerState => {
+        console.log(playerState);
         setSongPos(
           playerState.currentSongPos.secs
             + (playerState.currentSongPos.nanos / 1000000000),
@@ -73,7 +76,6 @@ export default function Seekbar() {
         }
 
         if (!playerState.isPaused && playerState.songsQueue.length > 0) {
-          console.log("test");
           updateSeekbarPos(playerState.currentSongPos, playerState.isPaused);
         }
       })
