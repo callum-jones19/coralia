@@ -119,7 +119,6 @@ fn handle_sink_song_end(
                 // Do we need to pull a new song into the sink from the
                 // queue? If yes, do it as many times to fill out the buffer
                 while sink_locked.len() < 6 {
-                    println!("!");
                     // Fetch the closest not-in-sink song.
                     let next_not_buffered_song = song_queue_locked
                         .iter_mut()
@@ -438,18 +437,21 @@ impl Player {
 
         // Flush out the current songs in the sink after the currently playing
         // one
-        for song in songs_queue.iter_mut().skip(1) {
-            match &song.sink_controls {
-                Some(ctr) => {
-                    ctr.store(true, Ordering::SeqCst);
-                    song.sink_controls = None;
+        if songs_queue.len() > 1 {
+            for song in songs_queue.iter_mut().skip(1) {
+                match &song.sink_controls {
+                    Some(ctr) => {
+                        ctr.store(true, Ordering::SeqCst);
+                        song.sink_controls = None;
+                    }
+                    None => break,
                 }
-                None => break,
             }
+            // Now place the given song after the current playing one.
+            songs_queue.insert(1, song_to_insert);
+        } else {
+            songs_queue.push_back(song_to_insert);
         }
-
-        // Now place the given song after the current playing one.
-        songs_queue.insert(1, song_to_insert);
 
         // FIXME - the sink won't actually empty when we mark the above as skipped
         // is this even necessary here? Also, we need to apply the changes made
@@ -507,7 +509,6 @@ impl Player {
     pub fn play(&mut self) {
         let curr_pos = {
             let sink = self.audio_sink.lock().unwrap();
-            println!("{}", sink.len());
             if sink.len() != 0 {
                 info!("Sink internals: Sink state set to play");
                 sink.play();
@@ -562,26 +563,33 @@ impl Player {
     pub fn go_back(&mut self) {
         let (current_song, prev_song) = {
             let queue = self.songs_queue.lock().unwrap();
-            let curr = match queue.get(0) {
-                Some(q) => q.clone(),
-                None => todo!(),
+            let curr = if queue.len() == 0 {
+                None
+            } else {
+                queue.clone().into_iter().nth(0)
             };
-
+            println!("{:?}", curr);
             let mut prev_songs = self.previous_songs.lock().unwrap();
             let prev = match prev_songs.pop() {
                 Some(s) => s,
                 None => return,
             };
+            println!("{:?}", prev);
 
             info!("curr: {:?}, prev: {:?}", curr, prev);
             (curr, prev)
         };
 
         self.add_to_queue_next(&prev_song.song);
-        // We don't want to just skip - if we do, it will go back into the prev
-        // queue.
-        self.remove_song_from_queue(0);
-        self.add_to_queue_next(&current_song.song);
+        match &current_song {
+            Some(s) => {
+                // We don't want to just skip - if we do, it will go back into the prev
+                // queue.s
+                self.remove_song_from_queue(0);
+                self.add_to_queue_next(&s.song)
+            }
+            None => {}
+        }
     }
 
     /// Remove a song from the queue given its index.
