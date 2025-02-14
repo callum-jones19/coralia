@@ -1,5 +1,5 @@
 import LibraryBody from "../components/Library/LibraryBody";
-import MusicFooter from "../components/MusicFooter";
+import MusicFooter from "../components/Sidebars/MusicFooter";
 import MenuBar from "../components/Sidebars/MenuBar";
 import QueueBar from "../components/Sidebars/QueueBar";
 import { SearchResults } from "../types";

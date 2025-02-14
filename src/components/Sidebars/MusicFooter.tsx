@@ -4,12 +4,12 @@ import { appWindow } from "@tauri-apps/api/window";
 import { useEffect, useState } from "react";
 import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
-import { getPlayerState } from "../api/importer";
-import { Song } from "../types";
-import PlayButtons from "./PlayButtons";
-import Seekbar from "./Seekbar";
-import SongInfoFooter from "./SongInfoFooter";
-import VolumeController from "./VolumeController";
+import { getPlayerState } from "../../api/importer";
+import { Song } from "../../types";
+import Seekbar from "../SongControls/Seekbar";
+import PlayButtons from "../SongControls/PlayButtons";
+import CurrentSongInfo from "../SongControls/CurrentSongInfo";
+import VolumeController from "../SongControls/VolumeController";
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
@@ -54,7 +54,7 @@ export default function MusicFooter() {
       <div className="flex flex-col justify-center h-full gap-2">
         <div className="flex flex-row justify-center flex-wrap gap-3">
           <PlayButtons />
-          <SongInfoFooter currentSong={currentSong} />
+          <CurrentSongInfo currentSong={currentSong} />
           <div className="flex flex-row items-center gap-2">
             <VolumeController />
             <Link

@@ -1,9 +1,9 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Pause, Play, SkipBack, SkipForward } from "react-feather";
-import { goBackOneSong, pausePlayer, playPlayer, skipOneSong } from "../api/commands";
-import { getPlayerState } from "../api/importer";
-import { SongInfo } from "../types";
+import { getPlayerState } from "../../api/importer";
+import { SongInfo } from "../../types";
+import { goBackOneSong, pausePlayer, playPlayer, skipOneSong } from "../../api/commands";
 
 export default function PlayButtons() {
   const [isPaused, setIsPaused] = useState<boolean>(true);

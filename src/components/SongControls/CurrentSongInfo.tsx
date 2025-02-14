@@ -1,10 +1,10 @@
-import { Song } from "../types";
+import { Song } from "../../types";
 
-export interface SongInfoFooterProps {
+export interface CurrentSongInfoProps {
   currentSong: Song | null;
 }
 
-export default function SongInfoFooter({ currentSong }: SongInfoFooterProps) {
+export default function CurrentSongInfo({ currentSong }: CurrentSongInfoProps) {
   return (
     <>
       <div id="music-info" className="flex flex-col text-center flex-grow">

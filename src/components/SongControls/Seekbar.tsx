@@ -1,8 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { seekCurrentSong } from "../api/commands";
-import { getPlayerState } from "../api/importer";
-import { Duration, Song, SongInfo } from "../types";
+import { seekCurrentSong } from "../../api/commands";
+import { getPlayerState } from "../../api/importer";
+import { Duration, Song, SongInfo } from "../../types";
 
 export default function Seekbar() {
   const songPosIntervalId = useRef<number | null>(null);

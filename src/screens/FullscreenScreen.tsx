@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { Minimize2 } from "react-feather";
 import { Link, useNavigate } from "react-router";
 import { getPlayerState } from "../api/importer";
-import PlayButtons from "../components/PlayButtons";
-import Seekbar from "../components/Seekbar";
-import SongInfoFooter from "../components/SongInfoFooter";
-import VolumeController from "../components/VolumeController";
+import Seekbar from "../components/SongControls/Seekbar";
 import { Song } from "../types";
+import PlayButtons from "../components/SongControls/PlayButtons";
+import CurrentSongInfo from "../components/SongControls/CurrentSongInfo";
+import VolumeController from "../components/SongControls/VolumeController";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -62,7 +62,7 @@ export default function FullscreenScreen() {
           </div>
           <div className="flex flex-col gap-2 justify-center items-center w-2/3 m-auto overflow-auto">
             <div className="mb-3">
-              <SongInfoFooter currentSong={queue[0]} />
+              <CurrentSongInfo currentSong={queue[0]} />
             </div>
             <Seekbar />
             <div className="w-full flex flex-row justify-between">
