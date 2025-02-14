@@ -9,6 +9,7 @@ import {
 import { useLocation, useNavigate } from "react-router";
 import { SearchResults } from "../../types";
 import SearchBar from "../SearchBar";
+import BackgroundCard from "../UI/BackgroundCard";
 
 type ActiveSection = "Songs" | "Albums";
 
@@ -69,7 +70,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
 
   return (
     <>
-      <div className="basis-52 flex-grow-0 flex-shrink-0 h-full flex flex-col bg-neutral-100 rounded-md p-2 justify-between overflow-hidden">
+      <BackgroundCard className="basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-hidden">
         <div className="w-full flex flex-col gap-2 items-start">
           <div className="w-full flex flex-row justify-between gap-2 flex-wrap">
             <button
@@ -87,22 +88,20 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
           </div>
           <SearchBar onSearch={onSearch} />
           <button
-            className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${
-              activeSection !== "Songs"
-                ? "hover:bg-neutral-200"
-                : "bg-neutral-300"
-            }`}
+            className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
+              ? "hover:bg-neutral-200"
+              : "bg-neutral-300"
+              }`}
             onClick={() => handleClickSongs()}
           >
             <Music />
             <p>Songs</p>
           </button>
           <button
-            className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2  ${
-              activeSection !== "Albums"
-                ? "hover:bg-neutral-200"
-                : "bg-neutral-300"
-            }`}
+            className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
+              ? "hover:bg-neutral-200"
+              : "bg-neutral-300"
+              }`}
             onClick={() => handleClickAlbums()}
           >
             <Disc />
@@ -116,7 +115,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
           <Settings />
           <p>Settings</p>
         </button>
-      </div>
+      </BackgroundCard>
     </>
   );
 }

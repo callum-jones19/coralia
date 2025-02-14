@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "react-feather";
 import { Outlet } from "react-router";
 import { LibraryStatus } from "../../types";
+import BackgroundCard from "../UI/BackgroundCard";
 
 export default function LibraryBody() {
   const [libraryState, setLibraryState] = useState<LibraryStatus | null>(null);
@@ -32,7 +33,7 @@ export default function LibraryBody() {
   return (
     <>
       {libraryState !== null &&
-        <div className="bg-neutral-100 basis-1/2 min-w-0 flex-grow rounded-md h-full">
+        <BackgroundCard className="basis-1/2 min-w-0 flex-grow rounded-md h-full">
           {libraryState === 'NotScanning' && <Outlet />}
           {libraryState !== 'NotScanning' &&
             <>
@@ -44,7 +45,7 @@ export default function LibraryBody() {
               </div>
             </>
           }
-        </div>
+        </BackgroundCard>
       }
     </>
   );

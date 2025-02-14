@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { getPlayerState } from "../../api/importer";
 import { Song } from "../../types";
 import QueueListItem from "../QueueListItem";
+import BackgroundCard from "../UI/BackgroundCard";
 
 export default function QueueBar() {
   const [isViewingQueue, setIsViewingQueue] = useState<boolean>(true);
@@ -39,7 +40,7 @@ export default function QueueBar() {
     : undefined;
 
   return (
-    <div className="basis-52 h-full flex-grow-0 flex-shrink-0 rounded-md bg-neutral-100 p-2 overflow-hidden">
+    <BackgroundCard className="basis-52 h-full flex-grow-0 flex-shrink-0 rounded-md p-2 overflow-hidden">
       <div className="h-full flex flex-col gap-3 justify-between">
         <button
           onClick={() => setIsViewingQueue(!isViewingQueue)}
@@ -86,6 +87,6 @@ export default function QueueBar() {
           )}
         </div>
       </div>
-    </div>
+    </BackgroundCard>
   );
 }
