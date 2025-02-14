@@ -7,8 +7,8 @@ import {
   Settings,
 } from "react-feather";
 import { useLocation, useNavigate } from "react-router";
-import SearchBar from "./SearchBar";
-import { SearchResults } from "../types";
+import { SearchResults } from "../../types";
+import SearchBar from "../SearchBar";
 
 type ActiveSection = "Songs" | "Albums";
 

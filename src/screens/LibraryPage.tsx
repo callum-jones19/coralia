@@ -1,7 +1,7 @@
 import LibraryBody from "../components/Library/LibraryBody";
-import MenuBar from "../components/MenuBar";
 import MusicFooter from "../components/MusicFooter";
-import QueueBar from "../components/QueueBar";
+import MenuBar from "../components/Sidebars/MenuBar";
+import QueueBar from "../components/Sidebars/QueueBar";
 import { SearchResults } from "../types";
 
 export interface LibraryPageProps {

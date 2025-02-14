@@ -3,9 +3,9 @@ import { Duration } from "@tauri-apps/api/http";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { getPlayerState } from "../api/importer";
-import { Song } from "../types";
-import QueueListItem from "./QueueListItem";
+import { getPlayerState } from "../../api/importer";
+import { Song } from "../../types";
+import QueueListItem from "../QueueListItem";
 
 export default function QueueBar() {
   const [isViewingQueue, setIsViewingQueue] = useState<boolean>(true);
