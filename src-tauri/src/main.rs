@@ -111,7 +111,7 @@ fn create_and_run_audio_player(
                 player.clear();
                 match player.add_to_queue_end(&song) {
                     Ok(_) => player.play(),
-                    Err(e) => {}
+                    Err(_) => {}
                 }
             }
             PlayerCommand::TrySeek(duration) => {
