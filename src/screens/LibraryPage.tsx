@@ -1,4 +1,4 @@
-import LibraryBody from "../components/LibraryBody";
+import LibraryBody from "../components/Library/LibraryBody";
 import MenuBar from "../components/MenuBar";
 import MusicFooter from "../components/MusicFooter";
 import QueueBar from "../components/QueueBar";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { getLibraryAlbums, getLibrarySongs } from "./api/importer";
-import AlbumView from "./components/AlbumView";
+import AlbumView from "./components/Library/AlbumView";
 import MusicGrid from "./components/MusicGrid";
 import SongList from "./components/SongList";
 import { AlbumContextProvider, SongsContextProvider } from "./Contexts";
@@ -10,7 +10,7 @@ import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { Album, Library, SearchResults, Song } from "./types";
-import SearchView from "./components/SearchView";
+import SearchView from "./components/Library/SearchView";
 import { listen } from "@tauri-apps/api/event";
 
 export default function App() {

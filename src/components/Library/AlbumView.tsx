@@ -5,11 +5,11 @@ import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { Play, Shuffle } from "react-feather";
 import { useParams } from "react-router";
-import { enqueueSongsBackend, playPlayer } from "../api/commands";
-import { getAlbum, getAlbumSongs, getPlayerState } from "../api/importer";
-import { Album, Song } from "../types";
-import SongListHeader from "./SongListHeader";
-import SongListItem from "./SongListItem";
+import { enqueueSongsBackend, playPlayer } from "../../api/commands";
+import { getAlbum, getAlbumSongs, getPlayerState } from "../../api/importer";
+import { Album, Song } from "../../types";
+import SongListHeader from "../SongListHeader";
+import SongListItem from "../SongListItem";
 
 export type AlbumViewParams = string;
 

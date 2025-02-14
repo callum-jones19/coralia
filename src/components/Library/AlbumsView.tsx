@@ -1,8 +1,8 @@
 import { CSSProperties, memo } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
-import { Album } from "../types";
-import MusicGridAlbum from "./MusicGridAlbum";
+import { Album } from "../../types";
+import MusicGridAlbum from "../MusicGridAlbum";
 
 interface RowData {
   albums: Album[];
@@ -30,12 +30,12 @@ const Row = memo(({ data, index, style }: RowProps) => {
 }, areEqual);
 Row.displayName = "AlbumRow";
 
-export interface MusicGridProps {
+export interface AlbumsViewProps {
   albums: Album[];
   emptyString?: string;
 }
 
-export default function MusicGrid({ albums, emptyString }: MusicGridProps) {
+export default function AlbumsView({ albums, emptyString }: AlbumsViewProps) {
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
       {albums.length > 0

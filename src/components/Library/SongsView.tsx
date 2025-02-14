@@ -3,10 +3,10 @@ import { Duration } from "@tauri-apps/api/http";
 import { CSSProperties, memo, useEffect, useState } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
-import { getPlayerState } from "../api/importer";
-import { Song } from "../types";
-import SongListHeader from "./SongListHeader";
-import SongListItem from "./SongListItem";
+import { getPlayerState } from "../../api/importer";
+import { Song } from "../../types";
+import SongListItem from "../SongListItem";
+import SongListHeader from "../SongListHeader";
 
 interface SongListData {
   songs: Song[];
@@ -48,12 +48,12 @@ const Row = memo(({ data, index, style }: RowProps) => {
 }, areEqual);
 Row.displayName = "SongRow";
 
-export interface SongListProps {
+export interface SongsViewProps {
   songs: Song[];
   emptyString?: string;
 }
 
-export default function SongList({ songs, emptyString }: SongListProps) {
+export default function SongsView({ songs, emptyString }: SongsViewProps) {
   const [queue, setQueue] = useState<Song[]>([]);
 
   useEffect(() => {

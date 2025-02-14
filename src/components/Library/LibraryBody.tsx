@@ -3,7 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Loader } from "react-feather";
 import { Outlet } from "react-router";
-import { LibraryStatus } from "../types";
+import { LibraryStatus } from "../../types";
 
 export default function LibraryBody() {
   const [libraryState, setLibraryState] = useState<LibraryStatus | null>(null);
