@@ -7,7 +7,9 @@ export interface BackgroundCardProps {
 export default function BackgroundCard({ children, className }: PropsWithChildren<BackgroundCardProps>) {
   return (
     <>
-      <div className={`shadow-md ${className}`}>
+      <div
+        className={`shadow-md ${className} dark:shadow-none dark:bg-neutral-800 dark:text-white`}
+      >
         {children}
       </div>
     </>

@@ -44,7 +44,7 @@ export default function QueueBar() {
       <div className="h-full flex flex-col gap-3 justify-between">
         <button
           onClick={() => setIsViewingQueue(!isViewingQueue)}
-          className="text-start font-bold bg-white p-1 rounded-md pl-2"
+          className="text-start font-bold bg-white p-1 rounded-md pl-2 dark:bg-neutral-700"
         >
 
           {isViewingQueue ? 'Queue' : 'Playing History'}

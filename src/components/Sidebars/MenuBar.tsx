@@ -74,13 +74,13 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
         <div className="w-full flex flex-col gap-2 items-start">
           <div className="w-full flex flex-row justify-between gap-2 flex-wrap">
             <button
-              className="hover:bg-neutral-300 bg-neutral-200 p-2 rounded-md flex-grow"
+              className="hover:bg-neutral-300 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
               onClick={handleClickBack}
             >
               <ChevronLeft className="m-auto" />
             </button>
             <button
-              className="hover:bg-neutral-300 bg-neutral-200 p-2 rounded-md flex-grow"
+              className="hover:bg-neutral-300 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
               onClick={handleClickForward}
             >
               <ChevronRight className="m-auto" />
@@ -89,8 +89,8 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
           <SearchBar onSearch={onSearch} />
           <button
             className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
-              ? "hover:bg-neutral-200"
-              : "bg-neutral-300"
+              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
+              : "bg-neutral-300 dark:bg-neutral-900"
               }`}
             onClick={() => handleClickSongs()}
           >
@@ -99,8 +99,8 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
           </button>
           <button
             className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
-              ? "hover:bg-neutral-200"
-              : "bg-neutral-300"
+              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
+              : "bg-neutral-300 dark:bg-neutral-900"
               }`}
             onClick={() => handleClickAlbums()}
           >
@@ -109,7 +109,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
           </button>
         </div>
         <button
-          className="flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300"
+          className="flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300 hover:dark:bg-neutral-700"
           onClick={() => handleClickSettings()}
         >
           <Settings />

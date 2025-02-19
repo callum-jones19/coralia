@@ -44,7 +44,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <div className="flex flex-row rounded-md items-center w-full bg-white ">
+    <div className="flex flex-row rounded-md items-center w-full bg-white">
       <input
         className=" basis-full items-center text-black p-2 min-w-0 rounded-md"
         placeholder="Search"
