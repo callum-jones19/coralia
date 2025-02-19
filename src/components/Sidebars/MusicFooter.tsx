@@ -2,7 +2,7 @@ import { listen } from "@tauri-apps/api/event";
 import { Duration } from "@tauri-apps/api/http";
 import { appWindow } from "@tauri-apps/api/window";
 import { useEffect, useState } from "react";
-import { Maximize2 } from "react-feather";
+import { List, Maximize2 } from "react-feather";
 import { Link } from "react-router";
 import { getPlayerState } from "../../api/importer";
 import { Song } from "../../types";
@@ -52,23 +52,28 @@ export default function MusicFooter() {
 
   return (
     <BackgroundCard className="basis-16 pr-10 pl-10 rounded-md p-2">
-      <div className="flex flex-col justify-center h-full gap-2">
-        <div className="flex flex-row justify-center flex-wrap gap-3">
-          <PlayButtons />
-          <CurrentSongInfo currentSong={currentSong} />
-          <div className="flex flex-row items-center gap-2">
-            <VolumeController />
-            <Link
-              to={"/fullscreen"}
-              onClick={() => {
-                appWindow.setFullscreen(true).catch(e => console.error(e));
-              }}
-            >
-              <Maximize2 size="1em" />
-            </Link>
+      <div className="w-full h-full flex flex-row gap-6 items-center">
+        <div className="basis-full flex flex-col justify-center h-full gap-2">
+          <div className="flex flex-row justify-center flex-wrap gap-3">
+            <PlayButtons />
+            <CurrentSongInfo currentSong={currentSong} />
+            <div className="flex flex-row items-center gap-2">
+              <VolumeController />
+              <Link
+                to={"/fullscreen"}
+                onClick={() => {
+                  appWindow.setFullscreen(true).catch(e => console.error(e));
+                }}
+              >
+                <Maximize2 size="1em" />
+              </Link>
+            </div>
           </div>
+          <Seekbar />
         </div>
-        <Seekbar />
+        <div className="block md:hidden">
+          <List />
+        </div>
       </div>
     </BackgroundCard>
   );

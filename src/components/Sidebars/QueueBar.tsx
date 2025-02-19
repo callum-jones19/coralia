@@ -40,7 +40,7 @@ export default function QueueBar() {
     : undefined;
 
   return (
-    <BackgroundCard className="basis-52 h-full flex-grow-0 flex-shrink-0 rounded-md p-2 overflow-hidden">
+    <BackgroundCard className="w-full h-full flex-grow-0 flex-shrink-0 rounded-md p-2 overflow-hidden">
       <div className="h-full flex flex-col gap-3 justify-between">
         <button
           onClick={() => setIsViewingQueue(!isViewingQueue)}
