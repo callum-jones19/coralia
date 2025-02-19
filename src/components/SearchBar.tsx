@@ -44,9 +44,9 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <div className="flex flex-row rounded-md items-center w-full bg-white">
+    <div className="flex flex-row rounded-md items-center w-full bg-white dark:text-white dark:bg-neutral-900">
       <input
-        className=" basis-full items-center text-black p-2 min-w-0 rounded-md"
+        className=" basis-full items-center text-black p-2 min-w-0 rounded-md dark:bg-neutral-900 dark:text-white mr-2"
         placeholder="Search"
         value={query ? query : ''}
         onChange={handleInputChage}
@@ -58,7 +58,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
             if (t) t.catch(e => console.error(e))
             setQuery(null);
           }}
-          className="bg-white h-full rounded-r-md pr-1"
+          className="bg-white h-full rounded-r-md pr-1 dark:bg-neutral-900 dark:text-white"
         >
           <X />
         </button>
