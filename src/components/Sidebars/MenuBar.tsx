@@ -70,7 +70,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
 
   return (
     <>
-      <BackgroundCard className="basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-hidden">
+      <BackgroundCard className="basis-16 sm:basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-hidden">
         <div className="w-full flex flex-col gap-2 items-start">
           <div className="w-full flex flex-row justify-between gap-2 flex-wrap">
             <button
@@ -88,32 +88,32 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
           </div>
           <SearchBar onSearch={onSearch} />
           <button
-            className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
+            className={`flex flex-row items-center justify-center sm:justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
               ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
               : "bg-neutral-300 dark:bg-neutral-900"
               }`}
             onClick={() => handleClickSongs()}
           >
             <Music />
-            <p>Songs</p>
+            <p className="hidden sm:block">Songs</p>
           </button>
           <button
-            className={`flex flex-row items-center justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
+            className={`flex flex-row items-center justify-center sm:justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
               ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
               : "bg-neutral-300 dark:bg-neutral-900"
               }`}
             onClick={() => handleClickAlbums()}
           >
             <Disc />
-            <p>Albums</p>
+            <p className="hidden sm:block">Albums</p>
           </button>
         </div>
         <button
-          className="flex flex-row items-center justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300 hover:dark:bg-neutral-700"
+          className="flex flex-row items-center justify-center sm:justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300 hover:dark:bg-neutral-700"
           onClick={() => handleClickSettings()}
         >
           <Settings />
-          <p>Settings</p>
+          <p className="hidden sm:block">Settings</p>
         </button>
       </BackgroundCard>
     </>
