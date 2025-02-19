@@ -22,10 +22,12 @@ export default function VolumeController() {
   }, []);
 
   return (
-    <div id="volume" className="flex flex-row gap-2 items-center p-1 relative">
+    <div
+      id="volume"
+      className="flex flex-row gap-2 items-center p-1 relative"
+    >
       <button
         onClick={() => setIsClicked(!isClicked)}
-        onBlur={() => setIsClicked(false)}
         className="block md:hidden"
       >
         {volume >= 50 && <Volume2 />}
