@@ -32,8 +32,8 @@ export default function MusicGridAlbum(
               {album.title}
             </p>
           </Link>
-          <p className="w-full text-center text-nowrap overflow-hidden text-ellipsis text-neutral-700">
-            {album.albumArtist}
+          <p className="w-full text-center text-nowrap overflow-hidden text-ellipsis text-neutral-700 dark:text-neutral-300">
+            <i>{album.albumArtist}</i>
           </p>
         </div>
       </div>

@@ -74,13 +74,13 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
         <div className="w-full flex flex-col gap-2 items-start">
           <div className="w-full flex flex-row justify-between gap-2 flex-wrap">
             <button
-              className="hover:bg-neutral-300 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
+              className="hover:bg-neutral-300 hover:dark:bg-neutral-600 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
               onClick={handleClickBack}
             >
               <ChevronLeft className="m-auto" />
             </button>
             <button
-              className="hover:bg-neutral-300 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
+              className="hover:bg-neutral-300 hover:dark:bg-neutral-600 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
               onClick={handleClickForward}
             >
               <ChevronRight className="m-auto" />
