@@ -25,7 +25,7 @@ export default function SongListItem(
         isPlaying
           ? "text-green-700 font-bold"
           : isHovering
-          ? "bg-neutral-400"
+          ? "bg-neutral-400 dark:bg-neutral-700"
           : ""
       } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
