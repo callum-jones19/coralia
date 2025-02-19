@@ -10,6 +10,8 @@ import { getAlbum, getAlbumSongs, getPlayerState } from "../../api/importer";
 import { Album, Song } from "../../types";
 import SongListHeader from "../SongListHeader";
 import SongListItem from "../SongListItem";
+import SongListItemDense from "../SongListItemDense";
+import SongListHeaderDense from "../SongListHeaderDense";
 
 export type AlbumViewParams = string;
 
@@ -61,14 +63,14 @@ export default function AlbumView() {
   return (
     <div className="flex flex-col h-full gap-3 overflow-auto">
       {!album || songs.length === 0 && (
-            <>
-              <p>
-                <i>
-                  Invalid album - given album ID does not exist
-                </i>
-              </p>
-            </>
-          )}
+        <>
+          <p>
+            <i>
+              Invalid album - given album ID does not exist
+            </i>
+          </p>
+        </>
+      )}
       {album && songs.length > 0
         && (
           <>
@@ -114,18 +116,34 @@ export default function AlbumView() {
               id="song-list"
               className="basis-full w-full"
             >
-              <div className="h-10 sticky top-0">
+              <div className="h-10 sticky top-0 hidden sm:block">
                 <SongListHeader />
               </div>
-              {songs.map(song => (
-                <div key={song.id} className="h-14">
-                  <SongListItem
+              <div className="h-10 sticky top-0 block sm:hidden">
+                <SongListHeaderDense />
+              </div>
+              <div className="hidden sm:block">
+                {songs.map(song => (
+                  <div key={song.id} className="h-14">
+                    <SongListItem
+                      song={song}
+                      colored={false}
+                      currentlyPlayingId={currentSong?.id}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="block sm:hidden">
+                {songs.map(song => (
+                  <div key={song.id} className="h-14">
+                    <SongListItemDense
                     song={song}
                     colored={false}
                     currentlyPlayingId={currentSong?.id}
                   />
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </ul>
           </>
         )}
