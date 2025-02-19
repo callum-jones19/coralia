@@ -57,7 +57,10 @@ export default function MusicFooter() {
           <div className="flex flex-row justify-center flex-wrap gap-3">
             <PlayButtons />
             <CurrentSongInfo currentSong={currentSong} />
-            <div className="flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-4">
+              <div className="block md:hidden">
+                <List />
+              </div>
               <VolumeController />
               <Link
                 to={"/fullscreen"}
@@ -70,9 +73,6 @@ export default function MusicFooter() {
             </div>
           </div>
           <Seekbar />
-        </div>
-        <div className="block md:hidden">
-          <List />
         </div>
       </div>
     </BackgroundCard>
