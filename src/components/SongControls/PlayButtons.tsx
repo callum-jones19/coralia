@@ -47,9 +47,12 @@ export default function PlayButtons() {
           }}
         >
           <SkipBack
-            fill={`${prevSongsLen === 0 ? "gray" : "black"}`}
-            color={`${prevSongsLen === 0 ? "gray" : "black"}`}
             size="1em"
+            className={
+              `${prevSongsLen === 0 ?
+                "text-neutral-400 fill-neutral-400" :
+                "text-black fill-black dark:text-white dark:fill-white"}`
+            }
           />
         </button>
         <button
@@ -63,7 +66,16 @@ export default function PlayButtons() {
             }
           }}
         >
-          {isPaused && <Play fill="black" size="1.2em" />}
+          {isPaused &&
+            <Play
+              size="1.2em"
+              className={
+                `${queueLen === 0 ?
+                  "text-neutral-400 fill-neutral-400" :
+                  "text-black fill-black dark:text-white dark:fill-white"}`
+              }
+            />
+          }
           {!isPaused && <Pause size="1.2em" fill="black" />}
         </button>
         <button
@@ -72,9 +84,12 @@ export default function PlayButtons() {
           onClick={() => skipOneSong()}
         >
           <SkipForward
-            fill={`${queueLen === 0 ? "gray" : "black"}`}
-            color={`${queueLen === 0 ? "gray" : "black"}`}
             size="1em"
+            className={
+              `${queueLen === 0 ?
+                "text-neutral-400 fill-neutral-400" :
+                "text-black fill-black dark:text-white dark:fill-white"}`
+            }
           />
         </button>
       </div>
