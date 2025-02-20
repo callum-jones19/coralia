@@ -56,7 +56,7 @@ export default function PlayButtons() {
           />
         </button>
         <button
-          className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-transparent hover:bg-neutral-400"
+          className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-transparent hover:bg-neutral-400 hover:dark:bg-neutral-600"
           disabled={queueLen === 0}
           onClick={() => {
             if (isPaused) {
@@ -76,7 +76,16 @@ export default function PlayButtons() {
               }
             />
           }
-          {!isPaused && <Pause size="1.2em" fill="black" />}
+          {!isPaused &&
+            <Pause
+              size="1.2em"
+              className={
+                `${queueLen === 0 ?
+                  "text-neutral-400 fill-neutral-400" :
+                  "text-black fill-black dark:text-white dark:fill-white"}`
+              }
+            />
+          }
         </button>
         <button
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"
