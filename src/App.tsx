@@ -4,7 +4,6 @@ import { getLibraryAlbums, getLibrarySongs } from "./api/importer";
 import AlbumView from "./components/Library/AlbumView";
 import { AlbumContextProvider, SongsContextProvider } from "./Contexts";
 import FullscreenScreen from "./screens/FullscreenScreen";
-import LibraryPage from "./screens/LibraryPage";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { Album, Library, SearchResults, Song } from "./types";
@@ -12,6 +11,7 @@ import SearchView from "./components/Library/SearchView";
 import { listen } from "@tauri-apps/api/event";
 import SongsView from "./components/Library/SongsView";
 import AlbumsView from "./components/Library/AlbumsView";
+import LibraryScreen from "./screens/LibraryScreen";
 
 export default function App() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -57,7 +57,7 @@ export default function App() {
               />
               <Route
                 path="home"
-                element={<LibraryPage onSearch={searchRes => setSearchRes(searchRes)} />}
+                element={<LibraryScreen onSearch={searchRes => setSearchRes(searchRes)} />}
               >
                 <Route
                   index

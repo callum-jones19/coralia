@@ -8,7 +8,7 @@ export default function BackgroundCard({ children, className }: PropsWithChildre
   return (
     <>
       <div
-        className={`shadow-md ${className} dark:shadow-none dark:bg-neutral-800 dark:text-white`}
+        className={`rounded-md shadow-md ${className} dark:shadow-none dark:bg-neutral-800 dark:text-white`}
       >
         {children}
       </div>
