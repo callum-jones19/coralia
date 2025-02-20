@@ -70,7 +70,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
 
   return (
     <>
-      <BackgroundCard className="basis-16 md:basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-hidden">
+      <BackgroundCard className="basis-16 md:basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-auto">
         <div className="w-full flex flex-col gap-2 items-start">
           <div className="w-full flex flex-row justify-between gap-2 flex-wrap border-b-2 border-solid border-neutral-300 dark:border-neutral-700 pb-4 mb-2">
             <button
