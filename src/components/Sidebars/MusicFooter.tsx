@@ -2,7 +2,7 @@ import { listen } from "@tauri-apps/api/event";
 import { Duration } from "@tauri-apps/api/http";
 import { appWindow } from "@tauri-apps/api/window";
 import { useEffect, useState } from "react";
-import { List, Maximize2 } from "react-feather";
+import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
 import { getPlayerState } from "../../api/importer";
 import { Song } from "../../types";
@@ -11,6 +11,7 @@ import PlayButtons from "../SongControls/PlayButtons";
 import CurrentSongInfo from "../SongControls/CurrentSongInfo";
 import VolumeController from "../SongControls/VolumeController";
 import BackgroundCard from "../UI/BackgroundCard";
+import QueuePopup from "../QueuePopup";
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from
@@ -59,7 +60,7 @@ export default function MusicFooter() {
             <CurrentSongInfo currentSong={currentSong} />
             <div className="flex flex-row items-center gap-4">
               <div className="block lg:hidden">
-                <List />
+                <QueuePopup />
               </div>
               <VolumeController />
               <Link
