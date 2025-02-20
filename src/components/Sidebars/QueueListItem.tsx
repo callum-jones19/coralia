@@ -1,15 +1,16 @@
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useState } from "react";
 import { Volume1, X } from "react-feather";
-import { removeFromQueue } from "../api/commands";
-import { Song } from "../types";
+import { removeFromQueue } from "../../api/commands";
+import { Song } from "../../types";
 
 export interface QueueListItem {
   song: Song;
-  index?: number;
+  index: number;
+  currentlyPlayingId: number | null;
 }
 
-export default function QueueListItem({ song, index }: QueueListItem) {
+export default function QueueListItem({ song, index, currentlyPlayingId }: QueueListItem) {
   const queueImgSrc = song.artwork?.thumbArt
     ? convertFileSrc(song.artwork?.thumbArt)
     : undefined;
@@ -22,10 +23,18 @@ export default function QueueListItem({ song, index }: QueueListItem) {
       onMouseLeave={() => setisHovering(false)}
     >
       <div className="basis-6 flex-grow-0 flex-shrink-0">
-        {index === undefined && <p>~~</p>}
-        {index === 0 && <Volume1 size="1em" />}
-        {index !== undefined && index !== 0
-          && <p>{index}.</p>}
+        {index !== undefined
+          && currentlyPlayingId !== null
+          && currentlyPlayingId !== song.id
+          &&
+          <p>{index + 1}.</p>
+        }
+        {index !== undefined
+          && currentlyPlayingId !== null
+          && currentlyPlayingId === song.id
+          &&
+          <p><Volume1 /></p>
+        }
       </div>
       <img
         loading="lazy"

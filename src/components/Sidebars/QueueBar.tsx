@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getPlayerState } from "../../api/importer";
 import { Song } from "../../types";
-import QueueListItem from "../QueueListItem";
+import QueueListItem from "./QueueListItem";
 import BackgroundCard from "../UI/BackgroundCard";
 
 export default function QueueBar() {
@@ -13,6 +13,8 @@ export default function QueueBar() {
   const [queue, setQueue] = useState<Song[]>([]);
   const [prevQueue, setPrevQueue] = useState<Song[]>([]);
   const navigate = useNavigate();
+
+  const currentlyPlayingId = queue.length > 0 ? queue[0].id : null;
 
   useEffect(() => {
     getPlayerState()
@@ -53,7 +55,7 @@ export default function QueueBar() {
           <div className="h-full w-full overflow-auto flex flex-col gap-2">
             {queue.length === 0 && <i>Empty queue</i>}
             {queue.map((song, index) => (
-              <QueueListItem key={index} song={song} index={index} />
+              <QueueListItem key={index} song={song} index={index} currentlyPlayingId={currentlyPlayingId} />
               ))
             }
           </div>
@@ -62,11 +64,11 @@ export default function QueueBar() {
           <div className="h-full w-full overflow-auto flex flex-col gap-2">
             {queue.length === 0 && prevQueue.length === 0 && <i>No Playing History</i>}
             {prevQueue.map((song, index) => (
-              <QueueListItem key={index} song={song} />
+              <QueueListItem key={index} song={song} index={index} currentlyPlayingId={currentlyPlayingId} />
               ))
             }
             {queue.map((song, index) => (
-              <QueueListItem key={index} song={song} index={index} />
+              <QueueListItem key={index} song={song} index={index + prevQueue.length} currentlyPlayingId={currentlyPlayingId} />
               ))
             }
           </div>
