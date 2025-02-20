@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Song } from "../../types";
-import QueueListItem from "./QueueListItem";
 import { getPlayerState } from "../../api/importer";
 import { listen } from "@tauri-apps/api/event";
 import { Duration } from "@tauri-apps/api/http";
+import QueueListItem from "./QueueListItem";
 
 export default function QueueList() {
   const [isViewingQueue, setIsViewingQueue] = useState<boolean>(true);
@@ -47,7 +47,7 @@ export default function QueueList() {
         <div className="h-full w-full overflow-auto flex flex-col gap-2">
           {queue.length === 0 && <i>Empty queue</i>}
           {queue.map((song, index) => (
-            <QueueListItem key={index} song={song} index={index} currentlyPlayingId={currentlyPlayingId} />
+            <QueueListItem removable key={index} song={song} index={index} currentlyPlayingId={currentlyPlayingId} />
           ))
           }
         </div>
@@ -60,7 +60,7 @@ export default function QueueList() {
           ))
           }
           {queue.map((song, index) => (
-            <QueueListItem key={index} song={song} index={index + prevQueue.length} currentlyPlayingId={currentlyPlayingId} />
+            <QueueListItem removable key={index} song={song} index={index + prevQueue.length} currentlyPlayingId={currentlyPlayingId} />
           ))
           }
         </div>

@@ -8,9 +8,10 @@ export interface QueueListItemProps {
   song: Song;
   index: number;
   currentlyPlayingId: number | null;
+  removable?: boolean;
 }
 
-export default function QueueListItem({ song, index, currentlyPlayingId }: QueueListItemProps) {
+export default function QueueListItem({ song, index, currentlyPlayingId, removable }: QueueListItemProps) {
   const queueImgSrc = song.artwork?.thumbArt
     ? convertFileSrc(song.artwork?.thumbArt)
     : undefined;
@@ -49,7 +50,7 @@ export default function QueueListItem({ song, index, currentlyPlayingId }: Queue
         {song.tags.title}
       </p>
       {isHovering
-        && index !== undefined && (
+        && index !== undefined && removable && (
           <button
             className=""
             onClick={() => removeFromQueue(index)}
