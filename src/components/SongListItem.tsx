@@ -32,7 +32,7 @@ export default function SongListItem(
       onMouseLeave={() => setIsHovering(false)}
       onDoubleClick={() => addToQueueNext(song)}
     >
-      <div className="basis-1/5 flex flex-row justify-start items-center pl-2">
+      <div className="basis-1/4 flex flex-row justify-start items-center pl-2">
         {showImage && (
           <img
             loading="lazy"
@@ -61,31 +61,25 @@ export default function SongListItem(
             </button>
           )}
       </div>
-      <div className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis flex flex-row items-center gap-1">
+      <div className="basis-1/4 flex-grow overflow-hidden text-nowrap text-ellipsis flex flex-row items-center gap-1">
         <p
-          className="basis-1/5flex-grow overflow-hidden text-nowrap text-ellipsis"
+          className="basis-1/4flex-grow overflow-hidden text-nowrap text-ellipsis"
           title={song.tags.title}
         >
           {song.tags.title}
         </p>
       </div>
       <p
-        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
+        className="basis-1/4 flex-grow overflow-hidden text-nowrap text-ellipsis"
         title={song.tags.album}
       >
         {song.tags.album}
       </p>
       <p
-        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
+        className="basis-1/4 flex-grow overflow-hidden text-nowrap text-ellipsis"
         title={song.tags.artist}
       >
         {song.tags.artist}
-      </p>
-      <p
-        className="basis-1/5 flex-grow overflow-hidden text-nowrap text-ellipsis"
-        title={song.tags.albumArtist}
-      >
-        {song.tags.albumArtist}
       </p>
     </div>
   );

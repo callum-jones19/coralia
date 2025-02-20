@@ -7,6 +7,8 @@ import { getPlayerState } from "../../api/importer";
 import { Song } from "../../types";
 import SongListItem from "../SongListItem";
 import SongListHeader from "../SongListHeader";
+import SongListItemDense from "../SongListItemDense";
+import SongListHeaderDense from "../SongListHeaderDense";
 
 interface SongListData {
   songs: Song[];
@@ -25,25 +27,41 @@ const Row = memo(({ data, index, style }: RowProps) => {
   if (index === 0) {
     return (
       <>
-        <div style={style}>
+        <div style={style} className="hidden sm:block">
           <SongListHeader />
+        </div>
+        <div style={style} className="block sm:hidden">
+          <SongListHeaderDense />
         </div>
       </>
     );
   }
 
   return (
-    <div
-      style={style}
-      // className="[&_*]:outline-green-300 [&_*]:outline [&_*]:outline-2"
-    >
-      <SongListItem
-        song={song}
-        colored={false}
-        currentlyPlayingId={data.currentlyPlayingId}
-        showImage
-      />
-    </div>
+    <>
+      <div
+        style={style}
+      className="hidden sm:block"
+      >
+        <SongListItem
+          song={song}
+          colored={false}
+          currentlyPlayingId={data.currentlyPlayingId}
+          showImage
+        />
+      </div>
+      <div
+        style={style}
+      className="block sm:hidden"
+      >
+        <SongListItemDense
+          song={song}
+          colored={false}
+          currentlyPlayingId={data.currentlyPlayingId}
+          showImage
+        />
+      </div>
+    </>
   );
 }, areEqual);
 Row.displayName = "SongRow";
@@ -81,7 +99,7 @@ export default function SongsView({ songs, emptyString }: SongsViewProps) {
   return (
     <div className="basis-1/2 flex-grow h-full flex flex-col">
       {songs.length > 0 && (
-          <div className="basis-full relative">
+        <div className="basis-full relative">
           <ReactVirtualizedAutoSizer>
             {({ height, width }) => (
               <FixedSizeList

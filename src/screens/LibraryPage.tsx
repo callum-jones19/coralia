@@ -14,7 +14,7 @@ export default function LibraryPage({ onSearch }: LibraryPageProps) {
       <div className="flex flex-row flex-grow h-1 flex-shrink gap-2">
         <MenuBar onSearch={onSearch} />
         <LibraryBody />
-        <div className="hidden md:block basis-52 h-full flex-grow-0 flex-shrink-0 overflow-hidden">
+        <div className="hidden lg:block basis-52 h-full flex-grow-0 flex-shrink-0 overflow-hidden">
           <QueueBar />
         </div>
       </div>

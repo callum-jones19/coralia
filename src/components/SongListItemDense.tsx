@@ -30,7 +30,7 @@ export default function SongListItemDense(
       onMouseLeave={() => setIsHovering(false)}
       onDoubleClick={() => addToQueueNext(song)}
     >
-      <div className="basis-14 flex flex-row justify-start items-center pl-2">
+      <div className="basis-20 flex flex-row justify-start items-center pl-2">
         {showImage && (
           <img
             loading="lazy"
