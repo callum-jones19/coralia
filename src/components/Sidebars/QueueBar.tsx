@@ -40,11 +40,11 @@ export default function QueueBar() {
     : undefined;
 
   return (
-    <BackgroundCard className="hidden lg:block basis-72 h-full flex-grow-0 flex-shrink-0 overflow-hidden p-2">
+    <BackgroundCard className="hidden lg:block basis-60 h-full flex-grow-0 flex-shrink-0 overflow-hidden p-2">
       <div className="h-full flex flex-col gap-3 justify-between">
         <button
           onClick={() => setIsViewingQueue(!isViewingQueue)}
-          className="text-start font-bold bg-white p-1 rounded-md pl-2 dark:bg-neutral-700"
+          className="text-start font-bold rounded-md flex flex-row gap-2 items-center"
         >
 
           {isViewingQueue ? 'Queue' : 'Playing History'}

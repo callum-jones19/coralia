@@ -58,7 +58,7 @@ export default function MusicFooter() {
             <PlayButtons />
             <CurrentSongInfo currentSong={currentSong} />
             <div className="flex flex-row items-center gap-4">
-              <div className="block md:hidden">
+              <div className="block lg:hidden">
                 <List />
               </div>
               <VolumeController />
