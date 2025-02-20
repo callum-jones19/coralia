@@ -4,13 +4,13 @@ import { Volume1, X } from "react-feather";
 import { removeFromQueue } from "../../api/commands";
 import { Song } from "../../types";
 
-export interface QueueListItem {
+export interface QueueListItemProps {
   song: Song;
   index: number;
   currentlyPlayingId: number | null;
 }
 
-export default function QueueListItem({ song, index, currentlyPlayingId }: QueueListItem) {
+export default function QueueListItem({ song, index, currentlyPlayingId }: QueueListItemProps) {
   const queueImgSrc = song.artwork?.thumbArt
     ? convertFileSrc(song.artwork?.thumbArt)
     : undefined;
