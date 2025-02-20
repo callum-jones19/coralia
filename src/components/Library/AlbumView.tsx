@@ -95,7 +95,7 @@ export default function AlbumView() {
               className="w-full flex flex-row gap-3 pl-3"
             >
               <button
-                className="hover:bg-neutral-300 rounded-md p-2"
+                className="hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-md p-2"
                 onClick={() => {
                   invoke("clear_queue", {})
                     .then(() => enqueueSongsBackend(songs))
@@ -103,7 +103,7 @@ export default function AlbumView() {
                     .catch(e => console.error(e));
                 }}
               >
-                <Play fill="black" />
+                <Play className="fill-black text-black dark:text-white dark:fill-white" />
               </button>
               <button
                 disabled
