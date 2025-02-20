@@ -72,7 +72,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
     <>
       <BackgroundCard className="basis-16 md:basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-hidden">
         <div className="w-full flex flex-col gap-2 items-start">
-          <div className="w-full flex flex-row justify-between gap-2 flex-wrap">
+          <div className="w-full flex flex-row justify-between gap-2 flex-wrap border-b-2 border-solid border-neutral-300 dark:border-neutral-700 pb-4 mb-2">
             <button
               className="hover:bg-neutral-300 hover:dark:bg-neutral-600 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
               onClick={handleClickBack}
@@ -85,8 +85,8 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
             >
               <ChevronRight className="m-auto" />
             </button>
+            <SearchBar onSearch={onSearch} />
           </div>
-          <SearchBar onSearch={onSearch} />
           <button
             className={`flex flex-row items-center justify-center md:justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
               ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
