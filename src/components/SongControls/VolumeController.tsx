@@ -28,19 +28,19 @@ export default function VolumeController() {
     >
       <button
         onClick={() => setIsClicked(!isClicked)}
-        className="block md:hidden"
+        className="block lg:hidden"
       >
         {volume >= 50 && <Volume2 />}
         {volume < 50 && volume > 0 && <Volume1 />}
         {volume === 0 && <VolumeX />}
       </button>
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         {volume >= 50 && <Volume2 />}
         {volume < 50 && volume > 0 && <Volume1 />}
         {volume === 0 && <VolumeX />}
       </div>
       {isClicked &&
-        <div className="bg-neutral-900 h-40 w-full absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md">
+        <div className="bg-white shadow-md dark:bg-neutral-900 h-40 w-full absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md">
           <input
             id="volume-slider"
             type="range"
@@ -69,7 +69,7 @@ export default function VolumeController() {
           setVolume(newVol);
           setVolumeBackend(newVol);
         }}
-        className="hidden md:block"
+        className="hidden lg:block"
       />
     </div>
   );
