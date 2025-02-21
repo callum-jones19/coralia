@@ -40,7 +40,7 @@ export default function VolumeController() {
         {volume === 0 && <VolumeX />}
       </div>
       {isClicked &&
-        <div className="bg-white shadow-md dark:bg-neutral-900 h-40 w-full absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md">
+        <div className="lg:hidden bg-white shadow-md dark:bg-neutral-900 h-fit w-fit absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md">
           <input
             id="volume-slider"
             type="range"
@@ -53,7 +53,7 @@ export default function VolumeController() {
               setVolume(newVol);
               setVolumeBackend(newVol);
             }}
-            style={{ writingMode: 'sideways-lr' }}
+            className="p-1"
           />
         </div>
       }
