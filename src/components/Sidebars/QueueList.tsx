@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Song } from "../../types";
 import { getPlayerState } from "../../api/importer";
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/api/http";
+import { Duration } from "@tauri-apps/plugin-http";
 import QueueListItem from "./QueueListItem";
 
 export default function QueueList() {

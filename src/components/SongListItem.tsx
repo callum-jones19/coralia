@@ -1,4 +1,4 @@
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { Play, Volume2 } from "react-feather";
 import { addToQueueNext, clearAndPlayBackend  } from "../api/commands";

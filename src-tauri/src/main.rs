@@ -18,7 +18,7 @@ use data::{
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State};
 
 mod data;
 mod player;
@@ -155,11 +155,11 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
             PlayerStateUpdate::SongEnd(new_queue, prev_songs) => {
                 info!("Player Events: song ended.");
                 handle
-                    .emit_all("queue-length-change", [&new_queue.len(), &prev_songs.len()])
+                    .emit("queue-length-change", [&new_queue.len(), &prev_songs.len()])
                     .unwrap();
-                handle.emit_all("song-end", &new_queue.front()).unwrap();
+                handle.emit("song-end", &new_queue.front()).unwrap();
                 handle
-                    .emit_all(
+                    .emit(
                         "queue-change",
                         (&new_queue, &prev_songs, Some(Duration::ZERO)),
                     )
@@ -171,7 +171,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     paused: false,
                     position: song_pos,
                 };
-                handle.emit_all("is-paused", payload).unwrap();
+                handle.emit("is-paused", payload).unwrap();
             }
             PlayerStateUpdate::SongPause(song_pos) => {
                 info!("Player Events: sink playback paused.");
@@ -180,7 +180,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     position: song_pos,
                 };
                 handle
-                    .emit_all::<PlayEventData>("is-paused", payload)
+                    .emit::<PlayEventData>("is-paused", payload)
                     .unwrap();
             }
             PlayerStateUpdate::QueueUpdate(
@@ -193,7 +193,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     current_song_position
                 );
                 handle
-                    .emit_all(
+                    .emit(
                         "queue-length-change",
                         [&updated_queue.len(), &updated_prev_songs.len()],
                     )
@@ -204,7 +204,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                 let queue_change_payload =
                     (updated_queue, updated_prev_songs, current_song_position);
                 handle
-                    .emit_all("queue-change", queue_change_payload)
+                    .emit("queue-change", queue_change_payload)
                     .unwrap();
             }
         }
@@ -223,8 +223,10 @@ fn main() {
     let (player_event_tx, player_event_rx) = channel::<PlayerStateUpdate>();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_http::init())
         .setup(move |app| {
-            let handle = app.app_handle();
+            let handle = app.app_handle().to_owned();
 
             info!("Starting async tokio thread to hold the audio player");
             tauri::async_runtime::spawn(async move {
@@ -283,7 +285,7 @@ fn export_library(library: &Library, app_handle: &AppHandle) -> Result<(), tauri
         songs: library.get_all_songs_sorted().clone(),
     };
 
-    app_handle.emit_all("library_update", export_library)
+    app_handle.emit("library_update", export_library)
 }
 
 // ============================== Commands =====================================
@@ -299,7 +301,7 @@ async fn add_library_directories(
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::Loading;
-        app_handle.emit_all::<LibraryStatus>("library_status_change", LibraryStatus::Loading)?
+        app_handle.emit::<LibraryStatus>("library_status_change", LibraryStatus::Loading)?
     }
     state.library.add_new_folders(root_dirs);
 
@@ -308,7 +310,7 @@ async fn add_library_directories(
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::ScanningSongs;
         app_handle
-            .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::ScanningSongs)?
+            .emit::<LibraryStatus>("library_status_change", LibraryStatus::ScanningSongs)?
     }
     state.library.scan_library_songs();
 
@@ -317,7 +319,7 @@ async fn add_library_directories(
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::IndexingAlbums;
         app_handle
-            .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::IndexingAlbums)?
+            .emit::<LibraryStatus>("library_status_change", LibraryStatus::IndexingAlbums)?
     }
     state.library.scan_library_albums();
 
@@ -326,7 +328,7 @@ async fn add_library_directories(
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::CachingArtwork;
         app_handle
-            .emit_all::<LibraryStatus>("library_status_change", LibraryStatus::CachingArtwork)?
+            .emit::<LibraryStatus>("library_status_change", LibraryStatus::CachingArtwork)?
     }
     state.library.cache_library_artwork();
     state.library.save_library_to_cache();
@@ -335,7 +337,7 @@ async fn add_library_directories(
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::NotScanning;
-        app_handle.emit_all::<LibraryStatus>("library_status_change", LibraryStatus::NotScanning)?
+        app_handle.emit::<LibraryStatus>("library_status_change", LibraryStatus::NotScanning)?
     }
 
     export_library(&state.library, &app_handle)

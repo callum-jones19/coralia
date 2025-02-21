@@ -1,13 +1,11 @@
-import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/api/http";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { Play, Shuffle } from "react-feather";
 import { useParams } from "react-router";
 import { enqueueSongsBackend, playPlayer } from "../../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../../api/importer";
-import { Album, Song } from "../../types";
+import { Album, Duration, Song } from "../../types";
 import SongListHeader from "../SongListHeader";
 import SongListItem from "../SongListItem";
 import SongListItemDense from "../SongListItemDense";

@@ -7,7 +7,7 @@ Fix issue with seeking and starting a new source causing issues with mpa offset.
 
 - Raphael’s Final Act
 
-Make the data sent with events an explicit struct/enum: E.G., everything becomes `emit_all::<PlayEventData>`
+Make the data sent with events an explicit struct/enum: E.G., everything becomes `emit::<PlayEventData>`
 
 ## Events
 

@@ -1,6 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/api/http";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { Duration } from "@tauri-apps/plugin-http";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getPlayerState } from "../../api/importer";

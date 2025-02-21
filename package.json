@@ -11,7 +11,9 @@
     "fmt": "dprint fmt"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.5.6",
+    "@tauri-apps/api": "^2.2.0",
+    "@tauri-apps/plugin-dialog": "^2.2.0",
+    "@tauri-apps/plugin-http": "^2.3.0",
     "dprint": "^0.46.3",
     "eslint-plugin-react": "^7.34.2",
     "react": "^18.2.0",

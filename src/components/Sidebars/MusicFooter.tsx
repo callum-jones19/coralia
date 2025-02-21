@@ -1,6 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/api/http";
-import { appWindow } from "@tauri-apps/api/window";
+import { Duration } from "@tauri-apps/plugin-http";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect, useState } from "react";
 import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
@@ -12,6 +12,7 @@ import CurrentSongInfo from "../SongControls/CurrentSongInfo";
 import VolumeController from "../SongControls/VolumeController";
 import BackgroundCard from "../UI/BackgroundCard";
 import QueuePopup from "../QueuePopup";
+const appWindow = getCurrentWebviewWindow()
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from

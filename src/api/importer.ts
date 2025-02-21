@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Album, CachedPlayerState, SearchResults, Song } from "../types";
 
 export const getAlbumSongs = async (albumId: number) => {

@@ -1,5 +1,5 @@
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/api/http";
+import { Duration } from "@tauri-apps/plugin-http";
 import { CSSProperties, memo, useEffect, useState } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
