@@ -12,19 +12,11 @@
   "tauri": {
     "allowlist": {
       "protocol": {
-        "all": true,
         "asset": true,
         "assetScope": ["**", "$CACHE/**"]
       },
       "window": {
-        "all": true
-      },
-      "path": {
-        "all": true
-      },
-      "fs": {
-        "all": true,
-        "scope": ["**"]
+        "setFullscreen": true
       },
       "dialog": {
         "all": true,
