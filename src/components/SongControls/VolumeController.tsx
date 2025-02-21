@@ -7,7 +7,6 @@ export default function VolumeController() {
   const [volume, setVolume] = useState<number>(23);
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
-
   useEffect(() => {
     console.log("Loading volume elem");
     getPlayerState()
@@ -29,6 +28,7 @@ export default function VolumeController() {
       <button
         onClick={() => setIsClicked(!isClicked)}
         className="block lg:hidden"
+        title={`Volume: ${volume}%`}
       >
         {volume >= 50 && <Volume2 />}
         {volume < 50 && volume > 0 && <Volume1 />}

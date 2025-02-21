@@ -10,6 +10,7 @@ export default function QueuePopup() {
       <button
         className="h-full w-full flex flex-row items-center justify-center"
         onClick={() => setIsOpen(!isOpen)}
+        title="Queue"
       >
         <List />
       </button>

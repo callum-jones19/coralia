@@ -1,12 +1,11 @@
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/plugin-http";
-import { convertFileSrc } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getPlayerState } from "../../api/importer";
-import { Song } from "../../types";
+import { Duration, Song } from "../../types";
 import BackgroundCard from "../UI/BackgroundCard";
 import QueueList from "./QueueList";
+import { convertFileSrc } from "@tauri-apps/api/core";
 
 export default function QueueBar() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -21,7 +20,7 @@ export default function QueueBar() {
       })
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Song[],Duration]>("queue-change", e => {
+    const unlistenQueue = listen<[Song[], Song[], Duration]>("queue-change", e => {
       const newQueue = e.payload[0];
       setQueue(newQueue);
     });

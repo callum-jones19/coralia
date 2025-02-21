@@ -1,17 +1,17 @@
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/plugin-http";
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect, useState } from "react";
 import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
 import { getPlayerState } from "../../api/importer";
-import { Song } from "../../types";
+import { Duration, Song } from "../../types";
 import Seekbar from "../SongControls/Seekbar";
 import PlayButtons from "../SongControls/PlayButtons";
 import CurrentSongInfo from "../SongControls/CurrentSongInfo";
 import VolumeController from "../SongControls/VolumeController";
 import BackgroundCard from "../UI/BackgroundCard";
 import QueuePopup from "../QueuePopup";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+
 const appWindow = getCurrentWebviewWindow()
 
 // TODO send down the isReady variable, so we can make things like the song
