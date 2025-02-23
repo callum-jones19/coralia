@@ -43,7 +43,7 @@ export default function AlbumsView({ albums, emptyString }: AlbumsViewProps) {
           <ReactVirtualizedAutoSizer>
             {({ height, width }) => {
               console.log(height, width);
-              const tileSize = 250;
+              const tileSize = 200;
 
               const itemsPerRow = Math.floor(width / tileSize);
               console.log(itemsPerRow);
