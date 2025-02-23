@@ -26,6 +26,7 @@ export default function PlayButtons() {
     getPlayerState()
       .then(playerState => {
         setQueueLen(playerState.songsQueue.length);
+        setPrevSongsLen(playerState.prevSongsQueue.length);
         setIsPaused(playerState.isPaused);
       })
       .catch(e => console.error(e));
