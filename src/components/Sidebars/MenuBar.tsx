@@ -70,7 +70,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
 
   return (
     <>
-      <BackgroundCard className="basis-16 md:basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-auto">
+      <BackgroundCard className="basis-16 lg:basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-auto">
         <div className="w-full flex flex-col gap-2 items-start">
           <div className="w-full flex flex-row justify-between gap-2 flex-wrap border-b-2 border-solid border-neutral-300 dark:border-neutral-700 pb-4 mb-2">
             <button
@@ -88,32 +88,32 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
             <SearchBar onSearch={onSearch} />
           </div>
           <button
-            className={`flex flex-row items-center justify-center md:justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
+            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
               ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
               : "bg-neutral-300 dark:bg-neutral-900"
               }`}
             onClick={() => handleClickSongs()}
           >
             <Music />
-            <p className="hidden md:block">Songs</p>
+            <p className="hidden lg:block">Songs</p>
           </button>
           <button
-            className={`flex flex-row items-center justify-center md:justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
+            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
               ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
               : "bg-neutral-300 dark:bg-neutral-900"
               }`}
             onClick={() => handleClickAlbums()}
           >
             <Disc />
-            <p className="hidden md:block">Albums</p>
+            <p className="hidden lg:block">Albums</p>
           </button>
         </div>
         <button
-          className="flex flex-row items-center justify-center md:justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300 hover:dark:bg-neutral-700"
+          className="flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300 hover:dark:bg-neutral-700"
           onClick={() => handleClickSettings()}
         >
           <Settings />
-          <p className="hidden md:block">Settings</p>
+          <p className="hidden lg:block">Settings</p>
         </button>
       </BackgroundCard>
     </>

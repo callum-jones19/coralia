@@ -25,8 +25,7 @@ export default function QueueListItem({ song, index, currentlyPlayingId, removab
     >
       <div className="basis-6 flex-grow-0 flex-shrink-0">
         {index !== undefined
-          && currentlyPlayingId !== null
-          && currentlyPlayingId !== song.id
+          && ((currentlyPlayingId !== null && currentlyPlayingId !== song.id) || currentlyPlayingId === null)
           &&
           <p>{index + 1}.</p>
         }

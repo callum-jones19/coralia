@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import { resetLibraryBackend } from "../api/commands";
-import { Aperture, ChevronLeft, Layers, Music, Settings } from "react-feather";
+import { ChevronLeft, Layers } from "react-feather";
 
 export default function SettingsScreen() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function SettingsScreen() {
       <div className="flex-grow p-3 m-2 ml-0 shadow-md rounded-md dark:shadow-none dark:bg-neutral-800 overflow-auto">
         <h2 className="text-xl font-bold mb-4 border-b-2 border-solid border-neutral-300 pb-3">Library</h2>
         <div className="flex flex-col gap-1">
-          <div className="flex justify-between items-center dark:bg-neutral-700 p-3 rounded-md">
+          <div className="flex justify-between items-center dark:bg-neutral-700 p-3 rounded-t-md">
             <div className="flex flex-col">
               <p className="text-lg">Scan for new music</p>
               <p className="dark:text-neutral-300 text-sm"><i>Re-scan the current library directories for newly added music files. This will <b>not</b> rescan the metadata of songs already in the library</i></p>
@@ -43,10 +43,10 @@ export default function SettingsScreen() {
               Rescan library
             </button>
           </div>
-          <div className="flex justify-between items-center dark:bg-neutral-700 p-3 rounded-md">
+          <div className="flex justify-between items-center dark:bg-neutral-700 p-3 rounded-b-md">
             <div className="flex flex-col">
               <p className="text-lg">Reset Library</p>
-              <p className="dark:text-neutral-300 text-sm"><i>Completely wipe the internal cache of the scanned music library, all attached metadata and artwork</i></p>
+              <p className="dark:text-neutral-300 text-sm"><i>Completely wipe the internal cache of the scanned music library, all attached metadata and artwork.</i></p>
             </div>
             <button
               className="bg-red-600 text-white p-2 rounded-md h-fit"

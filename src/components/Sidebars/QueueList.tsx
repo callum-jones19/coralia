@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { Song } from "../../types";
+import { Duration, Song } from "../../types";
 import { getPlayerState } from "../../api/importer";
 import { listen } from "@tauri-apps/api/event";
-import { Duration } from "@tauri-apps/plugin-http";
 import QueueListItem from "./QueueListItem";
 
 export default function QueueList() {
@@ -40,7 +39,6 @@ export default function QueueList() {
         onClick={() => setIsViewingQueue(!isViewingQueue)}
         className="text-start font-bold rounded-md flex flex-row gap-2 items-center mb-2"
       >
-
         {isViewingQueue ? 'Queue' : 'Playing History'}
       </button>
       {isViewingQueue &&
