@@ -1,4 +1,4 @@
-import LibrarySettings from "../components/Settings/LibrarySettings";
+import { Outlet } from "react-router";
 import SettingsSidebar from "../components/Settings/SettingsSidebar";
 
 export default function SettingsScreen() {
@@ -8,7 +8,7 @@ export default function SettingsScreen() {
         <SettingsSidebar />
       </div>
       <div className="flex-grow p-3 m-2 ml-0 shadow-md rounded-md dark:shadow-none dark:bg-neutral-800 overflow-auto">
-        <LibrarySettings />
+        <Outlet />
       </div>
     </div>
   );

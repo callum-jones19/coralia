@@ -1,7 +1,9 @@
 import { ChevronLeft, Layers, Sun } from "react-feather";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 export default function SettingsSidebar() {
+  const loc = useLocation();
+  console.log(loc)
   return (
     <>
       <div className="flex flex-row gap-2 items-center border-b-2 border-solid border-neutral-300 pb-3 mb-2">
@@ -10,14 +12,20 @@ export default function SettingsSidebar() {
           </Link>
           <h2 className="font-bold text-xl">Settings</h2>
         </div>
-        <button className="bg-neutral-300 dark:bg-neutral-900 text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300">
-          <Layers />
-          <p>Library</p>
-        </button>
-        <button className=" text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300">
+        <Link
+          to="appearance"
+          className={`${loc.pathname === '/settings/appearance' ? 'bg-neutral-900' : 'bg-transparent'} text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300`}
+        >
           <Sun />
           <p>Appearance</p>
-        </button>
+        </Link>
+        <Link
+          to="library"
+          className={`${loc.pathname === '/settings/library' ? 'bg-neutral-900' : 'bg-transparent'} text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300`}
+        >
+          <Layers />
+          <p>Library</p>
+        </Link>
     </>
   )
 }

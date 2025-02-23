@@ -12,6 +12,8 @@ import { listen } from "@tauri-apps/api/event";
 import SongsView from "./components/Library/SongsView";
 import AlbumsView from "./components/Library/AlbumsView";
 import LibraryScreen from "./screens/LibraryScreen";
+import LibrarySettings from "./components/Settings/LibrarySettings";
+import AppearanceSettings from "./components/Settings/AppearanceSettings";
 
 export default function App() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -85,7 +87,20 @@ export default function App() {
               <Route
                 path="/settings"
                 element={<SettingsScreen />}
-              />
+              >
+                <Route
+                  index
+                  element={<AppearanceSettings />}
+                />
+                <Route
+                  path="appearance"
+                  element={<AppearanceSettings />}
+                />
+                <Route
+                  path="library"
+                  element={<LibrarySettings />}
+                />
+              </Route>
             </Routes>
           </BrowserRouter>
         </AlbumContextProvider>
