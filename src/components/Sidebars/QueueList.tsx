@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getPlayerState } from "../../api/importer";
 import { Duration, Song } from "../../types";
 import QueueListItem from "./QueueListItem";
+import { Repeat } from "react-feather";
 
 export default function QueueList() {
   const [isViewingQueue, setIsViewingQueue] = useState<boolean>(true);
@@ -37,12 +38,24 @@ export default function QueueList() {
 
   return (
     <div className="h-full w-full overflow-hidden">
-      <button
-        onClick={() => setIsViewingQueue(!isViewingQueue)}
-        className="text-start font-bold rounded-md flex flex-row gap-2 items-center mb-2"
+      <div
+        className="text-start flex justify-between gap-2 items-center mb-2 w-full"
       >
-        {isViewingQueue ? "Queue" : "Playing History"}
-      </button>
+        <button
+          onClick={() => setIsViewingQueue(true)}
+          className={`${isViewingQueue ? "font-bold" : ""}`}
+          disabled={isViewingQueue}
+        >
+          Queue
+        </button>
+        <button
+          onClick={() => setIsViewingQueue(false)}
+          className={`${!isViewingQueue ? "font-bold" : ""}`}
+          disabled={!isViewingQueue}
+        >
+          Playing History
+        </button>
+      </div>
       {isViewingQueue
         && (
           <div className="h-full w-full overflow-auto flex flex-col gap-2">
