@@ -1,8 +1,8 @@
+import { ChangeEvent, useState } from "react";
+import { X } from "react-feather";
 import { useLocation, useNavigate } from "react-router";
 import { searchLibrary } from "../api/importer";
 import { SearchResults } from "../types";
-import { X } from "react-feather";
-import { ChangeEvent, useState } from "react";
 
 export interface SearchBarProps {
   onSearch: (searchRes: SearchResults) => void;
@@ -14,14 +14,14 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   const [query, setQuery] = useState<null | string>(null);
 
   const handleInputChage = (e: ChangeEvent<HTMLInputElement>) => {
-    const searchQuery = e.target.value === '' ? null : e.target.value;
+    const searchQuery = e.target.value === "" ? null : e.target.value;
     setQuery(searchQuery);
 
     if (searchQuery !== null) {
       searchLibrary(searchQuery)
         .then(res => {
-          if (location.pathname !== '/home/search') {
-            const t = navigate('/home/search');
+          if (location.pathname !== "/home/search") {
+            const t = navigate("/home/search");
             if (t) {
               t.catch(e => console.error(e));
             }
@@ -30,7 +30,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         })
         .catch(e => console.error(e));
     } else {
-      const t = navigate('/home');
+      const t = navigate("/home");
       if (t) {
         t.catch(e => console.error(e));
       }
@@ -48,21 +48,22 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
       <input
         className=" basis-full items-center text-black p-2 min-w-0 rounded-md bg-neutral-100 dark:bg-neutral-900 dark:text-white"
         placeholder="Search"
-        value={query ? query : ''}
+        value={query ? query : ""}
         onChange={handleInputChage}
       />
-      {query &&
-        <button
-          onClick={() => {
-            const t = navigate('/home');
-            if (t) t.catch(e => console.error(e))
-            setQuery(null);
-          }}
-          className="bg-neutral-100 h-full rounded-r-md pr-1 dark:bg-neutral-900 dark:text-white"
-        >
-          <X />
-        </button>
-      }
+      {query
+        && (
+          <button
+            onClick={() => {
+              const t = navigate("/home");
+              if (t) t.catch(e => console.error(e));
+              setQuery(null);
+            }}
+            className="bg-neutral-100 h-full rounded-r-md pr-1 dark:bg-neutral-900 dark:text-white"
+          >
+            <X />
+          </button>
+        )}
     </div>
-  )
+  );
 }

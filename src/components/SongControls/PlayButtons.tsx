@@ -1,9 +1,14 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Pause, Play, SkipBack, SkipForward } from "react-feather";
+import {
+  goBackOneSong,
+  pausePlayer,
+  playPlayer,
+  skipOneSong,
+} from "../../api/commands";
 import { getPlayerState } from "../../api/importer";
 import { SongInfo } from "../../types";
-import { goBackOneSong, pausePlayer, playPlayer, skipOneSong } from "../../api/commands";
 
 export default function PlayButtons() {
   const [isPaused, setIsPaused] = useState<boolean>(true);
@@ -17,11 +22,14 @@ export default function PlayButtons() {
       setIsPaused(paused);
     }).catch(e => console.error(e));
 
-    const unlistenQueueLen = listen<[number, number]>("queue-length-change", (e) => {
-      const newQueueLen = e.payload;
-      setQueueLen(newQueueLen[0]);
-      setPrevSongsLen(newQueueLen[1]);
-    }).catch(e => console.error(e));
+    const unlistenQueueLen = listen<[number, number]>(
+      "queue-length-change",
+      (e) => {
+        const newQueueLen = e.payload;
+        setQueueLen(newQueueLen[0]);
+        setPrevSongsLen(newQueueLen[1]);
+      },
+    ).catch(e => console.error(e));
 
     getPlayerState()
       .then(playerState => {
@@ -49,11 +57,11 @@ export default function PlayButtons() {
         >
           <SkipBack
             size="1em"
-            className={
-              `${prevSongsLen === 0 ?
-                "text-neutral-400 fill-neutral-400" :
-                "text-black fill-black dark:text-white dark:fill-white"}`
-            }
+            className={`${
+              prevSongsLen === 0
+                ? "text-neutral-400 fill-neutral-400"
+                : "text-black fill-black dark:text-white dark:fill-white"
+            }`}
           />
         </button>
         <button
@@ -67,26 +75,28 @@ export default function PlayButtons() {
             }
           }}
         >
-          {isPaused &&
-            <Play
-              size="1.2em"
-              className={
-                `${queueLen === 0 ?
-                  "text-neutral-400 fill-neutral-400" :
-                  "text-black fill-black dark:text-white dark:fill-white"}`
-              }
-            />
-          }
-          {!isPaused &&
-            <Pause
-              size="1.2em"
-              className={
-                `${queueLen === 0 ?
-                  "text-neutral-400 fill-neutral-400" :
-                  "text-black fill-black dark:text-white dark:fill-white"}`
-              }
-            />
-          }
+          {isPaused
+            && (
+              <Play
+                size="1.2em"
+                className={`${
+                  queueLen === 0
+                    ? "text-neutral-400 fill-neutral-400"
+                    : "text-black fill-black dark:text-white dark:fill-white"
+                }`}
+              />
+            )}
+          {!isPaused
+            && (
+              <Pause
+                size="1.2em"
+                className={`${
+                  queueLen === 0
+                    ? "text-neutral-400 fill-neutral-400"
+                    : "text-black fill-black dark:text-white dark:fill-white"
+                }`}
+              />
+            )}
         </button>
         <button
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"
@@ -95,11 +105,11 @@ export default function PlayButtons() {
         >
           <SkipForward
             size="1em"
-            className={
-              `${queueLen === 0 ?
-                "text-neutral-400 fill-neutral-400" :
-                "text-black fill-black dark:text-white dark:fill-white"}`
-            }
+            className={`${
+              queueLen === 0
+                ? "text-neutral-400 fill-neutral-400"
+                : "text-black fill-black dark:text-white dark:fill-white"
+            }`}
           />
         </button>
       </div>

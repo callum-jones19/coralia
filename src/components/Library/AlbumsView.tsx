@@ -18,12 +18,20 @@ interface RowProps {
 const Row = memo(({ data, index, style }: RowProps) => {
   // const albumIndex = (rowIndex * ALBUMS_PER_ROW) + columnIndex;
   const { albums, albumsPerRow } = data;
-  const rowAlbums = albums.slice(index * albumsPerRow, index * albumsPerRow + albumsPerRow);
+  const rowAlbums = albums.slice(
+    index * albumsPerRow,
+    index * albumsPerRow + albumsPerRow,
+  );
 
   return (
     <div style={style}>
-      <div id="grid-row" className="h-full w-full flex flex-row justify-between">
-        {rowAlbums.map(album => (<MusicGridAlbum key={album.id} album={album} />))}
+      <div
+        id="grid-row"
+        className="h-full w-full flex flex-row justify-between"
+      >
+        {rowAlbums.map(album => (
+          <MusicGridAlbum key={album.id} album={album} />
+        ))}
       </div>
     </div>
   );
@@ -55,18 +63,19 @@ export default function AlbumsView({ albums, emptyString }: AlbumsViewProps) {
               const rowData: RowData = {
                 albums: albums,
                 albumsPerRow: itemsPerRow,
-              }
+              };
               return (
-              <FixedSizeList
-                height={height}
-                width={width}
-                itemData={rowData}
-                itemCount={numberOfRows}
-                itemSize={tileSize}
-              >
-                {Row}
-              </FixedSizeList>
-            )}}
+                <FixedSizeList
+                  height={height}
+                  width={width}
+                  itemData={rowData}
+                  itemCount={numberOfRows}
+                  itemSize={tileSize}
+                >
+                  {Row}
+                </FixedSizeList>
+              );
+            }}
           </ReactVirtualizedAutoSizer>
         )}
       {albums.length === 0

@@ -1,19 +1,19 @@
+import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { getLibraryAlbums, getLibrarySongs } from "./api/importer";
+import AlbumsView from "./components/Library/AlbumsView";
 import AlbumView from "./components/Library/AlbumView";
+import SearchView from "./components/Library/SearchView";
+import SongsView from "./components/Library/SongsView";
+import AppearanceSettings from "./components/Settings/AppearanceSettings";
+import LibrarySettings from "./components/Settings/LibrarySettings";
 import { AlbumContextProvider, SongsContextProvider } from "./Contexts";
 import FullscreenScreen from "./screens/FullscreenScreen";
+import LibraryScreen from "./screens/LibraryScreen";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { Album, Library, SearchResults, Song } from "./types";
-import SearchView from "./components/Library/SearchView";
-import { listen } from "@tauri-apps/api/event";
-import SongsView from "./components/Library/SongsView";
-import AlbumsView from "./components/Library/AlbumsView";
-import LibraryScreen from "./screens/LibraryScreen";
-import LibrarySettings from "./components/Settings/LibrarySettings";
-import AppearanceSettings from "./components/Settings/AppearanceSettings";
 
 export default function App() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -27,7 +27,7 @@ export default function App() {
       setAlbums(e.payload.albums);
       setSongs(e.payload.songs);
     })
-    .catch(e => console.error(e));
+      .catch(e => console.error(e));
 
     // Fetch the library on initial load.
     getLibrarySongs()
@@ -44,7 +44,7 @@ export default function App() {
       unlistenLibrary
         .then(f => f)
         .catch(e => console.error(e));
-    }
+    };
   }, []);
 
   return (
@@ -59,7 +59,11 @@ export default function App() {
               />
               <Route
                 path="home"
-                element={<LibraryScreen onSearch={searchRes => setSearchRes(searchRes)} />}
+                element={
+                  <LibraryScreen
+                    onSearch={searchRes => setSearchRes(searchRes)}
+                  />
+                }
               >
                 <Route
                   index

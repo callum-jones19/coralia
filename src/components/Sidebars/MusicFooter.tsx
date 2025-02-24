@@ -1,18 +1,18 @@
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect, useState } from "react";
 import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
 import { getPlayerState } from "../../api/importer";
 import { Duration, Song } from "../../types";
-import Seekbar from "../SongControls/Seekbar";
-import PlayButtons from "../SongControls/PlayButtons";
+import QueuePopup from "../QueuePopup";
 import CurrentSongInfo from "../SongControls/CurrentSongInfo";
+import PlayButtons from "../SongControls/PlayButtons";
+import Seekbar from "../SongControls/Seekbar";
 import VolumeController from "../SongControls/VolumeController";
 import BackgroundCard from "../UI/BackgroundCard";
-import QueuePopup from "../QueuePopup";
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
-const appWindow = getCurrentWebviewWindow()
+const appWindow = getCurrentWebviewWindow();
 
 // TODO send down the isReady variable, so we can make things like the song
 // duration variable change only when the new data has been loaded in from

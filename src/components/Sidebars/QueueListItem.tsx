@@ -11,7 +11,9 @@ export interface QueueListItemProps {
   removable?: boolean;
 }
 
-export default function QueueListItem({ song, index, currentlyPlayingId, removable }: QueueListItemProps) {
+export default function QueueListItem(
+  { song, index, currentlyPlayingId, removable }: QueueListItemProps,
+) {
   const queueImgSrc = song.artwork?.thumbArt
     ? convertFileSrc(song.artwork?.thumbArt)
     : undefined;
@@ -25,16 +27,17 @@ export default function QueueListItem({ song, index, currentlyPlayingId, removab
     >
       <div className="basis-6 flex-grow-0 flex-shrink-0">
         {index !== undefined
-          && ((currentlyPlayingId !== null && currentlyPlayingId !== song.id) || currentlyPlayingId === null)
-          &&
-          <p>{index + 1}.</p>
-        }
+          && ((currentlyPlayingId !== null && currentlyPlayingId !== song.id)
+            || currentlyPlayingId === null)
+          && <p>{index + 1}.</p>}
         {index !== undefined
           && currentlyPlayingId !== null
           && currentlyPlayingId === song.id
-          &&
-          <p><Volume1 /></p>
-        }
+          && (
+            <p>
+              <Volume1 />
+            </p>
+          )}
       </div>
       <img
         loading="lazy"
@@ -50,13 +53,13 @@ export default function QueueListItem({ song, index, currentlyPlayingId, removab
       </p>
       {isHovering
         && index !== undefined && removable && (
-          <button
-            className=""
-            onClick={() => removeFromQueue(index)}
-          >
-            <X />
-          </button>
-        )}
+        <button
+          className=""
+          onClick={() => removeFromQueue(index)}
+        >
+          <X />
+        </button>
+      )}
     </div>
   );
 }

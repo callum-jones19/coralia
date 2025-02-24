@@ -1,8 +1,8 @@
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { useState } from "react";
+import { Play, Volume2 } from "react-feather";
 import { addToQueueNext, clearAndPlayBackend } from "../api/commands";
 import { Song } from "../types";
-import { Play, Volume2 } from "react-feather";
-import { convertFileSrc } from "@tauri-apps/api/core";
 
 export interface SongListItemDenseProps {
   song: Song;
@@ -20,12 +20,13 @@ export default function SongListItemDense(
 
   return (
     <div
-      className={`h-full rounded-md  ${isPlaying
-        ? "text-green-700 font-bold"
-        : isHovering
+      className={`h-full rounded-md  ${
+        isPlaying
+          ? "text-green-700 font-bold"
+          : isHovering
           ? "bg-neutral-400 dark:bg-neutral-700"
           : ""
-        } flex flex-row items-center gap-4`}
+      } flex flex-row items-center gap-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onDoubleClick={() => addToQueueNext(song)}

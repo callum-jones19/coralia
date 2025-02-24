@@ -88,20 +88,22 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
             <SearchBar onSearch={onSearch} />
           </div>
           <button
-            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
-              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
-              : "bg-neutral-300 dark:bg-neutral-900"
-              }`}
+            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${
+              activeSection !== "Songs"
+                ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
+                : "bg-neutral-300 dark:bg-neutral-900"
+            }`}
             onClick={() => handleClickSongs()}
           >
             <Music />
             <p className="hidden lg:block">Songs</p>
           </button>
           <button
-            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
-              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
-              : "bg-neutral-300 dark:bg-neutral-900"
-              }`}
+            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2  ${
+              activeSection !== "Albums"
+                ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
+                : "bg-neutral-300 dark:bg-neutral-900"
+            }`}
             onClick={() => handleClickAlbums()}
           >
             <Disc />

@@ -34,8 +34,8 @@ export const readLibFromCache = async () => {
 };
 
 export const searchLibrary = async (query: string) => {
-  return invoke<SearchResults>("search_library", { query: query })
-}
+  return invoke<SearchResults>("search_library", { query: query });
+};
 
 // export const getAlbums = async (aids: number[]) => {
 //   return invoke<Album[]>("get_albums", { albumIds: aids })
@@ -48,4 +48,3 @@ export const searchLibrary = async (query: string) => {
 //     .then(songs => songs)
 //     .catch(e => console.error(e));
 // }
-

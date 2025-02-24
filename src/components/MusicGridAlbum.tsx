@@ -16,7 +16,10 @@ export default function MusicGridAlbum(
   return (
     <div className="flex-grow basis-full h-full flex flex-col overflow-auto">
       <div className="w-full h-full p-2 flex-grow-0 flex-shrink-0 m-auto flex flex-col gap-1">
-        <Link to={`/home/album/${album.id}`} className="basis-1/2 w-full overflow-auto flex-grow">
+        <Link
+          to={`/home/album/${album.id}`}
+          className="basis-1/2 w-full overflow-auto flex-grow"
+        >
           <img
             src={imgSrc}
             className="rounded-lg h-full m-auto"

@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { Volume1, Volume2, VolumeX } from "react-feather";
-import { getPlayerState } from "../../api/importer";
 import { setVolumeBackend } from "../../api/commands";
+import { getPlayerState } from "../../api/importer";
 
 export default function VolumeController() {
   const [volume, setVolume] = useState<number>(23);
@@ -39,24 +39,25 @@ export default function VolumeController() {
         {volume < 50 && volume > 0 && <Volume1 />}
         {volume === 0 && <VolumeX />}
       </div>
-      {isClicked &&
-        <div className="lg:hidden bg-white shadow-md dark:bg-neutral-900 h-fit w-fit absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md">
-          <input
-            id="volume-slider"
-            type="range"
-            value={volume}
-            readOnly
-            step={1}
-            max={100}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              const newVol = parseFloat(e.target.value);
-              setVolume(newVol);
-              setVolumeBackend(newVol);
-            }}
-            className="p-1"
-          />
-        </div>
-      }
+      {isClicked
+        && (
+          <div className="lg:hidden bg-white shadow-md dark:bg-neutral-900 h-fit w-fit absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md">
+            <input
+              id="volume-slider"
+              type="range"
+              value={volume}
+              readOnly
+              step={1}
+              max={100}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const newVol = parseFloat(e.target.value);
+                setVolume(newVol);
+                setVolumeBackend(newVol);
+              }}
+              className="p-1"
+            />
+          </div>
+        )}
       <input
         id="volume-slider"
         type="range"

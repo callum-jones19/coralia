@@ -5,10 +5,10 @@ import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
 import { getPlayerState } from "../../api/importer";
 import { Song } from "../../types";
-import SongListItem from "../SongListItem";
 import SongListHeader from "../SongListHeader";
-import SongListItemDense from "../SongListItemDense";
 import SongListHeaderDense from "../SongListHeaderDense";
+import SongListItem from "../SongListItem";
+import SongListItemDense from "../SongListItemDense";
 
 interface SongListData {
   songs: Song[];
@@ -41,7 +41,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
     <>
       <div
         style={style}
-      className="hidden sm:block"
+        className="hidden sm:block"
       >
         <SongListItem
           song={song}
@@ -52,7 +52,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
       </div>
       <div
         style={style}
-      className="block sm:hidden"
+        className="block sm:hidden"
       >
         <SongListItemDense
           song={song}

@@ -4,7 +4,9 @@ export interface BackgroundCardProps {
   className: string;
 }
 
-export default function BackgroundCard({ children, className }: PropsWithChildren<BackgroundCardProps>) {
+export default function BackgroundCard(
+  { children, className }: PropsWithChildren<BackgroundCardProps>,
+) {
   return (
     <>
       <div
@@ -13,5 +15,5 @@ export default function BackgroundCard({ children, className }: PropsWithChildre
         {children}
       </div>
     </>
-  )
+  );
 }

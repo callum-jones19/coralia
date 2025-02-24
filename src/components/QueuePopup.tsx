@@ -14,11 +14,12 @@ export default function QueuePopup() {
       >
         <List />
       </button>
-      {isOpen &&
+      {isOpen
+        && (
           <div className="absolute z-10 bottom-10 right-0 h-96 w-60 rounded-md bg-white shadow-md dark:bg-neutral-900 p-2">
             <QueueList />
           </div>
-        }
+        )}
     </div>
   );
 }

@@ -11,11 +11,15 @@ export default function SearchView({ albums, songs }: SearchViewProps) {
   return (
     <div className="h-full flex flex-col gap-4">
       <div className="h-1/2 flex flex-col gap-2">
-        <h2 className="p-2 font-bold text-lg border-solid border-b-2 border-neutral-300">Songs</h2>
+        <h2 className="p-2 font-bold text-lg border-solid border-b-2 border-neutral-300">
+          Songs
+        </h2>
         <SongsView songs={songs} emptyString="No matching songs found" />
       </div>
       <div className="h-1/2 flex flex-col gap-2">
-        <h2 className="p-2 font-bold text-lg border-solid border-b-2 border-neutral-300">Albums</h2>
+        <h2 className="p-2 font-bold text-lg border-solid border-b-2 border-neutral-300">
+          Albums
+        </h2>
         <AlbumsView albums={albums} emptyString="No matching albums found" />
       </div>
     </div>

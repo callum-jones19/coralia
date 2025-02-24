@@ -1,5 +1,5 @@
-import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { Play, Shuffle } from "react-feather";
 import { useParams } from "react-router";
@@ -7,9 +7,9 @@ import { enqueueSongsBackend, playPlayer } from "../../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../../api/importer";
 import { Album, Duration, Song } from "../../types";
 import SongListHeader from "../SongListHeader";
+import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";
 import SongListItemDense from "../SongListItemDense";
-import SongListHeaderDense from "../SongListHeaderDense";
 
 export type AlbumViewParams = string;
 
@@ -61,14 +61,14 @@ export default function AlbumView() {
   return (
     <div className="flex flex-col h-full gap-3 overflow-auto">
       {!album || songs.length === 0 && (
-        <>
-          <p>
-            <i>
-              Invalid album - given album ID does not exist
-            </i>
-          </p>
-        </>
-      )}
+            <>
+              <p>
+                <i>
+                  Invalid album - given album ID does not exist
+                </i>
+              </p>
+            </>
+          )}
       {album && songs.length > 0
         && (
           <>
@@ -84,8 +84,12 @@ export default function AlbumView() {
                 className="rounded-md shadow-md"
               />
               <div className="flex flex-col justify-end gap-1 overflow-hidden">
-                <p className="font-bold text-3xl text-nowrap overflow-hidden text-ellipsis">{album.title}</p>
-                <i className="text-xl text-nowrap overflow-hidden text-ellipsis">{album.albumArtist}</i>
+                <p className="font-bold text-3xl text-nowrap overflow-hidden text-ellipsis">
+                  {album.title}
+                </p>
+                <i className="text-xl text-nowrap overflow-hidden text-ellipsis">
+                  {album.albumArtist}
+                </i>
               </div>
             </div>
             <div
@@ -135,10 +139,10 @@ export default function AlbumView() {
                 {songs.map(song => (
                   <div key={song.id} className="h-14">
                     <SongListItemDense
-                    song={song}
-                    colored={false}
-                    currentlyPlayingId={currentSong?.id}
-                  />
+                      song={song}
+                      colored={false}
+                      currentlyPlayingId={currentSong?.id}
+                    />
                   </div>
                 ))}
               </div>

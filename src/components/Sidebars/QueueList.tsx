@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { Duration, Song } from "../../types";
-import { getPlayerState } from "../../api/importer";
 import { listen } from "@tauri-apps/api/event";
+import { useEffect, useState } from "react";
+import { getPlayerState } from "../../api/importer";
+import { Duration, Song } from "../../types";
 import QueueListItem from "./QueueListItem";
 
 export default function QueueList() {
@@ -9,7 +9,6 @@ export default function QueueList() {
 
   const [queue, setQueue] = useState<Song[]>([]);
   const [prevQueue, setPrevQueue] = useState<Song[]>([]);
-
 
   useEffect(() => {
     getPlayerState()
@@ -20,12 +19,15 @@ export default function QueueList() {
       })
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Song[], Duration]>("queue-change", e => {
-      const newQueue = e.payload[0];
-      const newPrev = e.payload[1];
-      setQueue(newQueue);
-      setPrevQueue(newPrev);
-    });
+    const unlistenQueue = listen<[Song[], Song[], Duration]>(
+      "queue-change",
+      e => {
+        const newQueue = e.payload[0];
+        const newPrev = e.payload[1];
+        setQueue(newQueue);
+        setPrevQueue(newPrev);
+      },
+    );
 
     return () => {
       unlistenQueue.then(f => f).catch(e => console.log(e));
@@ -39,30 +41,48 @@ export default function QueueList() {
         onClick={() => setIsViewingQueue(!isViewingQueue)}
         className="text-start font-bold rounded-md flex flex-row gap-2 items-center mb-2"
       >
-        {isViewingQueue ? 'Queue' : 'Playing History'}
+        {isViewingQueue ? "Queue" : "Playing History"}
       </button>
-      {isViewingQueue &&
-        <div className="h-full w-full overflow-auto flex flex-col gap-2">
-          {queue.length === 0 && <i>Empty queue</i>}
-          {queue.map((song, index) => (
-            <QueueListItem removable key={index} song={song} index={index} currentlyPlayingId={currentlyPlayingId} />
-          ))
-          }
-        </div>
-      }
-      {!isViewingQueue &&
-        <div className="h-full w-full overflow-auto flex flex-col gap-2">
-          {queue.length === 0 && prevQueue.length === 0 && <i>No Playing History</i>}
-          {prevQueue.map((song, index) => (
-            <QueueListItem key={index} song={song} index={index} currentlyPlayingId={currentlyPlayingId} />
-          ))
-          }
-          {queue.map((song, index) => (
-            <QueueListItem removable key={index} song={song} index={index + prevQueue.length} currentlyPlayingId={currentlyPlayingId} />
-          ))
-          }
-        </div>
-      }
+      {isViewingQueue
+        && (
+          <div className="h-full w-full overflow-auto flex flex-col gap-2">
+            {queue.length === 0 && <i>Empty queue</i>}
+            {queue.map((song, index) => (
+              <QueueListItem
+                removable
+                key={index}
+                song={song}
+                index={index}
+                currentlyPlayingId={currentlyPlayingId}
+              />
+            ))}
+          </div>
+        )}
+      {!isViewingQueue
+        && (
+          <div className="h-full w-full overflow-auto flex flex-col gap-2">
+            {queue.length === 0 && prevQueue.length === 0 && (
+              <i>No Playing History</i>
+            )}
+            {prevQueue.map((song, index) => (
+              <QueueListItem
+                key={index}
+                song={song}
+                index={index}
+                currentlyPlayingId={currentlyPlayingId}
+              />
+            ))}
+            {queue.map((song, index) => (
+              <QueueListItem
+                removable
+                key={index}
+                song={song}
+                index={index + prevQueue.length}
+                currentlyPlayingId={currentlyPlayingId}
+              />
+            ))}
+          </div>
+        )}
     </div>
-  )
+  );
 }

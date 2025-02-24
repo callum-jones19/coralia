@@ -30,7 +30,7 @@ symphonia = "0.5.4"
 symphonia-bundle-mp3 = "0.5.4"
 symphonia-core = "0.5.4"
 symphonia-metadata = "0.5.4"
-tauri = { version = "2", features = [ "protocol-asset"] }
+tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-http = "2"
 tokio = "1.29.1"

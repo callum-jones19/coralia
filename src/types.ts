@@ -70,7 +70,8 @@ export interface Library {
   root_dirs: string[];
 }
 
-export type LibraryStatus = "Loading"
+export type LibraryStatus =
+  | "Loading"
   | "ScanningSongs"
   | "IndexingAlbums"
   | "CachingArtwork"
