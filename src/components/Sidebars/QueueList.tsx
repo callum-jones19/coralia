@@ -43,14 +43,14 @@ export default function QueueList() {
       >
         <button
           onClick={() => setIsViewingQueue(true)}
-          className={`${isViewingQueue ? "font-bold" : ""}`}
+          className={`${isViewingQueue ? "font-bold border-b-2 border-solid border-neutral-200" : ""} flex-grow`}
           disabled={isViewingQueue}
         >
           Queue
         </button>
         <button
           onClick={() => setIsViewingQueue(false)}
-          className={`${!isViewingQueue ? "font-bold" : ""}`}
+          className={`${!isViewingQueue ? "font-bold  border-b-2 border-solid border-neutral-200" : ""} flex-grow`}
           disabled={!isViewingQueue}
         >
           Playing History
