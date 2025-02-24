@@ -1,5 +1,5 @@
 import { ChevronLeft, Layers, Sun } from "react-feather";
-import { Link, useLocation } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 
 export default function SettingsSidebar() {
   const loc = useLocation();
@@ -15,28 +15,28 @@ export default function SettingsSidebar() {
         </Link>
         <h2 className="font-bold text-xl">Settings</h2>
       </div>
-      <Link
+      <NavLink
         to="appearance"
-        className={`${
-          loc.pathname === "/settings/appearance"
-            ? "bg-neutral-900"
+        className={({ isActive }) => (`${
+          isActive
+            ? "bg-neutral-300 dark:bg-neutral-900"
             : "bg-transparent"
-        } text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300`}
+        } text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300`)}
       >
         <Sun />
         <p>Appearance</p>
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         to="library"
-        className={`${
-          loc.pathname === "/settings/library"
-            ? "bg-neutral-900"
+        className={({ isActive }) => (`${
+          isActive
+            ? "bg-neutral-300 dark:bg-neutral-900"
             : "bg-transparent"
-        } text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300`}
+        } text-start p-2 rounded-md flex gap-3 disabled:text-neutral-300`)}
       >
         <Layers />
         <p>Library</p>
-      </Link>
+      </NavLink>
     </>
   );
 }
