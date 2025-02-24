@@ -35,29 +35,27 @@ export default function LibraryBody() {
 
   return (
     <>
-      {libraryState !== null
-        && (
-          <BackgroundCard className="basis-1/2 min-w-0 flex-grow rounded-md h-full">
-            {libraryState === "NotScanning" && <Outlet />}
-            {libraryState !== "NotScanning"
-              && (
-                <>
-                  <div className="h-full w-full flex flex-col justify-center gap-4 items-center">
-                    <Loader className="animate-spin" />
-                    {libraryState === "ScanningSongs" && (
-                      <p>Scanning library songs...</p>
-                    )}
-                    {libraryState === "IndexingAlbums" && (
-                      <p>Indexing library albums...</p>
-                    )}
-                    {libraryState === "CachingArtwork" && (
-                      <p>Caching library artwork...</p>
-                    )}
-                  </div>
-                </>
-              )}
-          </BackgroundCard>
-        )}
+      <BackgroundCard className="basis-1/2 min-w-0 flex-grow rounded-md h-full">
+        {libraryState === null && <></>}
+        {libraryState === "NotScanning" && <Outlet />}
+        {libraryState !== "NotScanning" && libraryState !== null
+          && (
+            <>
+              <div className="h-full w-full flex flex-col justify-center gap-4 items-center">
+                <Loader className="animate-spin" />
+                {libraryState === "ScanningSongs" && (
+                  <p>Scanning library songs...</p>
+                )}
+                {libraryState === "IndexingAlbums" && (
+                  <p>Indexing library albums...</p>
+                )}
+                {libraryState === "CachingArtwork" && (
+                  <p>Caching library artwork...</p>
+                )}
+              </div>
+            </>
+          )}
+      </BackgroundCard>
     </>
   );
 }
