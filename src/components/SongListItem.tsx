@@ -1,8 +1,9 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useState } from "react";
-import { Play, Volume2 } from "react-feather";
-import { addToQueueNext, clearAndPlayBackend } from "../api/commands";
+import { MoreVertical, Play, Volume2 } from "react-feather";
+import { clearAndPlayBackend } from "../api/commands";
 import { Song } from "../types";
+import SongPopup from "./Popups/SongPopup";
 
 export interface SongListItemProps {
   song: Song;
@@ -15,22 +16,22 @@ export default function SongListItem(
   { song, currentlyPlayingId, showImage }: SongListItemProps,
 ) {
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
   const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
 
   const isPlaying = currentlyPlayingId === song.id;
 
   return (
     <div
-      className={`h-full rounded-md  ${
-        isPlaying
+      className={`h-full rounded-md  ${isPlaying
           ? "text-green-700 font-bold"
           : isHovering
-          ? "bg-neutral-400 dark:bg-neutral-700"
-          : ""
-      } flex flex-row items-center gap-4`}
+            ? "bg-neutral-400 dark:bg-neutral-700"
+            : ""
+        } flex flex-row items-center gap-4 relative`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      onDoubleClick={() => addToQueueNext(song)}
+      onDoubleClick={() => clearAndPlayBackend(song)}
     >
       <div className="basis-1/4 flex flex-row justify-start items-center pl-2">
         {showImage && (
@@ -75,12 +76,26 @@ export default function SongListItem(
       >
         {song.tags.album}
       </p>
-      <p
-        className="basis-1/4 flex-grow overflow-hidden text-nowrap text-ellipsis"
+      <div
+        className="basis-1/4 flex-grow min-w-0 flex justify-between relative"
         title={song.tags.artist}
       >
-        {song.tags.artist}
-      </p>
+        <p className="overflow-hidden text-nowrap text-ellipsis">{song.tags.artist}</p>
+        {isHovering &&
+          <button
+            onClick={() => setShowPopup(!showPopup)}
+            onDoubleClick={e => e.stopPropagation()}
+            className="ml-2"
+          >
+            <MoreVertical />
+          </button>
+        }
+        {showPopup &&
+          <div className="absolute top-0 right-8 z-30" onBlur={() => console.log('fuck')}>
+            <SongPopup song={song} />
+          </div>
+        }
+      </div>
     </div>
   );
 }
