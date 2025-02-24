@@ -20,7 +20,7 @@ export default function LibrarySettings() {
         Library
       </h2>
       <div className="flex flex-col gap-1">
-        <div className="flex justify-between items-center dark:bg-neutral-700 p-3 rounded-t-md">
+        <div className="flex justify-between items-center bg-neutral-100 dark:bg-neutral-700 p-3 rounded-t-md">
           <div className="flex flex-col">
             <p className="text-lg">Scan for new music</p>
             <p className="dark:text-neutral-300 text-sm">
@@ -35,7 +35,7 @@ export default function LibrarySettings() {
             Rescan library
           </button>
         </div>
-        <div className="flex justify-between items-center dark:bg-neutral-700 p-3 rounded-b-md">
+        <div className="flex justify-between items-center bg-neutral-100 dark:bg-neutral-700 p-3 rounded-b-md">
           <div className="flex flex-col">
             <p className="text-lg">Reset Library</p>
             <p className="dark:text-neutral-300 text-sm">

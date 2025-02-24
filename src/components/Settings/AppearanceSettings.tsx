@@ -5,7 +5,7 @@ export default function AppearanceSettings() {
         Appearance
       </h2>
       <div className="flex flex-col gap-1">
-        <div className="flex justify-between items-center dark:bg-neutral-700 p-3 rounded-md">
+        <div className="flex justify-between items-center bg-neutral-100 dark:bg-neutral-700 p-3 rounded-md">
           <div className="flex flex-col">
             <p className="text-lg">Theme</p>
           </div>
