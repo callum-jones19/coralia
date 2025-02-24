@@ -1,5 +1,5 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MoreVertical, Play, Volume2 } from "react-feather";
 import { clearAndPlayBackend } from "../api/commands";
 import { Song } from "../types";
@@ -15,6 +15,8 @@ export interface SongListItemProps {
 export default function SongListItem(
   { song, currentlyPlayingId, showImage }: SongListItemProps,
 ) {
+  const blurTimeout = useRef<number | null>(null);
+
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const imgUrl = convertFileSrc(song.artwork ? song.artwork.thumbArt : "");
@@ -91,7 +93,20 @@ export default function SongListItem(
           </button>
         }
         {showPopup &&
-          <div className="absolute top-0 right-8 z-30" onBlur={() => console.log('fuck')}>
+          <div
+            className="absolute top-0 right-8 z-30"
+            onBlur={() => {
+
+              blurTimeout.current = window.setTimeout(() => {
+                setShowPopup(false);
+              }, 0);
+            }}
+            onFocus={() => {
+              if (blurTimeout.current) {
+                window.clearTimeout(blurTimeout.current);
+              }
+            }}
+          >
             <SongPopup song={song} />
           </div>
         }

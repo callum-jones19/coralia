@@ -18,6 +18,7 @@ export default function SongPopup({ song }: SongPopupProps) {
           <button
             className="flex gap-3 items-center hover:bg-neutral-200 hover:dark:bg-neutral-800 p-2 rounded-t-md"
             onClick={() => clearAndPlayBackend(song)}
+            autoFocus
           >
             <Play className="dark:text-neutral-400" />
             Play now
