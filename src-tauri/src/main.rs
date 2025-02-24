@@ -179,9 +179,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                     paused: true,
                     position: song_pos,
                 };
-                handle
-                    .emit::<PlayEventData>("is-paused", payload)
-                    .unwrap();
+                handle.emit::<PlayEventData>("is-paused", payload).unwrap();
             }
             PlayerStateUpdate::QueueUpdate(
                 updated_queue,
@@ -203,9 +201,7 @@ fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerState
                 // of the current song.
                 let queue_change_payload =
                     (updated_queue, updated_prev_songs, current_song_position);
-                handle
-                    .emit("queue-change", queue_change_payload)
-                    .unwrap();
+                handle.emit("queue-change", queue_change_payload).unwrap();
             }
         }
     }
@@ -309,8 +305,7 @@ async fn add_library_directories(
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::ScanningSongs;
-        app_handle
-            .emit::<LibraryStatus>("library_status_change", LibraryStatus::ScanningSongs)?
+        app_handle.emit::<LibraryStatus>("library_status_change", LibraryStatus::ScanningSongs)?
     }
     state.library.scan_library_songs();
 
@@ -318,8 +313,7 @@ async fn add_library_directories(
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::IndexingAlbums;
-        app_handle
-            .emit::<LibraryStatus>("library_status_change", LibraryStatus::IndexingAlbums)?
+        app_handle.emit::<LibraryStatus>("library_status_change", LibraryStatus::IndexingAlbums)?
     }
     state.library.scan_library_albums();
 
@@ -327,8 +321,7 @@ async fn add_library_directories(
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::CachingArtwork;
-        app_handle
-            .emit::<LibraryStatus>("library_status_change", LibraryStatus::CachingArtwork)?
+        app_handle.emit::<LibraryStatus>("library_status_change", LibraryStatus::CachingArtwork)?
     }
     state.library.cache_library_artwork();
     state.library.save_library_to_cache();
