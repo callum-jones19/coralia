@@ -1,6 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
-import { Pause, Play, SkipBack, SkipForward } from "react-feather";
+import { Pause, Play, Shuffle, SkipBack, SkipForward } from "react-feather";
 import {
   goBackOneSong,
   pausePlayer,
@@ -9,6 +9,7 @@ import {
 } from "../../api/commands";
 import { getPlayerState } from "../../api/importer";
 import { SongInfo } from "../../types";
+import { invoke } from "@tauri-apps/api/core";
 
 export default function PlayButtons() {
   const [isPaused, setIsPaused] = useState<boolean>(true);
@@ -112,6 +113,19 @@ export default function PlayButtons() {
                 ? "text-neutral-400 fill-neutral-400"
                 : "text-black fill-black dark:text-white dark:fill-white"
             }`}
+          />
+        </button>
+        <button
+          className="flex rounded-full flex-row justify-center items-center w-8 h-8"
+          disabled={queueLen <= 0}
+          onClick={() => {
+            invoke('shuffle_queue', {})
+              .catch(e => console.error(e));
+          }}
+        >
+          <Shuffle
+            size="1em"
+            className={"text-black fill-black dark:text-white dark:fill-white"}
           />
         </button>
       </div>
