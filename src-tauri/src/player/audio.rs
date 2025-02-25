@@ -12,6 +12,7 @@ use std::{
 };
 
 use log::{error, info};
+use rand::{seq::SliceRandom, thread_rng};
 use rodio::{
     decoder::DecoderError,
     source::{EmptyCallback, SeekError},
@@ -676,6 +677,39 @@ impl Player {
         let sink_locked = self.audio_sink.lock().unwrap();
         sink_locked.try_seek(seek_amount)?;
         Ok(())
+    }
+
+    /// TODO docs
+    pub fn shuffle_queue(&mut self) {
+        let mut songs_queue = self.songs_queue.lock().unwrap();
+        let prev_songs = self.previous_songs.lock().unwrap();
+        let sink = self.audio_sink.lock().unwrap();
+
+        let mut shuffled: Vec<PlayerSong> = songs_queue.clone().into();
+
+        let mut rng = thread_rng();
+        shuffled.shuffle(&mut rng);
+
+        *songs_queue = shuffled.into();
+
+        let new_queue: VecDeque<Song> = songs_queue
+            .clone()
+            .into_iter()
+            .map(|song| song.song)
+            .collect();
+
+        let new_prev_queue: Vec<Song> = prev_songs
+            .clone()
+            .into_iter()
+            .map(|song| song.song)
+            .collect();
+        self.state_update_tx
+            .send(PlayerStateUpdate::QueueUpdate(
+                new_queue,
+                new_prev_queue,
+                sink.get_pos(),
+            ))
+            .unwrap();
     }
 
     /// Return a snapshot of the player's current state

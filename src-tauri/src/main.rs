@@ -37,6 +37,7 @@ enum PlayerCommand {
     TrySeek(Duration),
     GetPlayerState(Sender<CachedPlayerState>),
     Clear,
+    Shuffle,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -143,6 +144,9 @@ fn create_and_run_audio_player(
             }
             PlayerCommand::GoBackOne => {
                 player.go_back();
+            }
+            PlayerCommand::Shuffle => {
+                player.shuffle_queue();
             }
         }
     }
@@ -268,7 +272,8 @@ fn main() {
             get_albums,
             get_library_state,
             add_to_queue_next,
-            skip_back
+            skip_back,
+            shuffle_queue
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
@@ -477,6 +482,14 @@ async fn seek_current_song(
         .command_tx
         .send(PlayerCommand::TrySeek(seek_duration))
         .unwrap();
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn shuffle_queue(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
+    let state = state_mutex.lock().unwrap();
+    state.command_tx.send(PlayerCommand::Shuffle).unwrap();
 
     Ok(())
 }
