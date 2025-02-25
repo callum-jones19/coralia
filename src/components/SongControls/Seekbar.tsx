@@ -173,7 +173,7 @@ export default function Seekbar() {
         disabled={currentSong === null}
         readOnly
         value={!songPos ? 0 : seekPos ? seekPos : songPos}
-        max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration}
+        max={!songDuration || Number.isNaN(songDuration) ? 0 : songDuration + 0.5}
         onChange={(e) => {
           const tmp = parseFloat(e.target.value);
           setSeekPos(tmp);
