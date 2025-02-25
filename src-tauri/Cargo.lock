@@ -102,6 +102,7 @@ dependencies = [
  "image",
  "lofty",
  "log",
+ "rand 0.8.5",
  "rodio",
  "serde",
  "serde_json",
