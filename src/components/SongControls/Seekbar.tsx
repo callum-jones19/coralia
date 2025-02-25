@@ -53,6 +53,8 @@ export default function Seekbar() {
     const unlistenQueue = listen<[Song[], Song[], Duration]>(
       "queue-change",
       e => {
+        console.log("Received queue change event");
+        console.log(e.payload);
         const newQueue = e.payload[0];
         const syncedSongPos = e.payload[2];
         const newCurrSong = newQueue[0];

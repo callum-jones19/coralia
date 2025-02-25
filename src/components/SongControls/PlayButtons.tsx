@@ -45,12 +45,14 @@ export default function PlayButtons() {
     };
   }, []);
 
+  const prevSongButtonDisabled = prevSongsLen === 0 && queueLen == 0;
+
   return (
     <>
       <div className="flex flex-row items-center gap-1">
         <button
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"
-          disabled={prevSongsLen === 0}
+          disabled={prevSongButtonDisabled}
           onClick={() => {
             goBackOneSong();
           }}
@@ -58,14 +60,14 @@ export default function PlayButtons() {
           <SkipBack
             size="1em"
             className={`${
-              prevSongsLen === 0
+              prevSongButtonDisabled
                 ? "text-neutral-400 fill-neutral-400"
                 : "text-black fill-black dark:text-white dark:fill-white"
             }`}
           />
         </button>
         <button
-          className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-transparent hover:bg-neutral-400 hover:dark:bg-neutral-600"
+          className="flex rounded-full flex-row justify-center items-center w-9 h-9 disabled:bg-transparent hover:enabled:bg-neutral-400 hover:dark:enabled:bg-neutral-600"
           disabled={queueLen === 0}
           onClick={() => {
             if (isPaused) {

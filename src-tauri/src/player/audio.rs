@@ -561,6 +561,25 @@ impl Player {
     /// If the song is more than 5 seconds deep, go back to the start of the song.
     /// Otherwise, jump pack to the previously playing song.
     pub fn go_back(&mut self) {
+        {
+            let sink = self.audio_sink.lock().unwrap();
+            let prev_queue = self.previous_songs.lock().unwrap();
+
+            let curr_pos = sink.get_pos();
+            if curr_pos > Duration::from_secs(5) || prev_queue.len() == 0 {
+                sink.try_seek(Duration::ZERO).unwrap();
+                let songs_queue = self.songs_queue.lock().unwrap();
+
+                let exported_songs = songs_queue.clone().into_iter().map(|s| s.song).collect();
+                let exported_prev = prev_queue.clone().into_iter().map(|s| s.song).collect();
+                let queue_change_state =
+                    PlayerStateUpdate::QueueUpdate(exported_songs, exported_prev, Duration::ZERO);
+                self.state_update_tx.send(queue_change_state).unwrap();
+                println!("Sent off player state update");
+                return;
+            }
+        }
+
         let (current_song, prev_song) = {
             let queue = self.songs_queue.lock().unwrap();
             let curr = if queue.len() == 0 {
