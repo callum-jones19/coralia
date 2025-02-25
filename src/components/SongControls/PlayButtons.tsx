@@ -81,7 +81,7 @@ export default function PlayButtons() {
           {isPaused
             && (
               <Play
-                size="1.2em"
+                size="1.5em"
                 className={`${
                   queueLen === 0
                     ? "text-neutral-400 fill-neutral-400"
@@ -92,7 +92,7 @@ export default function PlayButtons() {
           {!isPaused
             && (
               <Pause
-                size="1.2em"
+                size="1.5em"
                 className={`${
                   queueLen === 0
                     ? "text-neutral-400 fill-neutral-400"
@@ -116,7 +116,7 @@ export default function PlayButtons() {
           />
         </button>
         <button
-          className="flex rounded-full flex-row justify-center items-center w-8 h-8"
+          className="flex rounded-full flex-row justify-center items-center w-8 h-8 text-black dark:text-white disabled:text-neutral-300 disabled:dark:text-neutral-500"
           disabled={queueLen <= 0}
           onClick={() => {
             invoke('shuffle_queue', {})
@@ -125,7 +125,7 @@ export default function PlayButtons() {
         >
           <Shuffle
             size="1em"
-            className={"text-black fill-black dark:text-white dark:fill-white"}
+            className={""}
           />
         </button>
       </div>
