@@ -1,5 +1,5 @@
 import { setTheme } from "@tauri-apps/api/app";
-import Select, { GroupBase, OptionsOrGroups } from "react-select";
+import Select from "react-select";
 
 export type AppearanceOption = "dark" | "light" | "system";
 
@@ -15,7 +15,7 @@ export default function AppearanceSettings() {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-4 border-b-2 border-solid border-neutral-300 pb-3">
+      <h2 className="text-xl font-bold mb-4 border-b-2 border-solid border-neutral-300 dark:border-neutral-600 pb-3">
         Appearance
       </h2>
       <div className="flex flex-col gap-1">

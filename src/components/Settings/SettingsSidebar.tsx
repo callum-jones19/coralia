@@ -6,7 +6,7 @@ export default function SettingsSidebar() {
   console.log(loc);
   return (
     <>
-      <div className="flex flex-row gap-2 items-center border-b-2 border-solid border-neutral-300 pb-3 mb-2">
+      <div className="flex flex-row gap-2 items-center border-b-2 border-solid border-neutral-300 dark:border-neutral-600 pb-3 mb-2">
         <Link
           to="/home"
           className="flex flex-row h-full aspect-square items-center justify-center hover:bg-neutral-200 hover:dark:bg-neutral-700 rounded-md"

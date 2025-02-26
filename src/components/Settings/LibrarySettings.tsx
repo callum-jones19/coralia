@@ -16,7 +16,7 @@ export default function LibrarySettings() {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-4 border-b-2 border-solid border-neutral-300 pb-3">
+      <h2 className="text-xl font-bold mb-4 border-b-2 border-solid border-neutral-300 dark:border-neutral-600 pb-3">
         Library
       </h2>
       <div className="flex flex-col gap-1">
