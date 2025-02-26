@@ -274,7 +274,9 @@ fn main() {
             get_library_state,
             add_to_queue_next,
             skip_back,
-            shuffle_queue
+            shuffle_queue,
+            get_app_settings,
+            set_app_theme
         ])
         .run(tauri_context)
         .expect("Error while running tauri application!");
