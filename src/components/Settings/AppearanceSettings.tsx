@@ -1,4 +1,4 @@
-import { setTheme } from "@tauri-apps/api/app";
+import { invoke } from "@tauri-apps/api/core";
 import Select from "react-select";
 
 export type AppearanceOption = "dark" | "light" | "system";
@@ -29,11 +29,11 @@ export default function AppearanceSettings() {
             className="w-80"
             onChange={newTheme => {
               if (newTheme?.value === 'dark') {
-                setTheme('dark').catch(e => console.error(e));
+                invoke('set_app_theme', { newTheme: 'dark' }).catch(e => console.error(e));
               } else if (newTheme?.value === 'light') {
-                setTheme('light').catch(e => console.error(e));
+                invoke('set_app_theme', { newTheme: 'light' }).catch(e => console.error(e));
               } else if (newTheme?.value === 'system') {
-                setTheme(undefined).catch(e => console.error(e));
+                invoke('set_app_theme', { newTheme: null }).catch(e => console.error(e));
               }
             }}
           />

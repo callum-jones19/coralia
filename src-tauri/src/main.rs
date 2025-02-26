@@ -11,12 +11,15 @@ use std::{
 };
 
 use data::{
-    album::Album, library::{ExportedLibrary, Library, SearchResults}, settings::{Settings, Theme}, song::Song
+    album::Album,
+    library::{ExportedLibrary, Library, SearchResults},
+    settings::Settings,
+    song::Song,
 };
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State, Theme};
 
 mod data;
 mod player;
@@ -630,9 +633,7 @@ async fn search_library(
 }
 
 #[tauri::command]
-async fn get_app_settings(
-    state_mutex: State<'_, Mutex<AppState>>
-) -> Result<Settings, ()> {
+async fn get_app_settings(state_mutex: State<'_, Mutex<AppState>>) -> Result<Settings, ()> {
     let state = state_mutex.lock().unwrap();
     Ok(state.settings.clone())
 }
@@ -640,10 +641,13 @@ async fn get_app_settings(
 #[tauri::command]
 async fn set_app_theme(
     state_mutex: State<'_, Mutex<AppState>>,
-    new_theme: Theme
+    app_handle: AppHandle,
+    new_theme: Option<Theme>,
 ) -> Result<(), ()> {
     let mut state = state_mutex.lock().unwrap();
+    app_handle.set_theme(new_theme);
     state.settings.update_theme(new_theme);
+    state.settings.write_to_file();
 
     Ok(())
 }

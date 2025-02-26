@@ -48,7 +48,7 @@ impl Library {
 
     pub fn get_library_from_cache() -> Option<Self> {
         let mut library_cached_path = program_cache_dir().unwrap();
-        library_cached_path.push("cached_library");
+        library_cached_path.push("cached_library.json");
         let tmp = File::open(library_cached_path);
         match tmp {
             Ok(lib_file) => {
@@ -63,7 +63,7 @@ impl Library {
     fn wipe_cache(&self) -> Result<(), String> {
         let base_program_dir = program_cache_dir().unwrap();
         let mut library_cache_path = base_program_dir.clone();
-        library_cache_path.push("cached_library");
+        library_cache_path.push("cached_library.json");
         let remove_cache_res = fs::remove_file(library_cache_path);
         if let Err(e) = remove_cache_res {
             return Err(e.to_string());
@@ -169,7 +169,7 @@ impl Library {
     pub fn save_library_to_cache(&self) {
         println!("Saving library to cache");
         let mut library_cached_path = program_cache_dir().unwrap();
-        library_cached_path.push("cached_library");
+        library_cached_path.push("cached_library.json");
         let cached_lib_f = File::create(library_cached_path).unwrap();
         let out_stream = BufWriter::new(cached_lib_f);
         serde_json::to_writer(out_stream, self).unwrap();
