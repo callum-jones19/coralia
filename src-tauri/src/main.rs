@@ -11,9 +11,7 @@ use std::{
 };
 
 use data::{
-    album::Album,
-    library::{ExportedLibrary, Library, SearchResults},
-    song::Song,
+    album::Album, library::{ExportedLibrary, Library, SearchResults}, settings::Settings, song::Song
 };
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
@@ -50,6 +48,7 @@ struct PlayEventData {
 struct AppState {
     command_tx: Sender<PlayerCommand>,
     library: Library,
+    settings: Settings,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -219,6 +218,7 @@ fn main() {
     // Initialise an empty music library, and setup the player command and the
     // the player events system.
     let music_library = Library::new_empty();
+    let default_settings = Settings::new();
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
     let (player_event_tx, player_event_rx) = channel::<PlayerStateUpdate>();
 
@@ -243,6 +243,7 @@ fn main() {
         .manage(Mutex::new(AppState {
             command_tx: player_cmd_tx,
             library: music_library,
+            settings: default_settings,
         }))
         .manage(Mutex::new(LibraryState {
             current_status: LibraryStatus::NotScanning,
