@@ -10,8 +10,7 @@ export default function AppearanceSettings() {
     } else if (selectedOption === 'Light') {
       setTheme("light");
     } else if (selectedOption === 'Use system settings') {
-      // TODO
-      console.warn("System theme selection has not yet been implemented");
+      setTheme(undefined);
     } else {
       console.error("Selected theme that does not correspond to a valid option");
     }
