@@ -1,20 +1,17 @@
 import { setTheme } from "@tauri-apps/api/app";
-import { ChangeEvent } from "react";
+import Select, { GroupBase, OptionsOrGroups } from "react-select";
+
+export type AppearanceOption = "dark" | "light" | "system";
 
 export default function AppearanceSettings() {
-  const handleThemeSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const selectedOption = e.target.value;
+  // const themeOptions: AppearanceOption[] = ["dark", "light", "system"];
+  const themeOptions = [
+    { value: 'system', label: 'System' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'light', label: 'Light' },
+  ];
 
-    if (selectedOption === 'Dark') {
-      setTheme("dark");
-    } else if (selectedOption === 'Light') {
-      setTheme("light");
-    } else if (selectedOption === 'Use system settings') {
-      setTheme(undefined);
-    } else {
-      console.error("Selected theme that does not correspond to a valid option");
-    }
-  };
+
 
   return (
     <>
@@ -26,25 +23,20 @@ export default function AppearanceSettings() {
           <div className="flex flex-col">
             <p className="text-lg">Theme</p>
           </div>
-          <select
-            name="theme"
-            id="theme"
-            className="bg-transparent p-2"
-            onChange={handleThemeSelectChange}
-          >
-            <option
-              value="Use system settings"
-              className="p-2 rounded-md bg-neutral-900"
-            >
-              Use system settings
-            </option>
-            <option value="Dark" className="p-2 rounded-md bg-neutral-900">
-              Dark
-            </option>
-            <option value="Light" className="p-2 rounded-md bg-neutral-900">
-              Light
-            </option>
-          </select>
+          <Select
+            defaultValue={themeOptions[0]}
+            options={themeOptions}
+            className="w-80"
+            onChange={newTheme => {
+              if (newTheme?.value === 'dark') {
+                setTheme('dark').catch(e => console.error(e));
+              } else if (newTheme?.value === 'light') {
+                setTheme('light').catch(e => console.error(e));
+              } else if (newTheme?.value === 'system') {
+                setTheme(undefined).catch(e => console.error(e));
+              }
+            }}
+          />
         </div>
       </div>
     </>

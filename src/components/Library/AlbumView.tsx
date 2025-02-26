@@ -118,10 +118,10 @@ export default function AlbumView() {
               id="song-list"
               className="basis-full w-full"
             >
-              <div className="h-10 sticky top-0 hidden sm:block">
+              <div className="h-10 sticky top-0 hidden sm:block z-20">
                 <SongListHeader />
               </div>
-              <div className="h-10 sticky top-0 block sm:hidden">
+              <div className="h-10 sticky top-0 block sm:hidden z-20">
                 <SongListHeaderDense />
               </div>
               <div className="hidden sm:block">
