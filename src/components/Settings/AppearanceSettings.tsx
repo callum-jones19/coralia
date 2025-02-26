@@ -1,4 +1,22 @@
+import { setTheme } from "@tauri-apps/api/app";
+import { ChangeEvent } from "react";
+
 export default function AppearanceSettings() {
+  const handleThemeSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedOption = e.target.value;
+
+    if (selectedOption === 'Dark') {
+      setTheme("dark");
+    } else if (selectedOption === 'Light') {
+      setTheme("light");
+    } else if (selectedOption === 'Use system settings') {
+      // TODO
+      console.warn("System theme selection has not yet been implemented");
+    } else {
+      console.error("Selected theme that does not correspond to a valid option");
+    }
+  };
+
   return (
     <>
       <h2 className="text-xl font-bold mb-4 border-b-2 border-solid border-neutral-300 pb-3">
@@ -9,7 +27,12 @@ export default function AppearanceSettings() {
           <div className="flex flex-col">
             <p className="text-lg">Theme</p>
           </div>
-          <select name="theme" id="theme" className="bg-transparent p-2">
+          <select
+            name="theme"
+            id="theme"
+            className="bg-transparent p-2"
+            onChange={handleThemeSelectChange}
+          >
             <option
               value="Use system settings"
               className="p-2 rounded-md bg-neutral-900"
