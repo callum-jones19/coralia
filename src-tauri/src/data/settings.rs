@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-enum Theme {
+pub enum Theme {
     Light,
     Dark,
     System,
@@ -20,5 +20,9 @@ impl Settings {
         Settings {
             theme: Theme::System
         }
+    }
+
+    pub fn update_theme(&mut self, new_theme: Theme) {
+        self.theme = new_theme;
     }
 }

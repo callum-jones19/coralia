@@ -11,7 +11,7 @@ use std::{
 };
 
 use data::{
-    album::Album, library::{ExportedLibrary, Library, SearchResults}, settings::Settings, song::Song
+    album::Album, library::{ExportedLibrary, Library, SearchResults}, settings::{Settings, Theme}, song::Song
 };
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
@@ -625,4 +625,23 @@ async fn search_library(
     let search_res = state.library.search(&query);
 
     Ok(search_res)
+}
+
+#[tauri::command]
+async fn get_app_settings(
+    state_mutex: State<'_, Mutex<AppState>>
+) -> Result<Settings, ()> {
+    let state = state_mutex.lock().unwrap();
+    Ok(state.settings.clone())
+}
+
+#[tauri::command]
+async fn set_app_theme(
+    state_mutex: State<'_, Mutex<AppState>>,
+    new_theme: Theme
+) -> Result<(), ()> {
+    let mut state = state_mutex.lock().unwrap();
+    state.settings.update_theme(new_theme);
+
+    Ok(())
 }
