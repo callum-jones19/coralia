@@ -11,7 +11,7 @@ use std::{
 };
 
 use data::{
-    album::Album, library::{ExportedLibrary, Library, SearchResults}, settings::{Settings, Theme}, song::Song
+    album::Album, library::{ExportedLibrary, Library, SearchResults}, settings::Settings, song::Song
 };
 use log::info;
 use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
@@ -640,10 +640,13 @@ async fn get_app_settings(
 #[tauri::command]
 async fn set_app_theme(
     state_mutex: State<'_, Mutex<AppState>>,
-    new_theme: Theme
+    app_handle: AppHandle,
+    new_theme: Option<tauri::Theme>
 ) -> Result<(), ()> {
+    println!("{:?}", new_theme);
     let mut state = state_mutex.lock().unwrap();
     state.settings.update_theme(new_theme);
+    app_handle.set_theme(new_theme);
 
     Ok(())
 }

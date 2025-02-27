@@ -1,28 +1,21 @@
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub enum Theme {
-    Light,
-    Dark,
-    System,
-}
+use tauri::Theme;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
-    theme: Theme
+    theme: Option<Theme>
 }
 
 impl Settings {
     /// Create a new set of user settings with the defaults
     pub fn new() -> Self {
         Settings {
-            theme: Theme::System
+            theme: Some(Theme::Dark)
         }
     }
 
-    pub fn update_theme(&mut self, new_theme: Theme) {
+    pub fn update_theme(&mut self, new_theme: Option<Theme>) {
         self.theme = new_theme;
     }
 }
