@@ -1,7 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { Duration } from "@tauri-apps/plugin-http";
 import { useEffect, useState } from "react";
 import { Minimize2 } from "react-feather";
 import { Link, useNavigate } from "react-router";
@@ -10,7 +9,7 @@ import CurrentSongInfo from "../components/SongControls/CurrentSongInfo";
 import PlayButtons from "../components/SongControls/PlayButtons";
 import Seekbar from "../components/SongControls/Seekbar";
 import VolumeController from "../components/SongControls/VolumeController";
-import { Song } from "../types";
+import { Duration, Song } from "../types";
 const appWindow = getCurrentWebviewWindow();
 
 export default function FullscreenScreen() {

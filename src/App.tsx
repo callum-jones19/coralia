@@ -14,7 +14,6 @@ import LibraryScreen from "./screens/LibraryScreen";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { Album, Library, SearchResults, Song } from "./types";
-import { setTheme } from "@tauri-apps/api/app";
 
 export default function App() {
   const [albums, setAlbums] = useState<Album[]>([]);

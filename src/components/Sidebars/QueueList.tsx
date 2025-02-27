@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { getPlayerState } from "../../api/importer";
 import { Duration, Song } from "../../types";
 import QueueListItem from "./QueueListItem";
-import { Repeat } from "react-feather";
 
 export default function QueueList() {
   const [isViewingQueue, setIsViewingQueue] = useState<boolean>(true);
