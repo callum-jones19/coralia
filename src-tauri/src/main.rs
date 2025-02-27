@@ -2,12 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    path::PathBuf,
-    sync::{
+    io, path::PathBuf, sync::{
         mpsc::{channel, Receiver, Sender},
         Mutex,
-    },
-    time::Duration,
+    }, time::Duration
 };
 
 use data::{
@@ -218,7 +216,16 @@ fn main() {
     // Initialise an empty music library, and setup the player command and the
     // the player events system.
     let music_library = Library::new_empty();
-    let default_settings = Settings::new();
+
+    // Read the settings
+    let settings = match Settings::from_file() {
+        Ok(f) => f,
+        Err(e) => {
+            // TODO use specific error
+            Settings::new()
+        },
+    };
+
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
     let (player_event_tx, player_event_rx) = channel::<PlayerStateUpdate>();
 
@@ -243,7 +250,7 @@ fn main() {
         .manage(Mutex::new(AppState {
             command_tx: player_cmd_tx,
             library: music_library,
-            settings: default_settings,
+            settings,
         }))
         .manage(Mutex::new(LibraryState {
             current_status: LibraryStatus::NotScanning,
@@ -646,6 +653,7 @@ async fn set_app_theme(
     println!("{:?}", new_theme);
     let mut state = state_mutex.lock().unwrap();
     state.settings.update_theme(new_theme);
+    state.settings.write_to_file().unwrap();
     app_handle.set_theme(new_theme);
 
     Ok(())

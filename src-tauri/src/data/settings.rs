@@ -1,4 +1,4 @@
-use std::{fs::File, io::{self, BufReader, BufWriter}, path::Path};
+use std::{fs::File, io::{self, BufReader, BufWriter}};
 
 use serde::{Deserialize, Serialize};
 use tauri::Theme;
@@ -19,7 +19,7 @@ impl Settings {
         }
     }
 
-    pub fn from_file() -> Result<Self, ()> {
+    pub fn from_file() -> Result<Self, io::ErrorKind> {
         let base_program_dir = program_cache_dir().unwrap();
         let mut settings_path = base_program_dir.clone();
         settings_path.push("settings.json");
@@ -32,11 +32,11 @@ impl Settings {
                 let saved_settings: Settings = serde_json::from_reader(reader).unwrap();
                 Ok(saved_settings)
             },
-            Err(_) => Err(()),
+            Err(e) => Err(e.kind()),
         }
     }
 
-    pub fn write_to_file(&self) -> Result<(), io::Error> {
+    pub fn write_to_file(&self) -> Result<(), io::ErrorKind> {
         let mut settings_path = program_cache_dir().unwrap();
         settings_path.push("settings.json");
         let settings_f = File::create(settings_path);
@@ -46,7 +46,7 @@ impl Settings {
                 serde_json::to_writer(out_stream, self).unwrap();
                 Ok(())
             },
-            Err(e) => Err(e),
+            Err(e) => Err(e.kind()),
         }
     }
 
