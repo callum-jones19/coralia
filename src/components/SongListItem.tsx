@@ -30,7 +30,7 @@ export default function SongListItem(
           : isHovering
             ? "bg-neutral-400 dark:bg-neutral-700"
             : ""
-        } flex flex-row items-center gap-4 relative`}
+        } flex flex-row items-center gap-4 relative pr-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onDoubleClick={() => clearAndPlayBackend(song)}

@@ -26,7 +26,7 @@ export default function SongListItemDense(
           : isHovering
           ? "bg-neutral-400 dark:bg-neutral-700"
           : ""
-      } flex flex-row items-center gap-4`}
+      } flex flex-row items-center gap-4  pr-4`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onDoubleClick={() => addToQueueNext(song)}
