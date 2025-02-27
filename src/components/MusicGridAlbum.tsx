@@ -13,6 +13,10 @@ export default function MusicGridAlbum(
     ? convertFileSrc(album.artwork?.art400)
     : undefined;
 
+  const thumbSrc = album.artwork?.thumbArt
+    ? convertFileSrc(album.artwork?.thumbArt)
+    : undefined;
+
   return (
     <div className="flex-grow basis-full h-full flex flex-col overflow-auto">
       <div className="w-full h-full p-2 flex-grow-0 flex-shrink-0 m-auto flex flex-col gap-1">
@@ -21,7 +25,9 @@ export default function MusicGridAlbum(
           className="basis-1/2 w-full overflow-auto flex-grow"
         >
           <img
+            loading="lazy"
             src={imgSrc}
+            alt={`Album art for ${album.title}`}
             className="rounded-lg h-full m-auto"
           />
         </Link>
