@@ -21,7 +21,7 @@ export default function QueueListItem(
   return (
     <div
       key={`${song.filePath}-${index}`}
-      className="w-full flex flex-row gap-2 items-center"
+      className="w-full flex flex-row gap-2 items-center h-full"
       onMouseEnter={() => setisHovering(true)}
       onMouseLeave={() => setisHovering(false)}
     >
