@@ -6,14 +6,19 @@ import { areEqual, FixedSizeList } from "react-window";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import QueueListItem from "./QueueListItem";
 
+interface ListData {
+  songs: Song[];
+  currentPlayingId: number | null;
+}
+
 interface RowProps {
-  data: Song[];
+  data: ListData;
   index: number;
   style: CSSProperties;
 }
 
 const Row = memo(({ data, index, style }: RowProps) => {
-  const song = data[index];
+  const song = data.songs[index];
 
   return (
     <>
@@ -97,7 +102,7 @@ export default function QueueList() {
                   <FixedSizeList
                     height={height}
                     width={width}
-                    itemData={queue}
+                    itemData={{ songs: queue, currentPlayingId: currentlyPlayingId }}
                     itemCount={queue.length}
                     itemSize={44}
                     overscanCount={5}
@@ -120,7 +125,7 @@ export default function QueueList() {
                 <FixedSizeList
                   height={height}
                   width={width}
-                  itemData={combinedList}
+                  itemData={{ songs: combinedList, currentPlayingId: currentlyPlayingId }}
                   itemCount={combinedList.length}
                   itemSize={44}
                   overscanCount={5}
