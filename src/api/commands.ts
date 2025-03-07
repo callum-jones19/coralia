@@ -59,8 +59,7 @@ export const setVolumeBackend = (newVolume: number) => {
 };
 
 export const clearAndPlayBackend = (song: Song) => {
-  invoke("clear_queue_and_play", { song: song })
-    .catch(e => console.error(e));
+  return invoke<void>("clear_queue_and_play", { song: song });
 };
 
 export const seekCurrentSong = (seekAmount: Duration) => {
