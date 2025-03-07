@@ -8,7 +8,7 @@ import {
   skipOneSong,
 } from "../../api/commands";
 import { getPlayerState } from "../../api/importer";
-import { SongInfo } from "../../types";
+import { SongInfo } from "../../types/types";
 import { invoke } from "@tauri-apps/api/core";
 
 export default function PlayButtons() {

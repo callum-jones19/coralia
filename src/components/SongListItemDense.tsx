@@ -2,7 +2,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { Play, Volume2 } from "react-feather";
 import { addToQueueNext, clearAndPlayBackend } from "../api/commands";
-import { Song } from "../types";
+import { Song } from "../types/types";
 
 export interface SongListItemDenseProps {
   song: Song;

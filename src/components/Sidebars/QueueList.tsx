@@ -1,7 +1,7 @@
 import { listen } from "@tauri-apps/api/event";
 import { CSSProperties, memo, useEffect, useMemo, useState } from "react";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types";
+import { Duration, Song } from "../../types/types";
 import { areEqual, FixedSizeList } from "react-window";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import QueueListItem from "./QueueListItem";

@@ -3,7 +3,7 @@ import { CSSProperties, memo, useEffect, useState } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types";
+import { Duration, Song } from "../../types/types";
 import SongListHeader from "../SongListHeader";
 import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";

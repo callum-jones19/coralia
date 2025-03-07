@@ -5,7 +5,7 @@ import { Play, Shuffle } from "react-feather";
 import { useParams } from "react-router";
 import { enqueueSongsBackend, playPlayer } from "../../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../../api/importer";
-import { Album, Duration, Song } from "../../types";
+import { Album, Duration, Song } from "../../types/types";
 import SongListHeader from "../SongListHeader";
 import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";

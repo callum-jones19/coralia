@@ -7,7 +7,7 @@ import {
   Settings,
 } from "react-feather";
 import { useLocation, useNavigate } from "react-router";
-import { SearchResults } from "../../types";
+import { SearchResults } from "../../types/types";
 import SearchBar from "../SearchBar";
 import BackgroundCard from "../UI/BackgroundCard";
 

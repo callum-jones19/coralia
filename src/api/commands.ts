@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Duration, Song } from "../types";
+import { Duration, Song } from "../types/types";
 
 export const resetLibraryBackend = () => {
   const tmp = invoke<void>("clear_library_and_cache", {});

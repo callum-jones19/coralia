@@ -9,7 +9,7 @@ import CurrentSongInfo from "../components/SongControls/CurrentSongInfo";
 import PlayButtons from "../components/SongControls/PlayButtons";
 import Seekbar from "../components/SongControls/Seekbar";
 import VolumeController from "../components/SongControls/VolumeController";
-import { Duration, Song } from "../types";
+import { Duration, Song } from "../types/types";
 const appWindow = getCurrentWebviewWindow();
 
 export default function FullscreenScreen() {

@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { X } from "react-feather";
 import { useLocation, useNavigate } from "react-router";
 import { searchLibrary } from "../api/importer";
-import { SearchResults } from "../types";
+import { SearchResults } from "../types/types";
 
 export interface SearchBarProps {
   onSearch: (searchRes: SearchResults) => void;

@@ -1,5 +1,5 @@
 import { FastForward, Play, PlusCircle } from "react-feather";
-import { Song } from "../../types";
+import { Song } from "../../types/types";
 import { addToQueueNext, clearAndPlayBackend, enqueueSongBackend } from "../../api/commands";
 
 export interface SongPopupProps {

@@ -2,7 +2,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { useRef, useState } from "react";
 import { MoreVertical, Play, Volume2 } from "react-feather";
 import { clearAndPlayBackend } from "../api/commands";
-import { Song } from "../types";
+import { Song } from "../types/types";
 import SongPopup from "./Popups/SongPopup";
 
 export interface SongListItemProps {

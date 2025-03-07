@@ -1,7 +1,7 @@
 import { CSSProperties, memo } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
-import { Album } from "../../types";
+import { Album } from "../../types/types";
 import MusicGridAlbum from "../MusicGridAlbum";
 
 interface RowData {

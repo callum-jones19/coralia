@@ -1,4 +1,4 @@
-import { Album, Song } from "../../types";
+import { Album, Song } from "../../types/types";
 import AlbumsView from "./AlbumsView";
 import SongsView from "./SongsView";
 

@@ -1,6 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { Link } from "react-router";
-import { Album } from "../types";
+import { Album } from "../types/types";
 
 export interface MusicGridAlbumProps {
   album: Album;

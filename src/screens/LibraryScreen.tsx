@@ -2,7 +2,7 @@ import LibraryBody from "../components/Library/LibraryBody";
 import MenuBar from "../components/Sidebars/MenuBar";
 import MusicFooter from "../components/Sidebars/MusicFooter";
 import QueueBar from "../components/Sidebars/QueueBar";
-import { SearchResults } from "../types";
+import { SearchResults } from "../types/types";
 
 export interface LibraryScreenProps {
   onSearch: (searchRes: SearchResults) => void;

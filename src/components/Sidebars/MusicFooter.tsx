@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types";
+import { Duration, Song } from "../../types/types";
 import QueuePopup from "../QueuePopup";
 import CurrentSongInfo from "../SongControls/CurrentSongInfo";
 import PlayButtons from "../SongControls/PlayButtons";

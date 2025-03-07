@@ -1,4 +1,4 @@
-import { Song } from "../../types";
+import { Song } from "../../types/types";
 
 export interface CurrentSongInfoProps {
   currentSong: Song | null;

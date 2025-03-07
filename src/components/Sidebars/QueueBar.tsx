@@ -3,7 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types";
+import { Duration, Song } from "../../types/types";
 import BackgroundCard from "../UI/BackgroundCard";
 import QueueList from "./QueueList";
 

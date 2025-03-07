@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, PropsWithChildren, useContext } from "react";
-import { Album, Song } from "./types";
+import { Album, Song } from "./types/types";
 
 export const AlbumContext = createContext<Album[] | null>(null);
 export const SongContext = createContext<Song[] | null>(null);

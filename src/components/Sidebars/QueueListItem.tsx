@@ -2,7 +2,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { Volume1, X } from "react-feather";
 import { removeFromQueue } from "../../api/commands";
-import { Song } from "../../types";
+import { Song } from "../../types/types";
 
 export interface QueueListItemProps {
   song: Song;
