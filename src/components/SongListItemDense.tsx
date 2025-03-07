@@ -54,7 +54,9 @@ export default function SongListItemDense(
           && (
             <button
               className="rounded-full text-center"
-              onClick={() => clearAndPlayBackend(song)}
+              onClick={() => {
+                clearAndPlayBackend(song).catch(e => console.error(e));
+              }}
             >
               <Play />
             </button>

@@ -20,8 +20,9 @@ export default function SongPopup({ song }: SongPopupProps) {
           <button
             className="flex gap-3 items-center hover:bg-neutral-200 hover:dark:bg-neutral-800 p-2 rounded-t-md"
             onClick={e => {
-              clearAndPlayBackend(song);
-              e.currentTarget.blur();
+              clearAndPlayBackend(song)
+                .then(() => e.currentTarget.blur())
+                .catch(e => console.error(e));
             }}
             autoFocus
           >

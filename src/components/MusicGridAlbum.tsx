@@ -13,10 +13,6 @@ export default function MusicGridAlbum(
     ? convertFileSrc(album.artwork?.art400)
     : undefined;
 
-  const thumbSrc = album.artwork?.thumbArt
-    ? convertFileSrc(album.artwork?.thumbArt)
-    : undefined;
-
   return (
     <div className="flex-grow basis-full h-full flex flex-col overflow-auto">
       <div className="w-full h-full p-2 flex-grow-0 flex-shrink-0 m-auto flex flex-col gap-1">
