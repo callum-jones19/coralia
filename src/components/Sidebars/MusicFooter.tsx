@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { Maximize2 } from "react-feather";
 import { Link } from "react-router";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types/types";
+import { Song } from "../../types/types";
 import QueuePopup from "../QueuePopup";
 import CurrentSongInfo from "../SongControls/CurrentSongInfo";
 import PlayButtons from "../SongControls/PlayButtons";
 import Seekbar from "../SongControls/Seekbar";
 import VolumeController from "../SongControls/VolumeController";
 import BackgroundCard from "../UI/BackgroundCard";
+import { QueueUpdatePayload, SongEndPayload } from "../../types/apiTypes";
 
 const appWindow = getCurrentWebviewWindow();
 
@@ -25,10 +26,10 @@ export default function MusicFooter() {
       .then(initState => setCurrentSong(initState.songsQueue[0]))
       .catch(e => console.error(e));
 
-    const unlistenSongEnd = listen<Song | undefined>(
+    const unlistenSongEnd = listen<SongEndPayload>(
       "song-end",
       e => {
-        const newCurrentSong = e.payload;
+        const newCurrentSong = e.payload.newQueue[0];
         if (newCurrentSong) {
           setCurrentSong(newCurrentSong);
         } else {
@@ -37,8 +38,8 @@ export default function MusicFooter() {
       },
     );
 
-    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
-      const newQueue = e.payload[0];
+    const unlistenQueue = listen<QueueUpdatePayload>("queue-change", e => {
+      const newQueue = e.payload.newQueue;
       setCurrentSong(newQueue[0]);
     });
 

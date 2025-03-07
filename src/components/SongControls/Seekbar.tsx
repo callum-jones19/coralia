@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { seekCurrentSong } from "../../api/commands";
 import { getPlayerState } from "../../api/importer";
 import { Duration, Song, SongInfo } from "../../types/types";
+import { QueueUpdatePayload } from "../../types/apiTypes";
 
 export default function Seekbar() {
   const songPosIntervalId = useRef<number | null>(null);
@@ -50,13 +51,13 @@ export default function Seekbar() {
     })
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Song[], Duration]>(
+    const unlistenQueue = listen<QueueUpdatePayload>(
       "queue-change",
       e => {
         console.log("Received queue change event");
         console.log(e.payload);
-        const newQueue = e.payload[0];
-        const syncedSongPos = e.payload[2];
+        const newQueue = e.payload.newQueue;
+        const syncedSongPos = e.payload.playbackPosition;
         const newCurrSong = newQueue[0];
         if (newCurrSong) {
           setCurrentSong(newQueue[0]);

@@ -3,9 +3,10 @@ import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types/types";
+import { Song } from "../../types/types";
 import BackgroundCard from "../UI/BackgroundCard";
 import QueueList from "./QueueList";
+import { QueueUpdatePayload } from "../../types/apiTypes";
 
 export default function QueueBar() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -19,10 +20,10 @@ export default function QueueBar() {
       })
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Song[], Duration]>(
+    const unlistenQueue = listen<QueueUpdatePayload>(
       "queue-change",
       e => {
-        const newQueue = e.payload[0];
+        const newQueue = e.payload.newQueue;
         setQueue(newQueue);
       },
     );

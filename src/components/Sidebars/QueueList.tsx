@@ -1,10 +1,11 @@
 import { listen } from "@tauri-apps/api/event";
 import { CSSProperties, memo, useEffect, useMemo, useState } from "react";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types/types";
+import { Song } from "../../types/types";
 import { areEqual, FixedSizeList } from "react-window";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import QueueListItem from "./QueueListItem";
+import { QueueUpdatePayload } from "../../types/apiTypes";
 
 interface ListData {
   songs: Song[];
@@ -56,11 +57,11 @@ export default function QueueList() {
       })
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Song[], Duration]>(
+    const unlistenQueue = listen<QueueUpdatePayload>(
       "queue-change",
       e => {
-        const newQueue = e.payload[0];
-        const newPrev = e.payload[1];
+        const newQueue = e.payload.newQueue;
+        const newPrev = e.payload.newPrevious;
         setQueue(newQueue);
         setPrevQueue(newPrev);
       },

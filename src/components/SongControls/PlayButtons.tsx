@@ -10,6 +10,7 @@ import {
 import { getPlayerState } from "../../api/importer";
 import { SongInfo } from "../../types/types";
 import { invoke } from "@tauri-apps/api/core";
+import { QueueLengthChangePayload } from "../../types/apiTypes";
 
 export default function PlayButtons() {
   const [isPaused, setIsPaused] = useState<boolean>(true);
@@ -23,12 +24,12 @@ export default function PlayButtons() {
       setIsPaused(paused);
     }).catch(e => console.error(e));
 
-    const unlistenQueueLen = listen<[number, number]>(
+    const unlistenQueueLen = listen<QueueLengthChangePayload>(
       "queue-length-change",
       (e) => {
         const newQueueLen = e.payload;
-        setQueueLen(newQueueLen[0]);
-        setPrevSongsLen(newQueueLen[1]);
+        setQueueLen(newQueueLen.newQueueLength);
+        setPrevSongsLen(newQueueLen.newPreviousLength);
       },
     ).catch(e => console.error(e));
 

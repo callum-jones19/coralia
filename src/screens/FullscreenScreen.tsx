@@ -9,7 +9,8 @@ import CurrentSongInfo from "../components/SongControls/CurrentSongInfo";
 import PlayButtons from "../components/SongControls/PlayButtons";
 import Seekbar from "../components/SongControls/Seekbar";
 import VolumeController from "../components/SongControls/VolumeController";
-import { Duration, Song } from "../types/types";
+import { Song } from "../types/types";
+import { QueueUpdatePayload } from "../types/apiTypes";
 const appWindow = getCurrentWebviewWindow();
 
 export default function FullscreenScreen() {
@@ -21,8 +22,8 @@ export default function FullscreenScreen() {
       .then(cachedState => setQueue(cachedState.songsQueue))
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
-      const newQueue = e.payload[0];
+    const unlistenQueue = listen<QueueUpdatePayload>("queue-change", e => {
+      const newQueue = e.payload.newQueue;
       setQueue(newQueue);
     });
 

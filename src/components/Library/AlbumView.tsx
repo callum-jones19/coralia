@@ -5,11 +5,12 @@ import { Play, Shuffle } from "react-feather";
 import { useParams } from "react-router";
 import { enqueueSongsBackend, playPlayer } from "../../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../../api/importer";
-import { Album, Duration, Song } from "../../types/types";
+import { Album, Song } from "../../types/types";
 import SongListHeader from "../SongListHeader";
 import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";
 import SongListItemDense from "../SongListItemDense";
+import { QueueUpdatePayload } from "../../types/apiTypes";
 
 export type AlbumViewParams = string;
 
@@ -25,8 +26,8 @@ export default function AlbumView() {
       .then(d => setCurrentSong(d.songsQueue[0]))
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
-      const newQueue = e.payload[0];
+    const unlistenQueue = listen<QueueUpdatePayload>("queue-change", e => {
+      const newQueue = e.payload.newQueue;
       setCurrentSong(newQueue[0]);
     });
 

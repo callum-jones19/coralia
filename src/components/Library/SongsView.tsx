@@ -3,11 +3,12 @@ import { CSSProperties, memo, useEffect, useState } from "react";
 import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList } from "react-window";
 import { getPlayerState } from "../../api/importer";
-import { Duration, Song } from "../../types/types";
+import { Song } from "../../types/types";
 import SongListHeader from "../SongListHeader";
 import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";
   import { enqueueSongsBackend } from "../../api/commands";
+import { QueueUpdatePayload } from "../../types/apiTypes";
 
 interface SongListData {
   songs: Song[];
@@ -73,10 +74,10 @@ export default function SongsView({ songs, emptyString }: SongsViewProps) {
       .then(cachedState => setQueue(cachedState.songsQueue))
       .catch(e => console.error(e));
 
-    const unlistenQueue = listen<[Song[], Duration]>("queue-change", e => {
+    const unlistenQueue = listen<QueueUpdatePayload>("queue-change", e => {
       console.log("queue changed");
 
-      const newQueue = e.payload[0];
+      const newQueue = e.payload.newQueue;
       setQueue(newQueue);
     });
 
