@@ -5,5 +5,5 @@ pub mod album;
 pub mod artwork;
 pub mod library;
 pub mod music_tags;
-pub mod song;
 pub mod settings;
+pub mod song;
