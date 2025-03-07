@@ -8,7 +8,7 @@ use crate::data::song::Song;
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
-struct PlayEventData {
+struct PlayEventPayload {
     paused: bool,
     position: Duration,
 }
@@ -18,18 +18,6 @@ struct PlayEventData {
 struct SongEndPayload {
     new_queue: VecDeque<Song>,
     new_previous: Vec<Song>,
-}
-
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-struct PlayerPlayPayload {
-    playback_position: Duration,
-}
-
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-struct PlayerPausePayload {
-    playback_position: Duration,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -73,23 +61,27 @@ pub fn emit_song_end(new_queue: VecDeque<Song>, new_previous: Vec<Song>, handle:
 
 pub fn emit_player_play(current_playback_pos: Duration, handle: &AppHandle) {
     info!("Player Events: sink playback started.");
-    let payload = PlayEventData {
+    let payload = PlayEventPayload {
         paused: false,
         position: current_playback_pos,
     };
-    handle.emit::<PlayEventData>("is-paused", payload).unwrap();
+    handle
+        .emit::<PlayEventPayload>("is-paused", payload)
+        .unwrap();
 }
 
 pub fn emit_player_pause(current_playback_pos: Duration, handle: &AppHandle) {
     info!("Player Events: sink playback started.");
-    let payload = PlayEventData {
+    let payload = PlayEventPayload {
         paused: true,
         position: current_playback_pos,
     };
-    handle.emit::<PlayEventData>("is-paused", payload).unwrap();
+    handle
+        .emit::<PlayEventPayload>("is-paused", payload)
+        .unwrap();
 }
 
-pub fn queue_update(
+pub fn emit_queue_update(
     new_queue: VecDeque<Song>,
     new_previous: Vec<Song>,
     current_playback_pos: Duration,

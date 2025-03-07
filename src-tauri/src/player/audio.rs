@@ -300,6 +300,30 @@ impl Player {
         }
     }
 
+    pub fn get_queue(&self) -> VecDeque<Song> {
+        self.songs_queue
+            .lock()
+            .unwrap()
+            .clone()
+            .into_iter()
+            .map(|f| f.song)
+            .collect()
+    }
+
+    pub fn get_previous(&self) -> Vec<Song> {
+        self.previous_songs
+            .lock()
+            .unwrap()
+            .clone()
+            .into_iter()
+            .map(|f| f.song)
+            .collect()
+    }
+
+    pub fn get_playback_position(&self) -> Duration {
+        self.audio_sink.lock().unwrap().get_pos()
+    }
+
     /// Gets number of actual songs in the sink, ignoring non-song sources
     /// such as `EmptyCallback`. This prevents us accidentally
     /// double counting empty signalling sources as songs.

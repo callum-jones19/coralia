@@ -17,6 +17,7 @@ use data::{
     settings::Settings,
     song::Song,
 };
+use events::{emit_player_pause, emit_player_play, emit_queue_update};
 use log::info;
 use player::audio::{CachedPlayerState, Player};
 use serde::{Deserialize, Serialize};
@@ -75,14 +76,22 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                     &song.tags.title
                 );
                 player.add_to_queue_end(&song).unwrap();
+                emit_queue_update(
+                    player.get_queue(),
+                    player.get_previous(),
+                    player.get_playback_position(),
+                    handle,
+                );
             }
             PlayerCommand::Play => {
                 info!("Player Command Handler: Received request to set sink to play.");
                 player.play();
+                emit_player_play(player.get_playback_position(), handle);
             }
             PlayerCommand::Pause => {
                 info!("Player Command Handler: Received request to set sink to pause.");
                 player.pause();
+                emit_player_pause(player.get_playback_position(), handle);
             }
             PlayerCommand::SetVolume(vol) => {
                 let clamped_vol = if vol > 100 { 100 } else { vol };
@@ -97,6 +106,12 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                 info!("Player Command Handler: Received request to skip current song");
                 player.skip_current_song();
                 player.play();
+                emit_queue_update(
+                    player.get_queue(),
+                    player.get_previous(),
+                    player.get_playback_position(),
+                    handle,
+                );
             }
             PlayerCommand::EmptyAndPlay(song) => {
                 info!(
@@ -105,7 +120,16 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                 );
                 player.clear();
                 match player.add_to_queue_end(&song) {
-                    Ok(_) => player.play(),
+                    Ok(_) => {
+                        player.play();
+                        emit_queue_update(
+                            player.get_queue(),
+                            player.get_previous(),
+                            player.get_playback_position(),
+                            handle,
+                        );
+                        emit_player_play(player.get_playback_position(), handle);
+                    }
                     Err(_) => {}
                 }
             }
@@ -118,7 +142,17 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
             }
             PlayerCommand::RemoveAtIndex(skip_index) => {
                 info!("Player Command Handler: Received request to remove song from queue at index {}.", skip_index);
-                let _ = player.remove_song_from_queue(skip_index);
+                match player.remove_song_from_queue(skip_index) {
+                    Some(e) => {
+                        emit_queue_update(
+                            player.get_queue(),
+                            player.get_previous(),
+                            player.get_playback_position(),
+                            handle,
+                        );
+                    }
+                    None => todo!(),
+                }
             }
             PlayerCommand::GetPlayerState(state_rx) => {
                 info!("Player Command Handler: Received request to export the player state.");
@@ -128,6 +162,12 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
             PlayerCommand::Clear => {
                 info!("Player Command Handler: Received request to clear the player queue.");
                 player.clear();
+                emit_queue_update(
+                    player.get_queue(),
+                    player.get_previous(),
+                    player.get_playback_position(),
+                    handle,
+                );
             }
             PlayerCommand::AddToQueueNext(song) => {
                 info!(
@@ -135,12 +175,30 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                     &song.tags.title
                 );
                 player.add_to_queue_next(&song);
+                emit_queue_update(
+                    player.get_queue(),
+                    player.get_previous(),
+                    player.get_playback_position(),
+                    handle,
+                );
             }
             PlayerCommand::GoBackOne => {
                 player.go_back();
+                emit_queue_update(
+                    player.get_queue(),
+                    player.get_previous(),
+                    player.get_playback_position(),
+                    handle,
+                );
             }
             PlayerCommand::Shuffle => {
                 player.shuffle_queue();
+                emit_queue_update(
+                    player.get_queue(),
+                    player.get_previous(),
+                    player.get_playback_position(),
+                    handle,
+                );
             }
         }
     }
