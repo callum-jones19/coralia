@@ -4,14 +4,11 @@ import Select from "react-select";
 export type AppearanceOption = "dark" | "light" | "system";
 
 export default function AppearanceSettings() {
-  // const themeOptions: AppearanceOption[] = ["dark", "light", "system"];
   const themeOptions = [
     { value: 'system', label: 'System' },
     { value: 'dark', label: 'Dark' },
     { value: 'light', label: 'Light' },
   ];
-
-
 
   return (
     <>
@@ -28,12 +25,15 @@ export default function AppearanceSettings() {
             options={themeOptions}
             className="w-80"
             onChange={newTheme => {
-              if (newTheme?.value === 'dark') {
-                invoke('set_app_theme', { newTheme: 'dark' }).catch(e => console.error(e));
+              if (newTheme?.value === 'system') {
+                invoke('set_app_theme', { newTheme: null })
+                  .catch(e => console.error(e));
+              } else if (newTheme?.value === 'dark') {
+                invoke('set_app_theme', { newTheme: 'dark' })
+                .catch(e => console.error(e));
               } else if (newTheme?.value === 'light') {
-                invoke('set_app_theme', { newTheme: 'light' }).catch(e => console.error(e));
-              } else if (newTheme?.value === 'system') {
-                invoke('set_app_theme', { newTheme: null }).catch(e => console.error(e));
+                invoke('set_app_theme', { newTheme: 'light' })
+                .catch(e => console.error(e));
               }
             }}
           />

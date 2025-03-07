@@ -1,15 +1,51 @@
 import { listen } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
+import { CSSProperties, memo, useEffect, useMemo, useState } from "react";
 import { getPlayerState } from "../../api/importer";
 import { Duration, Song } from "../../types";
+import { areEqual, FixedSizeList } from "react-window";
+import ReactVirtualizedAutoSizer from "react-virtualized-auto-sizer";
 import QueueListItem from "./QueueListItem";
-import { Repeat } from "react-feather";
+
+interface ListData {
+  songs: Song[];
+  currentPlayingId: number | null;
+}
+
+interface RowProps {
+  data: ListData;
+  index: number;
+  style: CSSProperties;
+}
+
+const Row = memo(({ data, index, style }: RowProps) => {
+  const song = data.songs[index];
+
+  return (
+    <>
+      <div
+        style={style}
+      >
+        <QueueListItem
+          song={song}
+          currentlyPlayingId={null}
+          index={index}
+        />
+      </div>
+    </>
+  );
+}, areEqual);
+Row.displayName = "SongRow";
 
 export default function QueueList() {
   const [isViewingQueue, setIsViewingQueue] = useState<boolean>(true);
 
   const [queue, setQueue] = useState<Song[]>([]);
   const [prevQueue, setPrevQueue] = useState<Song[]>([]);
+
+  const combinedList = useMemo(() => {
+    const res = prevQueue.concat(queue);
+    return res;
+  }, [prevQueue, queue]);
 
   useEffect(() => {
     getPlayerState()
@@ -60,15 +96,22 @@ export default function QueueList() {
         && (
           <div className="h-full w-full overflow-auto flex flex-col gap-2">
             {queue.length === 0 && <i>Empty queue</i>}
-            {queue.map((song, index) => (
-              <QueueListItem
-                removable
-                key={index}
-                song={song}
-                index={index}
-                currentlyPlayingId={currentlyPlayingId}
-              />
-            ))}
+            {queue.length > 0 &&
+              <ReactVirtualizedAutoSizer>
+                {({ height, width }) => (
+                  <FixedSizeList
+                    height={height}
+                    width={width}
+                    itemData={{ songs: queue, currentPlayingId: currentlyPlayingId }}
+                    itemCount={queue.length}
+                    itemSize={44}
+                    overscanCount={5}
+                  >
+                    {Row}
+                  </FixedSizeList>
+                )}
+              </ReactVirtualizedAutoSizer>
+            }
           </div>
         )}
       {!isViewingQueue
@@ -77,23 +120,20 @@ export default function QueueList() {
             {queue.length === 0 && prevQueue.length === 0 && (
               <i>No Playing History</i>
             )}
-            {prevQueue.map((song, index) => (
-              <QueueListItem
-                key={index}
-                song={song}
-                index={index}
-                currentlyPlayingId={currentlyPlayingId}
-              />
-            ))}
-            {queue.map((song, index) => (
-              <QueueListItem
-                removable
-                key={index}
-                song={song}
-                index={index + prevQueue.length}
-                currentlyPlayingId={currentlyPlayingId}
-              />
-            ))}
+            <ReactVirtualizedAutoSizer>
+              {({ height, width }) => (
+                <FixedSizeList
+                  height={height}
+                  width={width}
+                  itemData={{ songs: combinedList, currentPlayingId: currentlyPlayingId }}
+                  itemCount={combinedList.length}
+                  itemSize={44}
+                  overscanCount={5}
+                >
+                  {Row}
+                </FixedSizeList>
+              )}
+            </ReactVirtualizedAutoSizer>
           </div>
         )}
     </div>

@@ -76,3 +76,10 @@ export type LibraryStatus =
   | "IndexingAlbums"
   | "CachingArtwork"
   | "NotScanning";
+
+
+export type Theme = "dark" | "light" | null;
+
+export interface Settings {
+  theme: Theme;
+}

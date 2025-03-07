@@ -7,7 +7,7 @@ import { Duration, Song } from "../../types";
 import SongListHeader from "../SongListHeader";
 import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";
-import SongListItemDense from "../SongListItemDense";
+  import { enqueueSongsBackend } from "../../api/commands";
 
 interface SongListData {
   songs: Song[];
@@ -40,24 +40,19 @@ const Row = memo(({ data, index, style }: RowProps) => {
     <>
       <div
         style={style}
-        className="hidden sm:block"
       >
         <SongListItem
           song={song}
           colored={false}
           currentlyPlayingId={data.currentlyPlayingId}
           showImage
-        />
-      </div>
-      <div
-        style={style}
-        className="block sm:hidden"
-      >
-        <SongListItemDense
-          song={song}
-          colored={false}
-          currentlyPlayingId={data.currentlyPlayingId}
-          showImage
+          onPlaySong={() => {
+            const nextSongs = data.songs.slice(index);
+            console.log('Adding next songs to queue');
+            console.log(nextSongs);
+
+            enqueueSongsBackend(nextSongs);
+          }}
         />
       </div>
     </>

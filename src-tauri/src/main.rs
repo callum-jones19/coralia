@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
+    collections::VecDeque,
     path::PathBuf,
     sync::{
         mpsc::{channel, Receiver, Sender},
@@ -17,11 +18,12 @@ use data::{
     song::Song,
 };
 use log::info;
-use player::audio::{CachedPlayerState, Player, PlayerStateUpdate};
+use player::audio::{CachedPlayerState, Player};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, Manager, State, Theme};
 
 mod data;
+mod events;
 mod player;
 mod utils;
 
@@ -39,13 +41,6 @@ enum PlayerCommand {
     GetPlayerState(Sender<CachedPlayerState>),
     Clear,
     Shuffle,
-}
-
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-struct PlayEventData {
-    paused: bool,
-    position: Duration,
 }
 
 struct AppState {
@@ -68,11 +63,8 @@ struct LibraryState {
     current_status: LibraryStatus,
 }
 
-fn create_and_run_audio_player(
-    state_update_tx: Sender<PlayerStateUpdate>,
-    player_cmd_rx: Receiver<PlayerCommand>,
-) {
-    let mut player = Player::new(state_update_tx);
+fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &AppHandle) {
+    let mut player = Player::new();
 
     loop {
         let command = player_cmd_rx.recv().unwrap();
@@ -154,64 +146,67 @@ fn create_and_run_audio_player(
     }
 }
 
-fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerStateUpdate>) {
-    loop {
-        let state_update = player_event_rx.recv().unwrap();
-        match state_update {
-            PlayerStateUpdate::SongEnd(new_queue, prev_songs) => {
-                info!("Player Events: song ended.");
-                handle
-                    .emit("queue-length-change", [&new_queue.len(), &prev_songs.len()])
-                    .unwrap();
-                handle.emit("song-end", &new_queue.front()).unwrap();
-                handle
-                    .emit(
-                        "queue-change",
-                        (&new_queue, &prev_songs, Some(Duration::ZERO)),
-                    )
-                    .unwrap();
-            }
-            PlayerStateUpdate::SongPlay(song_pos) => {
-                info!("Player Events: sink playback started.");
-                let payload = PlayEventData {
-                    paused: false,
-                    position: song_pos,
-                };
-                handle.emit("is-paused", payload).unwrap();
-            }
-            PlayerStateUpdate::SongPause(song_pos) => {
-                info!("Player Events: sink playback paused.");
-                let payload = PlayEventData {
-                    paused: true,
-                    position: song_pos,
-                };
-                handle.emit::<PlayEventData>("is-paused", payload).unwrap();
-            }
-            PlayerStateUpdate::QueueUpdate(
-                updated_queue,
-                updated_prev_songs,
-                current_song_position,
-            ) => {
-                info!(
-                    "Player Events: song queue updated. {:?}",
-                    current_song_position
-                );
-                handle
-                    .emit(
-                        "queue-length-change",
-                        [&updated_queue.len(), &updated_prev_songs.len()],
-                    )
-                    .unwrap();
+// fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerStateUpdate>) {
+//     loop {
+//         let state_update = player_event_rx.recv().unwrap();
+//         match state_update {
+//             PlayerStateUpdate::SongEnd(new_queue, prev_songs) => {
+//                 info!("Player Events: song ended.");
+//                 handle
+//                     .emit("queue-length-change", [&new_queue.len(), &prev_songs.len()])
+//                     .unwrap();
+//                 handle.emit("song-end", &new_queue.front()).unwrap();
+//                 handle
+//                     .emit(
+//                         "queue-change",
+//                         (&new_queue, &prev_songs, Some(Duration::ZERO)),
+//                     )
+//                     .unwrap();
+//             }
+//             PlayerStateUpdate::SongPlay(song_pos) => {
+//                 info!("Player Events: sink playback started.");
+//                 let payload = PlayEventData {
+//                     paused: false,
+//                     position: song_pos,
+//                 };
+//                 handle.emit("is-paused", payload).unwrap();
+//             }
+//             PlayerStateUpdate::SongPause(song_pos) => {
+//                 info!("Player Events: sink playback paused.");
+//                 let payload = PlayEventData {
+//                     paused: true,
+//                     position: song_pos,
+//                 };
+//                 handle.emit::<PlayEventData>("is-paused", payload).unwrap();
+//             }
+//             PlayerStateUpdate::QueueUpdate(
+//                 updated_queue,
+//                 updated_prev_songs,
+//                 current_song_position,
+//             ) => {
+//                 info!(
+//                     "Player Events: song queue updated. {:?}",
+//                     current_song_position
+//                 );
+//                 handle
+//                     .emit(
+//                         "queue-length-change",
+//                         [&updated_queue.len(), &updated_prev_songs.len()],
+//                     )
+//                     .unwrap();
 
-                // We want to send both the queue, but also the playback info
-                // of the current song.
-                let queue_change_payload =
-                    (updated_queue, updated_prev_songs, current_song_position);
-                handle.emit("queue-change", queue_change_payload).unwrap();
-            }
-        }
-    }
-}
+//                 // We want to send both the queue, but also the playback info
+//                 // of the current song.
+//                 let queue_change_payload =
+//                     (updated_queue, updated_prev_songs, current_song_position);
+//                 handle.emit("queue-change", queue_change_payload).unwrap();
+//             }
+//         }
+//     }
+// }
+
+/// An enum of possible events that we may want to send out of the player
+/// thread for major events that could occur within the Player structure.
 
 fn main() {
     env_logger::init();
@@ -221,9 +216,17 @@ fn main() {
     // Initialise an empty music library, and setup the player command and the
     // the player events system.
     let music_library = Library::new_empty();
-    let default_settings = Settings::new();
+
+    // Read the settings
+    let settings = match Settings::from_file() {
+        Ok(f) => f,
+        Err(_) => {
+            // TODO use specific error
+            Settings::new()
+        }
+    };
+
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
-    let (player_event_tx, player_event_rx) = channel::<PlayerStateUpdate>();
 
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -233,12 +236,7 @@ fn main() {
 
             info!("Starting async tokio thread to hold the audio player");
             tauri::async_runtime::spawn(async move {
-                create_and_run_audio_player(player_event_tx, player_cmd_rx);
-            });
-
-            info!("Starting async tokio thread to respond to music player events");
-            tauri::async_runtime::spawn(async move {
-                handle_player_events(handle, player_event_rx);
+                create_and_run_audio_player(player_cmd_rx, &handle);
             });
 
             Ok(())
@@ -246,7 +244,7 @@ fn main() {
         .manage(Mutex::new(AppState {
             command_tx: player_cmd_tx,
             library: music_library,
-            settings: default_settings,
+            settings,
         }))
         .manage(Mutex::new(LibraryState {
             current_status: LibraryStatus::NotScanning,
@@ -642,12 +640,14 @@ async fn get_app_settings(state_mutex: State<'_, Mutex<AppState>>) -> Result<Set
 async fn set_app_theme(
     state_mutex: State<'_, Mutex<AppState>>,
     app_handle: AppHandle,
-    new_theme: Option<Theme>,
+    new_theme: Option<tauri::Theme>,
 ) -> Result<(), ()> {
+    println!("{:?}", new_theme);
     let mut state = state_mutex.lock().unwrap();
     app_handle.set_theme(new_theme);
     state.settings.update_theme(new_theme);
-    state.settings.write_to_file();
+    state.settings.write_to_file().unwrap();
+    app_handle.set_theme(new_theme);
 
     Ok(())
 }
