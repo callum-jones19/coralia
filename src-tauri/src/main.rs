@@ -65,7 +65,7 @@ struct LibraryState {
 }
 
 fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &AppHandle) {
-    let mut player = Player::new();
+    let mut player = Player::new(handle.clone());
 
     loop {
         let command = player_cmd_rx.recv().unwrap();

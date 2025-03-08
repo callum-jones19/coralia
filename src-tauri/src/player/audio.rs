@@ -19,8 +19,12 @@ use rodio::{
     Decoder, OutputStream, OutputStreamHandle, Sink, Source,
 };
 use serde::{Deserialize, Serialize};
+use tauri::AppHandle;
 
-use crate::data::song::Song;
+use crate::{
+    data::song::Song,
+    events::{emit_player_pause, emit_queue_update, emit_song_end},
+};
 
 enum EndCause {
     EndOfSong,
@@ -94,10 +98,11 @@ fn open_song_into_sink(
 /// sink out of the current Song queue.
 fn handle_sink_song_end(
     sink_song_end_rx: Receiver<EndCause>,
+    sink_song_end_tx: Sender<EndCause>,
     sink: Arc<Mutex<Sink>>,
     song_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
     prev_song_queue: Arc<Mutex<Vec<PlayerSong>>>,
-    sink_song_end_tx: Sender<EndCause>,
+    app_handle: AppHandle,
 ) {
     loop {
         // Sleep this thread until a song ends
@@ -146,7 +151,27 @@ fn handle_sink_song_end(
 
                 if song_queue_locked.len() == 0 {
                     sink_locked.pause();
+
+                    let pos = sink_locked.get_pos();
+
+                    emit_player_pause(pos, &app_handle);
                 }
+
+                // Signal to the Player Event System that a song has ended
+                let new_queue: VecDeque<Song> = song_queue_locked
+                    .clone()
+                    .into_iter()
+                    .map(|song| song.song)
+                    .collect();
+
+                let new_previous: Vec<Song> = prev_songs_queue_locked
+                    .clone()
+                    .into_iter()
+                    .map(|song| song.song)
+                    .collect();
+
+                emit_song_end(new_queue.clone(), new_previous.clone(), &app_handle);
+                emit_queue_update(new_queue, new_previous, sink_locked.get_pos(), &app_handle);
             }
             EndCause::Stopped => {
                 let mut song_queue_locked = song_queue.lock().unwrap();
@@ -181,6 +206,10 @@ fn handle_sink_song_end(
 
                 if song_queue_locked.len() == 0 {
                     sink_locked.pause();
+
+                    let pos = sink_locked.get_pos();
+
+                    emit_player_pause(pos, &app_handle);
                 }
             }
         }
@@ -253,7 +282,7 @@ impl Player {
     /// This takes a mcsp channel sender to communicate updates outside of
     /// the player once initialised. This allows it to work in its own thread
     /// but still communicate outside of this.
-    pub fn new() -> Self {
+    pub fn new(app_handle: AppHandle) -> Self {
         // Setup rodio backend
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
@@ -282,10 +311,11 @@ impl Player {
         thread::spawn(move || {
             handle_sink_song_end(
                 sink_song_end_rx,
+                sink_song_end_tx2,
                 sink2,
                 songs_queue_2,
                 prev_songs_2,
-                sink_song_end_tx2,
+                app_handle,
             );
         });
 
