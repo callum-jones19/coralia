@@ -30,7 +30,8 @@ mod utils;
 
 enum PlayerCommand {
     EmptyAndPlay(Box<Song>),
-    AddToQueueEnd(Box<Song>),
+    AddSongToQueueEnd(Box<Song>),
+    AddSongsToQueueEnd(Box<Vec<Song>>),
     AddToQueueNext(Box<Song>),
     Play,
     Pause,
@@ -70,7 +71,7 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
     loop {
         let command = player_cmd_rx.recv().unwrap();
         match command {
-            PlayerCommand::AddToQueueEnd(song) => {
+            PlayerCommand::AddSongToQueueEnd(song) => {
                 info!(
                     "Player Command Handler: Received request to enqueue song {} into the player.",
                     &song.tags.title
@@ -200,68 +201,20 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                     handle,
                 );
             }
+            PlayerCommand::AddSongsToQueueEnd(songs) => {
+                for song in *songs {
+                    player.add_to_queue_end(&song).unwrap();
+                }
+                emit_queue_update(
+                    player.get_queue(),
+                    player.get_previous(),
+                    player.get_playback_position(),
+                    handle,
+                );
+            }
         }
     }
 }
-
-// fn handle_player_events(handle: AppHandle, player_event_rx: Receiver<PlayerStateUpdate>) {
-//     loop {
-//         let state_update = player_event_rx.recv().unwrap();
-//         match state_update {
-//             PlayerStateUpdate::SongEnd(new_queue, prev_songs) => {
-//                 info!("Player Events: song ended.");
-//                 handle
-//                     .emit("queue-length-change", [&new_queue.len(), &prev_songs.len()])
-//                     .unwrap();
-//                 handle.emit("song-end", &new_queue.front()).unwrap();
-//                 handle
-//                     .emit(
-//                         "queue-change",
-//                         (&new_queue, &prev_songs, Some(Duration::ZERO)),
-//                     )
-//                     .unwrap();
-//             }
-//             PlayerStateUpdate::SongPlay(song_pos) => {
-//                 info!("Player Events: sink playback started.");
-//                 let payload = PlayEventData {
-//                     paused: false,
-//                     position: song_pos,
-//                 };
-//                 handle.emit("is-paused", payload).unwrap();
-//             }
-//             PlayerStateUpdate::SongPause(song_pos) => {
-//                 info!("Player Events: sink playback paused.");
-//                 let payload = PlayEventData {
-//                     paused: true,
-//                     position: song_pos,
-//                 };
-//                 handle.emit::<PlayEventData>("is-paused", payload).unwrap();
-//             }
-//             PlayerStateUpdate::QueueUpdate(
-//                 updated_queue,
-//                 updated_prev_songs,
-//                 current_song_position,
-//             ) => {
-//                 info!(
-//                     "Player Events: song queue updated. {:?}",
-//                     current_song_position
-//                 );
-//                 handle
-//                     .emit(
-//                         "queue-length-change",
-//                         [&updated_queue.len(), &updated_prev_songs.len()],
-//                     )
-//                     .unwrap();
-
-//                 // We want to send both the queue, but also the playback info
-//                 // of the current song.
-//                 let queue_change_payload =
-//                     (updated_queue, updated_prev_songs, current_song_position);
-//                 handle.emit("queue-change", queue_change_payload).unwrap();
-//             }
-//         }
-//     }
-// }
 
 /// An enum of possible events that we may want to send out of the player
 /// thread for major events that could occur within the Player structure.
@@ -433,7 +386,7 @@ async fn add_to_queue_end(state_mutex: State<'_, Mutex<AppState>>, song: Song) -
     let state = state_mutex.lock().unwrap();
     state
         .command_tx
-        .send(PlayerCommand::AddToQueueEnd(Box::new(song)))
+        .send(PlayerCommand::AddSongToQueueEnd(Box::new(song)))
         .unwrap();
     Ok(())
 }
@@ -461,12 +414,10 @@ async fn enqueue_songs(
     songs: Vec<Song>,
 ) -> Result<(), ()> {
     let state = state_mutex.lock().unwrap();
-    for song in songs {
-        state
-            .command_tx
-            .send(PlayerCommand::AddToQueueEnd(Box::new(song)))
-            .unwrap();
-    }
+    state
+        .command_tx
+        .send(PlayerCommand::AddSongsToQueueEnd(Box::new(songs)))
+        .unwrap();
     Ok(())
 }
 
