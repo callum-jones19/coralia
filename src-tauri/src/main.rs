@@ -322,6 +322,7 @@ async fn add_library_directories(
     state.library.add_new_folders(root_dirs);
 
     // Begin scanning songs
+    info!("Beginning scan of selected library songs");
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::ScanningSongs;
@@ -330,6 +331,7 @@ async fn add_library_directories(
     state.library.scan_library_songs();
 
     // Begin indexing albums
+    info!("Beginning indexing of scanned songs into albums");
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::IndexingAlbums;
@@ -338,6 +340,7 @@ async fn add_library_directories(
     state.library.scan_library_albums();
 
     // Begin caching artwork
+    info!("Beginning caching of album art");
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::CachingArtwork;
@@ -347,6 +350,7 @@ async fn add_library_directories(
     state.library.save_library_to_cache();
 
     // Mark as completed
+    info!("Completed scanning library.");
     {
         let mut library_state = library_state.lock().unwrap();
         library_state.current_status = LibraryStatus::NotScanning;
