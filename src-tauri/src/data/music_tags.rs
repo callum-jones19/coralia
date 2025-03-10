@@ -1,7 +1,12 @@
-use std::{fs::File, io::{BufRead, BufReader}, path::PathBuf};
+use std::{
+    fs::File,
+    path::PathBuf,
+};
 
 use lofty::{
-    file::TaggedFileExt, read_from, read_from_path, tag::{Accessor, ItemKey}
+    file::TaggedFileExt,
+    read_from,
+    tag::{Accessor, ItemKey},
 };
 use serde::{Deserialize, Serialize};
 

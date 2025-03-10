@@ -50,10 +50,7 @@ fn open_song_into_sink(
     let song_file = BufReader::new(File::open(&song.song.file_path).unwrap());
 
     // Decode the file into a source
-    let song_source = match Decoder::new(song_file) {
-        Ok(src) => src,
-        Err(e) => return Err(e),
-    };
+    let song_source = Decoder::new(song_file)?;
 
     // Wrap it in a Stoppable.
     let stoppable_source = song_source.stoppable();
@@ -550,14 +547,12 @@ impl Player {
         };
 
         self.add_to_queue_next(&prev_song.song);
-        match &current_song {
-            Some(s) => {
+        if let Some(s) = &current_song {
                 // We don't want to just skip - if we do, it will go back into the prev
                 // queue.s
                 self.remove_song_from_queue(0);
                 self.add_to_queue_next(&s.song)
-            }
-            None => {}
+
         }
     }
 
@@ -570,10 +565,7 @@ impl Player {
         let sink = self.audio_sink.lock().unwrap();
         // Handle edge case of removing the first song.
 
-        let song = match songs_queue.remove(song_index) {
-            Some(s) => s,
-            None => return None,
-        };
+        let song = songs_queue.remove(song_index)?;
 
         if let Some(sink_ctrls) = song.sink_controls {
             info!("Sink internals: Marking song in sink as stopped");
@@ -582,7 +574,7 @@ impl Player {
 
         // Send the event to the frontend
         let songs_data: VecDeque<Song> = songs_queue.clone().into_iter().map(|s| s.song).collect();
-        if songs_data.len() == 0 {
+        if songs_data.is_empty() {
             sink.pause();
         }
 

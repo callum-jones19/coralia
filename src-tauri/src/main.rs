@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    collections::VecDeque,
     path::PathBuf,
     sync::{
         mpsc::{channel, Receiver, Sender},
@@ -21,7 +20,7 @@ use events::{emit_player_pause, emit_player_play, emit_queue_update};
 use log::info;
 use player::audio::{CachedPlayerState, Player};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Emitter, Manager, State, Theme};
+use tauri::{AppHandle, Emitter, Manager, State};
 
 mod data;
 mod events;
@@ -31,7 +30,7 @@ mod utils;
 enum PlayerCommand {
     EmptyAndPlay(Box<Song>),
     AddSongToQueueEnd(Box<Song>),
-    AddSongsToQueueEnd(Box<Vec<Song>>),
+    AddSongsToQueueEnd(Vec<Song>),
     AddToQueueNext(Box<Song>),
     Play,
     Pause,
@@ -120,18 +119,15 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                     &song.tags.title
                 );
                 player.clear();
-                match player.add_to_queue_end(&song) {
-                    Ok(_) => {
-                        player.play();
-                        emit_queue_update(
-                            player.get_queue(),
-                            player.get_previous(),
-                            player.get_playback_position(),
-                            handle,
-                        );
-                        emit_player_play(player.get_playback_position(), handle);
-                    }
-                    Err(_) => {}
+                if player.add_to_queue_end(&song).is_ok() {
+                    player.play();
+                    emit_queue_update(
+                        player.get_queue(),
+                        player.get_previous(),
+                        player.get_playback_position(),
+                        handle,
+                    );
+                    emit_player_play(player.get_playback_position(), handle);
                 }
             }
             PlayerCommand::TrySeek(duration) => {
@@ -144,7 +140,7 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
             PlayerCommand::RemoveAtIndex(skip_index) => {
                 info!("Player Command Handler: Received request to remove song from queue at index {}.", skip_index);
                 match player.remove_song_from_queue(skip_index) {
-                    Some(e) => {
+                    Some(_) => {
                         emit_queue_update(
                             player.get_queue(),
                             player.get_previous(),
@@ -202,7 +198,7 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                 );
             }
             PlayerCommand::AddSongsToQueueEnd(songs) => {
-                for song in *songs {
+                for song in songs {
                     player.add_to_queue_end(&song).unwrap();
                 }
                 emit_queue_update(
@@ -218,7 +214,6 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
 
 /// An enum of possible events that we may want to send out of the player
 /// thread for major events that could occur within the Player structure.
-
 fn main() {
     env_logger::init();
 
@@ -420,7 +415,7 @@ async fn enqueue_songs(
     let state = state_mutex.lock().unwrap();
     state
         .command_tx
-        .send(PlayerCommand::AddSongsToQueueEnd(Box::new(songs)))
+        .send(PlayerCommand::AddSongsToQueueEnd(songs))
         .unwrap();
     Ok(())
 }
