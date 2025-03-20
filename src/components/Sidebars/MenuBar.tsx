@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   Disc,
   Music,
+  Search,
   Settings,
 } from "react-feather";
 import { useLocation, useNavigate } from "react-router";
@@ -67,10 +68,26 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
     }
   };
 
+  const [searchExpanded, setSearchExpanded] = useState<boolean>(false);
+  const blurTimeout = useRef<number | null>(null);
+
   return (
     <>
-      <BackgroundCard className="basis-16 lg:basis-52 flex-grow-0 flex-shrink-0 rounded-md py-2 px-2 w-full h-full flex flex-col justify-between overflow-auto">
-        <div className="w-full flex flex-col gap-2 items-center lg:items-start">
+      <BackgroundCard className={`${searchExpanded ? 'basis-52' : 'basis-16'} transition-all lg:basis-52 flex-grow-0 flex-shrink-0 rounded-md py-2 px-2 w-full h-full flex flex-col justify-between overflow-auto @container`}>
+        <div
+          className="w-full flex flex-col gap-2 items-center lg:items-start"
+          onBlur={() => {
+
+            blurTimeout.current = window.setTimeout(() => {
+              setSearchExpanded(false);
+            }, 0);
+          }}
+          onFocus={() => {
+            if (blurTimeout.current) {
+              window.clearTimeout(blurTimeout.current);
+            }
+          }}
+        >
           <div className="w-full border-b border-neutral-600 pb-4">
             <div className="flex flex-row gap-1 items-center w-full mb-4 justify-center">
               <button
@@ -82,10 +99,20 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
               </button>
               <p className="font-semibold hidden lg:block flex-grow">Library</p>
             </div>
-            <SearchBar onSearch={onSearch} />
-
+            <div className="hidden lg:block">
+              <SearchBar onSearch={onSearch} />
+            </div>
+            <div className="block lg:hidden">
+              {!searchExpanded && <button
+                type="button"
+                className="w-full flex justify-center items-center p-2 rounded-md hover:dark:bg-neutral-600"
+                onClick={() => setSearchExpanded(!searchExpanded)}
+              >
+                <Search className="h-5 w-5" />
+              </button>}
+              {searchExpanded && <SearchBar autofocus onSearch={onSearch} />}
+            </div>
           </div>
-          {/* <h3 className="font-semibold text-lg hidden ml-2 lg:block">Library</h3> */}
           <button
             className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md mt-2 p-2 ${activeSection !== "Songs"
               ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"

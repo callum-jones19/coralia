@@ -6,9 +6,10 @@ import { SearchResults } from "../types/types";
 
 export interface SearchBarProps {
   onSearch: (searchRes: SearchResults) => void;
+  autofocus?: boolean;
 }
 
-export default function SearchBar({ onSearch }: SearchBarProps) {
+export default function SearchBar({ onSearch, autofocus }: SearchBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [query, setQuery] = useState<null | string>(null);
@@ -50,6 +51,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         placeholder="Search"
         value={query ? query : ""}
         onChange={handleInputChage}
+        autoFocus={autofocus}
       />
       {query
         && (
