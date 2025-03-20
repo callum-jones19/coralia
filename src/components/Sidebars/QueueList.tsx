@@ -74,7 +74,7 @@ export default function QueueList() {
   const currentlyPlayingId = queue.length > 0 ? queue[0].id : null;
 
   return (
-    <div className="h-full w-full overflow-hidden">
+    <div className="h-full w-full overflow-hidden flex flex-col">
       <div
         className="text-start flex justify-between gap-2 items-center mb-2 w-full"
       >
