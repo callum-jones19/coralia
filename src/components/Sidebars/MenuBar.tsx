@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  ChevronLeft,
-  ChevronRight,
+  ArrowLeft,
   Disc,
   Music,
   Settings,
@@ -61,52 +60,42 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
     }
   };
 
-  const handleClickForward = () => {
-    const t = navigate(1);
-    if (t) {
-      t.catch(e => console.error(e));
-    }
-  };
-
   return (
     <>
-      <BackgroundCard className="basis-16 lg:basis-52 flex-grow-0 flex-shrink-0 rounded-md p-2 w-full h-full flex flex-col justify-between overflow-auto">
+      <BackgroundCard className="basis-16 lg:basis-52 flex-grow-0 flex-shrink-0 rounded-md py-2 px-2 w-full h-full flex flex-col justify-between overflow-auto">
         <div className="w-full flex flex-col gap-2 items-start">
-          <div className="w-full flex flex-row justify-between gap-2 flex-wrap border-b-2 border-solid border-neutral-300 dark:border-neutral-700 pb-4 mb-2">
-            <button
-              className="hover:bg-neutral-300 hover:dark:bg-neutral-600 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
-              onClick={handleClickBack}
-            >
-              <ChevronLeft className="m-auto" />
-            </button>
-            <button
-              className="hover:bg-neutral-300 hover:dark:bg-neutral-600 bg-neutral-200 dark:bg-neutral-700 p-2 rounded-md flex-grow"
-              onClick={handleClickForward}
-            >
-              <ChevronRight className="m-auto" />
-            </button>
+          <div className="w-full border-b border-neutral-600 pb-4">
+            <div className="flex flex-row gap-1 items-center w-full mb-4">
+              <button
+                className="hover:bg-neutral-300 hover:dark:bg-neutral-600 p-1 rounded-md w-8 h-8 inline-flex items-center justify-center"
+                onClick={handleClickBack}
+              >
+                <ArrowLeft className="h-5/6 w-5/6" />
+              </button>
+              <p className="font-semibold">Library</p>
+            </div>
             <SearchBar onSearch={onSearch} />
+
           </div>
+          {/* <h3 className="font-semibold text-lg hidden ml-2 lg:block">Library</h3> */}
           <button
-            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${
-              activeSection !== "Songs"
-                ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
-                : "bg-neutral-300 dark:bg-neutral-900"
-            }`}
+            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${activeSection !== "Songs"
+              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
+              : "bg-neutral-300 dark:bg-neutral-900"
+              }`}
             onClick={() => handleClickSongs()}
           >
-            <Music />
+            <Music className="h-5 w-5" />
             <p className="hidden lg:block">Songs</p>
           </button>
           <button
-            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2  ${
-              activeSection !== "Albums"
-                ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
-                : "bg-neutral-300 dark:bg-neutral-900"
-            }`}
+            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
+              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
+              : "bg-neutral-300 dark:bg-neutral-900"
+              }`}
             onClick={() => handleClickAlbums()}
           >
-            <Disc />
+            <Disc className="h-5 w-5" />
             <p className="hidden lg:block">Albums</p>
           </button>
         </div>
