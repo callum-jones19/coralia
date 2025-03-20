@@ -234,7 +234,11 @@ fn main() {
 
     // Read the settings
     let settings = match Settings::from_file() {
-        Ok(f) => f,
+        Ok(f) => {
+            info!("Read in existing settings from settings file");
+            info!("{:?}", &f);
+            f
+        }
         Err(_) => {
             // TODO use specific error
             Settings::new()
@@ -243,6 +247,7 @@ fn main() {
 
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
 
+    let init_settings = settings.clone();
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_http::init())
@@ -250,9 +255,12 @@ fn main() {
             let handle = app.app_handle().to_owned();
 
             info!("Starting async tokio thread to hold the audio player");
+            let player_handle = handle.clone();
             tauri::async_runtime::spawn(async move {
-                create_and_run_audio_player(player_cmd_rx, &handle);
+                create_and_run_audio_player(player_cmd_rx, &player_handle);
             });
+
+            init_settings.apply(&handle);
 
             Ok(())
         })

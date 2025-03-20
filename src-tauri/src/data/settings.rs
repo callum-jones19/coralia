@@ -4,7 +4,7 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
-use tauri::Theme;
+use tauri::{AppHandle, Theme};
 
 use crate::utils::program_cache_dir;
 
@@ -51,6 +51,11 @@ impl Settings {
             }
             Err(e) => Err(e.kind()),
         }
+    }
+
+    /// Set all the tauri states to be synced with the current settings
+    pub fn apply(&self, handle: &AppHandle) {
+        handle.set_theme(self.theme);
     }
 
     pub fn update_theme(&mut self, new_theme: Option<Theme>) {
