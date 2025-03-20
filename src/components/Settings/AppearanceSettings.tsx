@@ -32,7 +32,7 @@ export default function AppearanceSettings() {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-4 border-b-2 border-solid border-neutral-300 dark:border-neutral-600 pb-3">
+      <h2 className="font-semibold mb-4 p-1 border-b border-solid border-neutral-300 dark:border-neutral-600 pb-5">
         Appearance
       </h2>
       <div className="flex flex-col gap-1">
