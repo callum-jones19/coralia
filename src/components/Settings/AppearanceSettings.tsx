@@ -1,7 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
+import { useEffect, useState } from "react";
 import Select from "react-select";
+import { Settings } from "../../types/types";
 
 export type AppearanceOption = "dark" | "light" | "system";
+
+interface ThemeOption { value: string; label: string }
 
 export default function AppearanceSettings() {
   const themeOptions = [
@@ -9,6 +13,22 @@ export default function AppearanceSettings() {
     { value: 'dark', label: 'Dark' },
     { value: 'light', label: 'Light' },
   ];
+
+  const [initTheme, setInitTheme] = useState<null | ThemeOption>(null);
+
+  useEffect(() => {
+    invoke<Settings>('get_app_settings', {})
+      .then(settings => {
+        if (settings.theme === null) {
+          setInitTheme({ value: 'system', label: 'System' });
+        } else if (settings.theme === 'dark') {
+          setInitTheme({ value: 'dark', label: 'Dark' });
+        } else {
+          setInitTheme({ value: 'light', label: 'Light' });
+        }
+      })
+      .catch(e => console.error(e));
+  }, []);
 
   return (
     <>
@@ -20,8 +40,8 @@ export default function AppearanceSettings() {
           <div className="flex flex-col">
             <p className="text-lg">Theme</p>
           </div>
-          <Select
-            defaultValue={themeOptions[0]}
+          {initTheme && <Select
+            defaultValue={initTheme}
             options={themeOptions}
             className="w-80"
             onChange={newTheme => {
@@ -36,7 +56,7 @@ export default function AppearanceSettings() {
                 .catch(e => console.error(e));
               }
             }}
-          />
+          />}
         </div>
       </div>
     </>
