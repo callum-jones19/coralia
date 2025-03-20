@@ -1,8 +1,11 @@
-use std::path::PathBuf;
+use std::{
+    fs::File,
+    path::PathBuf,
+};
 
 use lofty::{
     file::TaggedFileExt,
-    read_from_path,
+    read_from,
     tag::{Accessor, ItemKey},
 };
 use serde::{Deserialize, Serialize};
@@ -46,7 +49,12 @@ impl MusicTags {
     }
 
     pub fn new_from_file(music_file: PathBuf) -> Result<Self, String> {
-        let tagged_file = match read_from_path(music_file) {
+        let mut file_to_tag = match File::open(music_file) {
+            Ok(f) => f,
+            Err(e) => return Err(format!("Could not read given file. Error: {}", e)),
+        };
+        // let buff_file = BufReader::new(file_to_tag);
+        let tagged_file = match read_from(&mut file_to_tag) {
             Ok(t) => t,
             Err(e) => return Err(format!("Could not read tags from file. Error: {}", e)),
         };

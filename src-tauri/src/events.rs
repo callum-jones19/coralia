@@ -46,7 +46,10 @@ pub fn emit_song_end(new_queue: VecDeque<Song>, new_previous: Vec<Song>, handle:
             },
         )
         .unwrap();
-    handle.emit("song-end", &new_queue.front()).unwrap();
+    handle.emit::<SongEndPayload>("song-end", SongEndPayload {
+        new_queue: new_queue.clone(),
+        new_previous: new_previous.clone(),
+    }).unwrap();
     handle
         .emit::<QueueUpdatePayload>(
             "queue-change",
