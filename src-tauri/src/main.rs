@@ -107,12 +107,21 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                 info!("Player Command Handler: Received request to skip current song");
                 player.skip_current_song();
                 player.play();
-                emit_queue_update(
-                    player.get_queue(),
-                    player.get_previous(),
-                    player.get_playback_position(),
-                    handle,
-                );
+                // Leave this out of here for now - this will get emitted when
+                // the song ends in the actual sink.
+                // TODO think about the race condition this represents. I simply
+                // don't have the energy to fundametnally fix it right now because
+                // I think it is quite substantial, but essentially I think because
+                // the queue is not being updated directly in that skip function
+                // but instead when the song comes out of the sink, sometimes
+                // the get_queue func will return an out-of-sync set of data.
+
+                // emit_queue_update(
+                //     player.get_queue(),
+                //     player.get_previous(),
+                //     player.get_playback_position(),
+                //     handle,
+                // );
             }
             PlayerCommand::EmptyAndPlay(song) => {
                 info!(
