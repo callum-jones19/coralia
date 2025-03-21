@@ -198,7 +198,7 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                 );
             }
             PlayerCommand::Shuffle => {
-                player.shuffle_queue();
+                player.toggle_queue_shuffle();
                 emit_queue_update(
                     player.get_queue(),
                     player.get_previous(),

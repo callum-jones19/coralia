@@ -270,6 +270,7 @@ pub struct Player {
     // We need a list of sources to track what is currently in the sink,
     // as the sink gives us no info about the sources inside it.
     songs_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
+    cached_unshuffled_queue: Option<VecDeque<PlayerSong>>,
     previous_songs: Arc<Mutex<Vec<PlayerSong>>>,
     player_event_tx: Sender<EndCause>,
 }
@@ -323,6 +324,7 @@ impl Player {
             audio_sink: sink_wrapped,
             songs_queue,
             previous_songs: prev_songs,
+            cached_unshuffled_queue: None,
             player_event_tx: sink_song_end_tx,
         }
     }
@@ -590,54 +592,87 @@ impl Player {
     }
 
     /// TODO docs
-    pub fn shuffle_queue(&mut self) {
-        {
-            let mut songs_queue = self.songs_queue.lock().unwrap();
+    pub fn toggle_queue_shuffle(&mut self) {
+        let mut songs_queue = self.songs_queue.lock().unwrap();
 
-            // Create the new queue copy that we will shuffle, leaving the currently
-            // playing song untouched
-            let mut to_shuffle = songs_queue.clone();
-            let curr_playing = to_shuffle.pop_front();
+        // Create the new queue copy that we will shuffle, leaving the currently
+        // playing song untouched
+        let mut queue_to_change = songs_queue.clone();
+        let curr_playing = queue_to_change.pop_front();
 
-            // Now that we have popped the currently playing song, shadow the
-            // variable with just a regular vec so we can shuffle later
-            let mut to_shuffle: Vec<PlayerSong> = to_shuffle.into();
+        // Now we need to clear out the current queue, without disturbing
+        // the song that is being played at the moment. Then we want to drain
+        // the sink of future songs too.
+        if songs_queue.len() > 0 {
+            let mut songs_in_sink: Vec<&PlayerSong> = songs_queue
+                .iter()
+                .filter(|s| s.sink_controls.is_some())
+                .collect();
 
-            // Now we need to clear out the current queue, without disturbing
-            // the song that is being played at the moment. Then we want to drain
-            // the sink of future songs too.
-            if songs_queue.len() > 0 {
-                let mut songs_in_sink: Vec<&PlayerSong> = songs_queue
-                    .iter()
-                    .filter(|s| s.sink_controls.is_some())
-                    .collect();
-
-                // Remove songs from the sink, keeping only the first in there.
-                for song in songs_in_sink.iter().skip(1) {
-                    match &song.sink_controls {
-                        Some(should_stop) => {
-                            should_stop.store(true, Ordering::SeqCst);
-                        }
-                        None => panic!(
-                            "Should never receive none for sink controls, due to filter above"
-                        ),
+            // Remove songs from the sink, keeping only the first in there.
+            for song in songs_in_sink.iter().skip(1) {
+                match &song.sink_controls {
+                    Some(should_stop) => {
+                        should_stop.store(true, Ordering::SeqCst);
+                    }
+                    None => {
+                        panic!("Should never receive none for sink controls, due to filter above")
                     }
                 }
+            }
 
-                // Now clear out the queue. Becuase we have both the sink and the
-                // queue locked, this should not cause any race conditions if
-                // a song ends and tries to run its callback in the milliseconds
-                // it has available.
-                songs_in_sink.drain(1..);
+            // Now clear out the queue. Becuase we have both the sink and the
+            // queue locked, this should not cause any race conditions if
+            // a song ends and tries to run its callback in the milliseconds
+            // it has available.
+            songs_in_sink.drain(1..);
 
-                // Now repopulate the queue with the shuffled songs
-                let mut rng = thread_rng();
-                to_shuffle.shuffle(&mut rng);
+            // Either shuffle or 'unshuffle' the queue
+            match &self.cached_unshuffled_queue {
+                Some(cached_orig_queue) => {
+                    let mut original_queue = cached_orig_queue.clone();
+                    // These songs get marked as stopped in the cached version,
+                    // because they need to be marked as such to get them out of
+                    // the sink when we clear it for the shuffled queue. This look
+                    // resets them to be non stopped in the restored queue.
 
-                *songs_queue = to_shuffle.into();
-                match curr_playing {
-                    Some(curr_playing) => songs_queue.push_front(curr_playing),
-                    None => {}
+                    // Keep in mind our current code largely assumes that if the
+                    // control is Some(), then the song is going to be skipped
+
+                    // FIXME setting to none immediately after setting to Some(true)
+                    // worries me a little bit. Might need to rethink this?
+                    // I think it's fine for now but could be a problem if you
+                    // shuffled and then skipped fast enough?
+                    original_queue
+                        .iter_mut()
+                        .for_each(|s| s.sink_controls = None);
+
+                    *songs_queue = original_queue;
+
+                    self.cached_unshuffled_queue = None;
+                    match curr_playing {
+                        Some(curr_playing) => songs_queue.push_front(curr_playing),
+                        None => {}
+                    }
+                }
+                None => {
+                    // Cache the unshuffled queue, so we can turn off shuffle
+                    // and restore to the orignial state
+                    self.cached_unshuffled_queue = Some(queue_to_change.clone());
+
+                    // Now that we have popped the currently playing song, shadow the
+                    // variable with just a regular vec so we can shuffle later
+                    let mut queue_to_change: Vec<PlayerSong> = queue_to_change.into();
+
+                    // Now repopulate the queue with the shuffled songs
+                    let mut rng = thread_rng();
+                    queue_to_change.shuffle(&mut rng);
+
+                    *songs_queue = queue_to_change.into();
+                    match curr_playing {
+                        Some(curr_playing) => songs_queue.push_front(curr_playing),
+                        None => {}
+                    }
                 }
             }
         }
