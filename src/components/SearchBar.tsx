@@ -52,6 +52,11 @@ export default function SearchBar({ onSearch, autofocus }: SearchBarProps) {
         value={query ? query : ""}
         onChange={handleInputChage}
         autoFocus={autofocus}
+        onKeyDown={e => {
+          if (e.key === 'Escape') {
+            e.currentTarget.blur();
+          }
+        }}
       />
       {query
         && (
