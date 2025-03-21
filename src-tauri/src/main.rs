@@ -30,7 +30,7 @@ mod utils;
 enum PlayerCommand {
     EmptyAndPlay(Box<Song>),
     AddSongToQueueEnd(Box<Song>),
-    AddSongsToQueueEnd(Vec<Song>),
+    AddSongsToQueueEnd(Vec<Song>, Sender<()>),
     AddToQueueNext(Box<Song>),
     Play,
     Pause,
@@ -40,7 +40,7 @@ enum PlayerCommand {
     RemoveAtIndex(usize),
     TrySeek(Duration),
     GetPlayerState(Sender<CachedPlayerState>),
-    Clear,
+    Clear(Sender<()>),
     Shuffle,
 }
 
@@ -165,7 +165,7 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                 let cached_state = player.get_current_state();
                 state_rx.send(cached_state).unwrap();
             }
-            PlayerCommand::Clear => {
+            PlayerCommand::Clear(tx) => {
                 info!("Player Command Handler: Received request to clear the player queue.");
                 player.clear();
                 emit_queue_update(
@@ -174,6 +174,9 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                     player.get_playback_position(),
                     handle,
                 );
+
+                // Signal that the queue has been cleared
+                tx.send(()).unwrap();
             }
             PlayerCommand::AddToQueueNext(song) => {
                 info!(
@@ -206,7 +209,7 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                     handle,
                 );
             }
-            PlayerCommand::AddSongsToQueueEnd(songs) => {
+            PlayerCommand::AddSongsToQueueEnd(songs, tx) => {
                 for song in songs {
                     player.add_to_queue_end(&song).unwrap();
                 }
@@ -216,6 +219,7 @@ fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &
                     player.get_playback_position(),
                     handle,
                 );
+                tx.send(()).unwrap();
             }
         }
     }
@@ -379,8 +383,10 @@ async fn clear_library_and_cache(
 ) -> Result<(), tauri::Error> {
     let mut state = state_mutex.lock().unwrap();
     state.library.clear_library();
-    state.command_tx.send(PlayerCommand::Clear).unwrap();
+    let (tx, rx) = channel();
+    state.command_tx.send(PlayerCommand::Clear(tx)).unwrap();
 
+    rx.recv().unwrap();
     export_library(&state.library, &app_handle)
 }
 
@@ -430,10 +436,16 @@ async fn enqueue_songs(
     songs: Vec<Song>,
 ) -> Result<(), ()> {
     let state = state_mutex.lock().unwrap();
+    let (tx, rx) = channel::<()>();
     state
         .command_tx
-        .send(PlayerCommand::AddSongsToQueueEnd(songs))
+        .send(PlayerCommand::AddSongsToQueueEnd(songs, tx))
         .unwrap();
+
+    // Sleep until the songs are added to the queue
+    // This means the frontend can use .then() to actually wait for when the
+    // songs have been added to the queue.
+    rx.recv().unwrap();
     Ok(())
 }
 
@@ -453,7 +465,11 @@ async fn clear_queue_and_play(
 #[tauri::command]
 async fn clear_queue(state_mutex: State<'_, Mutex<AppState>>) -> Result<(), ()> {
     let state = state_mutex.lock().unwrap();
-    state.command_tx.send(PlayerCommand::Clear).unwrap();
+    let (tx, rx) = channel::<()>();
+    state.command_tx.send(PlayerCommand::Clear(tx)).unwrap();
+
+    // Wait for the queue to be cleared
+    rx.recv().unwrap();
     Ok(())
 }
 
