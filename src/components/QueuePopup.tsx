@@ -16,7 +16,7 @@ export default function QueuePopup() {
       </button>
       {isOpen
         && (
-          <div className="absolute z-10 bottom-10 right-0 h-96 w-60 rounded-md bg-white shadow-md dark:bg-neutral-900 p-4">
+          <div className="absolute z-20 bottom-10 right-0 h-96 w-60 rounded-md bg-white shadow-md dark:bg-neutral-900 p-4">
             <QueueList />
           </div>
         )}
