@@ -24,7 +24,7 @@ function DirectoryListItem(
           </p>
         </div>
           <button
-            className="text-neutral-500 rounded-lg p-1 flex justify-center items-center hover:bg-neutral-200 hover:text-black"
+            className="text-neutral-800 dark:text-neutral-200 rounded-lg p-1 flex justify-center items-center hover:bg-neutral-200 hover:text-black"
             type="button"
             onClick={() => {
               if (onClickRemove) {
