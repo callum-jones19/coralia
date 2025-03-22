@@ -1,7 +1,7 @@
 import {} from "@tauri-apps/api";
 import * as dialog from "@tauri-apps/plugin-dialog";
 import { FormEvent, useEffect, useState } from "react";
-import { CheckSquare, Plus, Square, X } from "react-feather";
+import { Plus, X } from "react-feather";
 import { useNavigate } from "react-router";
 import { addLibraryFolders } from "../api/commands";
 import { readLibFromCache } from "../api/importer";
@@ -15,41 +15,25 @@ interface DirectoryListItemProps {
 function DirectoryListItem(
   { path, onClickRemove, index }: DirectoryListItemProps,
 ) {
-  const [isChecked, setIsChecked] = useState<boolean>(true);
-
   return (
     <>
       <div className="w-full flex flex-row items-center justify-between  rounded-lg h-10">
         <div className="flex flex-row items-center flex-grow basis-1/2 text-nowrap overflow-hidden">
-          {false
-            && (
-              <button
-                className="text-black p-1 rounded-lg h-full aspect-square flex justify-center items-center hover:bg-neutral-200"
-                type="button"
-                onClick={() => setIsChecked(!isChecked)}
-              >
-                {isChecked && <CheckSquare size="1.5rem" />}
-                {!isChecked && <Square size="1.5rem" />}
-              </button>
-            )}
           <p title={path} className="text-nowrap overflow-hidden text-ellipsis">
             <b>{index}.</b> {path}
           </p>
         </div>
-        {true
-          && (
-            <button
-              className="text-neutral-500 rounded-lg p-1 flex justify-center items-center  hover:bg-neutral-200 hover:text-black"
-              type="button"
-              onClick={() => {
-                if (onClickRemove) {
-                  onClickRemove();
-                }
-              }}
-            >
-              <X size={20} />
-            </button>
-          )}
+          <button
+            className="text-neutral-500 rounded-lg p-1 flex justify-center items-center hover:bg-neutral-200 hover:text-black"
+            type="button"
+            onClick={() => {
+              if (onClickRemove) {
+                onClickRemove();
+              }
+            }}
+          >
+            <X size={20} />
+          </button>
       </div>
     </>
   );
@@ -103,10 +87,10 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center bg-neutral-400">
+    <div className="h-screen flex flex-col justify-center bg-neutral-400 dark:bg-neutral-700">
       {!isCheckingCache && !cachedLibExists && (
         <form
-          className="bg-white shadow-md text-neutral-950 w-2/3 m-auto h-1/2 p-10 rounded-xl flex flex-col gap-3 justify-between"
+          className="bg-white dark:bg-neutral-900 shadow-md text-neutral-950 dark:text-white w-2/3 m-auto h-1/2 p-10 rounded-xl flex flex-col gap-3 justify-between"
           onSubmit={handleFormSubmit}
         >
           <div className="border-b-2 border-solid border-neutral-300">
@@ -115,7 +99,7 @@ export default function OnboardingScreen() {
               Music will be scanned into the library from the following folders:
             </p>
           </div>
-          <div className="bg-white text-neutral-950 rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center ">
+          <div className="rounded-md flex flex-col gap-3 overflow-auto flex-grow justify-center ">
             <div className="overflow-auto basis-full flex flex-col gap-3">
               {paths.map((path, index) => (
                 <div key={path} className="mr-4">
@@ -139,9 +123,9 @@ export default function OnboardingScreen() {
             </div>
           </div>
 
-          <div className="flex flex-row w-full justify-between">
+          <div className="flex flex-row w-full justify-between text-white dark:text-black">
             <button
-              className="rounded-lg flex flex-row gap-2 hover:bg-neutral-300 text-sm p-2 pl-3 pr-4 bg-neutral-700 w-fit text-white shadow-md"
+              className="rounded-lg flex flex-row gap-2 hover:bg-neutral-300 text-sm p-2 pl-3 pr-4 bg-neutral-700 dark:bg-neutral-200 w-fit shadow-md"
               onClick={handleAddDir}
               type="button"
             >
@@ -151,7 +135,7 @@ export default function OnboardingScreen() {
             <button
               type="submit"
               disabled={paths.length === 0}
-              className="disabled:bg-neutral-200 disabled:text-neutral-500 rounded-lg bg-neutral-700 pl-3 pr-3 text-white shadow-md p-2 w-fit hover:bg-neutral-200 self-end"
+              className="disabled:bg-neutral-200 disabled:dark:bg-neutral-700 disabled:text-neutral-500 rounded-lg bg-neutral-700 pl-3 pr-3 shadow-md p-2 w-fit dark:bg-neutral-200 hover:bg-neutral-200 self-end"
             >
               Submit
             </button>
