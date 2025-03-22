@@ -6,7 +6,7 @@ default-run = "app"
 edition = "2021"
 license = ""
 repository = ""
-rust-version = "1.60"
+rust-version = "1.67"
 description = "A Tauri App"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -27,6 +27,7 @@ rand = "0.8.5"
 rodio = { version = "0.19.0", features = ["symphonia-all"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+souvlaki = "0.7.0"
 symphonia = "0.5.4"
 symphonia-bundle-mp3 = "0.5.4"
 symphonia-core = "0.5.4"
