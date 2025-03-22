@@ -170,7 +170,16 @@ fn handle_sink_song_end(
                     .collect();
 
                 emit_song_end(new_queue.clone(), new_previous.clone(), &app_handle);
-                emit_queue_update(new_queue, new_previous, sink_locked.get_pos(), &app_handle);
+                {
+                    let mut controls = media_controls.lock().unwrap();
+                    emit_queue_update(
+                        new_queue,
+                        new_previous,
+                        sink_locked.get_pos(),
+                        &app_handle,
+                        &mut controls,
+                    );
+                }
             }
             EndCause::Stopped => {
                 let mut song_queue_locked = song_queue.lock().unwrap();

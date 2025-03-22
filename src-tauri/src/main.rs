@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    panic::UnwindSafe,
     path::PathBuf,
     sync::{
         mpsc::{channel, Receiver, Sender},
@@ -92,9 +91,9 @@ fn create_and_run_audio_player(
         .attach(|event| println!("Event received: {:?}", event))
         .unwrap();
 
-    let mut controls = Arc::new(Mutex::new(controls));
+    let controls = Arc::new(Mutex::new(controls));
 
-    let mut player_media_controls = Arc::clone(&controls);
+    let player_media_controls = Arc::clone(&controls);
     let mut player = Player::new(handle.clone(), player_media_controls);
 
     loop {
@@ -106,12 +105,16 @@ fn create_and_run_audio_player(
                     &song.tags.title
                 );
                 player.add_to_queue_end(&song).unwrap();
-                emit_queue_update(
-                    player.get_queue(),
-                    player.get_previous(),
-                    player.get_playback_position(),
-                    handle,
-                );
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_queue_update(
+                        player.get_queue(),
+                        player.get_previous(),
+                        player.get_playback_position(),
+                        handle,
+                        &mut controls,
+                    );
+                }
             }
             PlayerCommand::Play => {
                 info!("Player Command Handler: Received request to set sink to play.");
@@ -160,12 +163,16 @@ fn create_and_run_audio_player(
                 player.clear();
                 if player.add_to_queue_end(&song).is_ok() {
                     player.play();
-                    emit_queue_update(
-                        player.get_queue(),
-                        player.get_previous(),
-                        player.get_playback_position(),
-                        handle,
-                    );
+                    {
+                        let mut controls = controls.lock().unwrap();
+                        emit_queue_update(
+                            player.get_queue(),
+                            player.get_previous(),
+                            player.get_playback_position(),
+                            handle,
+                            &mut controls,
+                        );
+                    }
                     emit_player_play(player.get_playback_position(), handle);
                 }
             }
@@ -180,11 +187,13 @@ fn create_and_run_audio_player(
                 info!("Player Command Handler: Received request to remove song from queue at index {}.", skip_index);
                 match player.remove_song_from_queue(skip_index) {
                     Some(_) => {
+                        let mut controls = controls.lock().unwrap();
                         emit_queue_update(
                             player.get_queue(),
                             player.get_previous(),
                             player.get_playback_position(),
                             handle,
+                            &mut controls,
                         );
                     }
                     None => todo!(),
@@ -198,12 +207,16 @@ fn create_and_run_audio_player(
             PlayerCommand::Clear(tx) => {
                 info!("Player Command Handler: Received request to clear the player queue.");
                 player.clear();
-                emit_queue_update(
-                    player.get_queue(),
-                    player.get_previous(),
-                    player.get_playback_position(),
-                    handle,
-                );
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_queue_update(
+                        player.get_queue(),
+                        player.get_previous(),
+                        player.get_playback_position(),
+                        handle,
+                        &mut controls,
+                    );
+                }
 
                 // Signal that the queue has been cleared
                 tx.send(()).unwrap();
@@ -214,41 +227,57 @@ fn create_and_run_audio_player(
                     &song.tags.title
                 );
                 player.add_to_queue_next(&song);
-                emit_queue_update(
-                    player.get_queue(),
-                    player.get_previous(),
-                    player.get_playback_position(),
-                    handle,
-                );
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_queue_update(
+                        player.get_queue(),
+                        player.get_previous(),
+                        player.get_playback_position(),
+                        handle,
+                        &mut controls,
+                    );
+                }
             }
             PlayerCommand::GoBackOne => {
                 player.go_back();
-                emit_queue_update(
-                    player.get_queue(),
-                    player.get_previous(),
-                    player.get_playback_position(),
-                    handle,
-                );
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_queue_update(
+                        player.get_queue(),
+                        player.get_previous(),
+                        player.get_playback_position(),
+                        handle,
+                        &mut controls,
+                    );
+                }
             }
             PlayerCommand::Shuffle => {
                 player.toggle_queue_shuffle();
-                emit_queue_update(
-                    player.get_queue(),
-                    player.get_previous(),
-                    player.get_playback_position(),
-                    handle,
-                );
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_queue_update(
+                        player.get_queue(),
+                        player.get_previous(),
+                        player.get_playback_position(),
+                        handle,
+                        &mut controls,
+                    );
+                }
             }
             PlayerCommand::AddSongsToQueueEnd(songs, tx) => {
                 for song in songs {
                     player.add_to_queue_end(&song).unwrap();
                 }
-                emit_queue_update(
-                    player.get_queue(),
-                    player.get_previous(),
-                    player.get_playback_position(),
-                    handle,
-                );
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_queue_update(
+                        player.get_queue(),
+                        player.get_previous(),
+                        player.get_playback_position(),
+                        handle,
+                        &mut controls,
+                    );
+                }
                 tx.send(()).unwrap();
             }
         }

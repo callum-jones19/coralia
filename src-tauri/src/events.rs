@@ -2,6 +2,7 @@ use std::{collections::VecDeque, time::Duration};
 
 use log::info;
 use serde::Serialize;
+use souvlaki::{MediaControls, MediaMetadata};
 use tauri::{AppHandle, Emitter};
 
 use crate::data::song::Song;
@@ -46,10 +47,15 @@ pub fn emit_song_end(new_queue: VecDeque<Song>, new_previous: Vec<Song>, handle:
             },
         )
         .unwrap();
-    handle.emit::<SongEndPayload>("song-end", SongEndPayload {
-        new_queue: new_queue.clone(),
-        new_previous: new_previous.clone(),
-    }).unwrap();
+    handle
+        .emit::<SongEndPayload>(
+            "song-end",
+            SongEndPayload {
+                new_queue: new_queue.clone(),
+                new_previous: new_previous.clone(),
+            },
+        )
+        .unwrap();
     handle
         .emit::<QueueUpdatePayload>(
             "queue-change",
@@ -89,11 +95,25 @@ pub fn emit_queue_update(
     new_previous: Vec<Song>,
     current_playback_pos: Duration,
     handle: &AppHandle,
+    media_controls: &mut MediaControls,
 ) {
     info!(
         "Player Events: song queue updated. {:?}",
         current_playback_pos
     );
+
+    match new_queue.front() {
+        Some(current_song) => {
+            media_controls.set_metadata(MediaMetadata {
+                album: current_song.tags.album.as_deref(),
+                title: Some(&current_song.tags.title),
+                artist: current_song.tags.artist.as_deref(),
+                ..Default::default()
+            });
+        }
+        None => {}
+    }
+
     handle
         .emit::<QueueLengthChangePayload>(
             "queue-length-change",
