@@ -93,10 +93,6 @@ export default function App() {
                 element={<SettingsScreen />}
               >
                 <Route
-                  index
-                  element={<AppearanceSettings />}
-                />
-                <Route
                   path="appearance"
                   element={<AppearanceSettings />}
                 />

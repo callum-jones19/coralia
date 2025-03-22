@@ -6,12 +6,10 @@ import {
   Search,
   Settings,
 } from "react-feather";
-import { useLocation, useNavigate } from "react-router";
+import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { SearchResults } from "../../types/types";
 import SearchBar from "../SearchBar";
 import BackgroundCard from "../UI/BackgroundCard";
-
-type ActiveSection = "Songs" | "Albums";
 
 export interface MenuBarProps {
   onSearch: (searchRes: SearchResults) => void;
@@ -21,17 +19,10 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
   const navigate = useNavigate();
   const loc = useLocation();
 
-  const [activeSection, setActiveSection] = useState<ActiveSection>("Songs");
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
 
   useEffect(() => {
     console.log(loc);
-
-    if (loc.pathname === "/home") {
-      setActiveSection("Songs");
-    } else if (loc.pathname === "/home/albums") {
-      setActiveSection("Albums");
-    }
 
     if (loc.pathname.startsWith("/home/album/")) {
       setCanGoBack(true);
@@ -39,27 +30,6 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
       setCanGoBack(false);
     }
   }, [loc]);
-
-  const handleClickSongs = () => {
-    const t = navigate("/home");
-    if (t) {
-      t.catch(e => console.error(e));
-    }
-  };
-
-  const handleClickAlbums = () => {
-    const t = navigate("/home/albums");
-    if (t) {
-      t.catch(e => console.error(e));
-    }
-  };
-
-  const handleClickSettings = () => {
-    const t = navigate("/settings");
-    if (t) {
-      t.catch(e => console.error(e));
-    }
-  };
 
   const handleClickBack = () => {
     const t = navigate("/home/albums");
@@ -113,34 +83,29 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
               {searchExpanded && <SearchBar autofocus onSearch={onSearch} />}
             </div>
           </div>
-          <button
-            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md mt-2 p-2 ${activeSection !== "Songs"
-              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
-              : "bg-neutral-300 dark:bg-neutral-900"
-              }`}
-            onClick={() => handleClickSongs()}
+          <NavLink
+            className={({ isActive }) => `flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${isActive ? 'bg-neutral-200 dark:bg-neutral-900' : 'bg-transparent'}`}
+            to="/home"
+            end
           >
             <Music className="h-5 w-5" />
             <p className="hidden lg:block">Songs</p>
-          </button>
-          <button
-            className={`flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2  ${activeSection !== "Albums"
-              ? "hover:bg-neutral-200 hover:dark:bg-neutral-700"
-              : "bg-neutral-300 dark:bg-neutral-900"
-              }`}
-            onClick={() => handleClickAlbums()}
+          </NavLink>
+          <NavLink
+            className={({ isActive }) => `flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${isActive ? 'bg-neutral-200 dark:bg-neutral-900' : 'bg-transparent'}`}
+            to="/home/albums"
           >
             <Disc className="h-5 w-5" />
             <p className="hidden lg:block">Albums</p>
-          </button>
+          </NavLink>
         </div>
-        <button
+        <Link
           className="flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 hover:bg-neutral-300 hover:dark:bg-neutral-700"
-          onClick={() => handleClickSettings()}
+          to={'/settings/appearance'}
         >
           <Settings className="h-5 w-5" />
           <p className="hidden lg:block">Settings</p>
-        </button>
+        </Link>
       </BackgroundCard>
     </>
   );
