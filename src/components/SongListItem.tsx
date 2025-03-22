@@ -27,7 +27,7 @@ export default function SongListItem(
   return (
     <div
       className={`h-full rounded-md  ${isPlaying
-          ? "text-green-700 font-bold"
+          ? "text-green-700 font-semibold"
           : isHovering
             ? "bg-neutral-400 dark:bg-neutral-700"
             : ""

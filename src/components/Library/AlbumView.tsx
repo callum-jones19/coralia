@@ -60,7 +60,7 @@ export default function AlbumView() {
     : "";
 
   return (
-    <div className="flex flex-col h-full gap-3 overflow-auto">
+    <div className="flex flex-col h-full gap-5 overflow-auto">
       {!album || songs.length === 0 && (
             <>
               <p>
@@ -73,47 +73,44 @@ export default function AlbumView() {
       {album && songs.length > 0
         && (
           <>
-            <div
-              id="album-header"
-              className="flex flex-row flex-grow gap-3 pl-3 pt-3 flex-wrap justify-start"
-            >
-              <img
-                alt="Album Art Image"
-                src={albumArtUri}
-                height="250px"
-                width="250px"
-                className="rounded-md shadow-md"
-              />
-              <div className="flex flex-col justify-end gap-1 overflow-hidden">
-                <p className="font-bold text-3xl text-nowrap overflow-hidden text-ellipsis">
-                  {album.title}
-                </p>
-                <i className="text-xl text-nowrap overflow-hidden text-ellipsis">
-                  {album.albumArtist}
-                </i>
+            <div className="w-full flex flex-col gap-4">
+              <div
+                id="album-header"
+                className="flex flex-row flex-grow gap-3 pl-3 pt-3 flex-wrap justify-start"
+              >
+                <img
+                  alt="Album Art Image"
+                  src={albumArtUri}
+                  height="250px"
+                  width="250px"
+                  className="rounded-md shadow-md"
+                />
+                <div className="flex flex-col justify-end gap-1 overflow-hidden">
+                  <p className="font-semibold text-4xl text-nowrap overflow-hidden text-ellipsis pb-2">
+                    {album.title}
+                  </p>
+                  <p className="text-xl font- text-nowrap overflow-hidden text-ellipsis">
+                    {album.albumArtist}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              id="controls"
-              className="w-full flex flex-row gap-3 pl-3"
-            >
-              <button
-                className="hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-md p-2"
-                onClick={() => {
-                  invoke("clear_queue", {})
-                    .then(() => enqueueSongsBackend(songs))
-                    .then(() => playPlayer())
-                    .catch(e => console.error(e));
-                }}
+              <div
+                id="controls"
+                className="w-full flex flex-row gap-3 pl-3"
               >
-                <Play className="fill-black text-black dark:text-white dark:fill-white" />
-              </button>
-              <button
-                disabled
-                className="rounded-full disabled:text-neutral-400"
-              >
-                <Shuffle />
-              </button>
+                <button
+                  className="hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-md p-2"
+                  onClick={() => {
+                    invoke("clear_queue", {})
+                      .then(() => enqueueSongsBackend(songs))
+                      .then(() => playPlayer())
+                      .catch(e => console.error(e));
+                  }}
+                >
+                  <Play className="fill-black text-black dark:text-white dark:fill-white" />
+                </button>
+
+              </div>
             </div>
             <ul
               id="song-list"
