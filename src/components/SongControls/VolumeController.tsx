@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Volume1, Volume2, VolumeX } from "react-feather";
 import { setVolumeBackend } from "../../api/commands";
 import { getPlayerState } from "../../api/importer";
@@ -6,6 +6,7 @@ import { getPlayerState } from "../../api/importer";
 export default function VolumeController() {
   const [volume, setVolume] = useState<number>(23);
   const [isClicked, setIsClicked] = useState<boolean>(false);
+  const blurTimeout = useRef<number | null>(null);
 
   useEffect(() => {
     console.log("Loading volume elem");
@@ -41,12 +42,25 @@ export default function VolumeController() {
       </div>
       {isClicked
         && (
-          <div className="lg:hidden bg-white shadow-md dark:bg-neutral-900 h-fit w-fit absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md">
+          <div
+            className="lg:hidden bg-white shadow-md dark:bg-neutral-900 h-fit w-fit absolute bottom-10 right-1 flex flex-row justify-center p-2 rounded-md"
+            onBlur={() => {
+              blurTimeout.current = window.setTimeout(() => {
+                setIsClicked(false);
+              }, 0);
+            }}
+            onFocus={() => {
+              if (blurTimeout.current) {
+                window.clearTimeout(blurTimeout.current);
+              }
+            }}
+          >
             <input
-              id="volume-slider"
+              id="volume-slider-popup"
               type="range"
               value={volume}
               readOnly
+              autoFocus
               step={1}
               max={100}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
