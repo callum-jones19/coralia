@@ -84,7 +84,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
             </div>
           </div>
           <NavLink
-            className={({ isActive }) => `flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${isActive ? 'bg-neutral-200 dark:bg-neutral-900' : 'bg-transparent'}`}
+            className={({ isActive }) => `flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${isActive ? 'bg-neutral-200 dark:bg-neutral-900' : 'bg-transparent hover:bg-neutral-300 hover:dark:bg-neutral-700'}`}
             to="/home"
             end
           >
@@ -92,7 +92,7 @@ export default function MenuBar({ onSearch }: MenuBarProps) {
             <p className="hidden lg:block">Songs</p>
           </NavLink>
           <NavLink
-            className={({ isActive }) => `flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${isActive ? 'bg-neutral-200 dark:bg-neutral-900' : 'bg-transparent'}`}
+            className={({ isActive }) => `flex flex-row items-center justify-center lg:justify-start gap-2 w-full rounded-md p-2 ${isActive ? 'bg-neutral-200 dark:bg-neutral-900' : 'bg-transparent hover:bg-neutral-300 hover:dark:bg-neutral-700'}`}
             to="/home/albums"
           >
             <Disc className="h-5 w-5" />

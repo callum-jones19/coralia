@@ -15,28 +15,30 @@ export default function SettingsSidebar() {
           </Link>
           <p className="font-semibold hidden lg:block flex-grow">Settings</p>
         </div>
-        <NavLink
-          to="/settings/appearance"
-          className={({ isActive }) => (`${isActive
-            ? "bg-neutral-200 dark:bg-neutral-900"
-            : "bg-transparent"
-            } text-start p-2 rounded-md flex items-center gap-3 disabled:text-neutral-300 justify-center lg:justify-start h-10 w-10 lg:w-full`)}
-          title="Appearance"
-        >
-          <Sun className="h-5 w-5" />
-          <p className="hidden lg:block">Appearance</p>
-        </NavLink>
-        <NavLink
-          to="library"
-          className={({ isActive }) => (`${isActive
-            ? "bg-neutral-200 dark:bg-neutral-900"
-            : "bg-transparent"
-            } text-start p-2 rounded-md flex items-center gap-3 disabled:text-neutral-300 justify-center lg:justify-start h-10 w-10 lg:w-full`)}
-          title="Library"
-        >
-          <Layers className="h-5 w-5" />
-          <p className="hidden lg:block">Library</p>
-        </NavLink>
+        <div className="w-full h-full flex flex-col gap-2">
+          <NavLink
+            to="/settings/appearance"
+            className={({ isActive }) => (`${isActive
+              ? "bg-neutral-200 dark:bg-neutral-900"
+              : "bg-transparent hover:bg-neutral-300 hover:dark:bg-neutral-700"
+              } text-start p-2 rounded-md flex items-center gap-3 disabled:text-neutral-300 justify-center lg:justify-start h-10 w-10 lg:w-full`)}
+            title="Appearance"
+          >
+            <Sun className="h-5 w-5" />
+            <p className="hidden lg:block">Appearance</p>
+          </NavLink>
+          <NavLink
+            to="library"
+            className={({ isActive }) => (`${isActive
+              ? "bg-neutral-200 dark:bg-neutral-900"
+              : "bg-transparent hover:bg-neutral-300 hover:dark:bg-neutral-700"
+              } text-start p-2 rounded-md flex items-center gap-3 disabled:text-neutral-300 justify-center lg:justify-start h-10 w-10 lg:w-full`)}
+            title="Library"
+          >
+            <Layers className="h-5 w-5" />
+            <p className="hidden lg:block">Library</p>
+          </NavLink>
+        </div>
       </BackgroundCard>
     </>
   );
