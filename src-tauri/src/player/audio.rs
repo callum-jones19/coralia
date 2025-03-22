@@ -153,7 +153,10 @@ fn handle_sink_song_end(
 
                     let pos = sink_locked.get_pos();
 
-                    emit_player_pause(pos, &app_handle);
+                    {
+                        let mut media_controls = media_controls.lock().unwrap();
+                        emit_player_pause(pos, &app_handle, &mut media_controls);
+                    }
                 }
 
                 // Signal to the Player Event System that a song has ended
@@ -217,7 +220,10 @@ fn handle_sink_song_end(
 
                     let pos = sink_locked.get_pos();
 
-                    emit_player_pause(pos, &app_handle);
+                    {
+                        let mut media_controls = media_controls.lock().unwrap();
+                        emit_player_pause(pos, &app_handle, &mut media_controls);
+                    }
                 }
             }
         }

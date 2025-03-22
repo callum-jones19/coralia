@@ -20,7 +20,7 @@ use events::{emit_player_pause, emit_player_play, emit_queue_update};
 use log::info;
 use player::audio::{CachedPlayerState, Player};
 use serde::{Deserialize, Serialize};
-use souvlaki::{MediaControls, PlatformConfig};
+use souvlaki::{MediaControls, MediaPlayback, PlatformConfig};
 use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
 
 mod data;
@@ -67,6 +67,7 @@ struct LibraryState {
 
 fn create_and_run_audio_player(
     player_cmd_rx: Receiver<PlayerCommand>,
+    player_cmd_tx: Sender<PlayerCommand>,
     handle: &AppHandle,
     window: &WebviewWindow,
 ) {
@@ -88,7 +89,24 @@ fn create_and_run_audio_player(
 
     let mut controls = MediaControls::new(config).unwrap();
     controls
-        .attach(|event| println!("Event received: {:?}", event))
+        .attach(move |event| {
+            // Deal with a media control event being fired
+            match event {
+                souvlaki::MediaControlEvent::Play => {
+                    player_cmd_tx.send(PlayerCommand::Play).unwrap()
+                }
+                souvlaki::MediaControlEvent::Pause => {
+                    player_cmd_tx.send(PlayerCommand::Pause).unwrap()
+                }
+                souvlaki::MediaControlEvent::Next => {
+                    player_cmd_tx.send(PlayerCommand::SkipOne).unwrap()
+                }
+                souvlaki::MediaControlEvent::Previous => {
+                    player_cmd_tx.send(PlayerCommand::GoBackOne).unwrap();
+                }
+                _ => {}
+            }
+        })
         .unwrap();
 
     let controls = Arc::new(Mutex::new(controls));
@@ -119,12 +137,18 @@ fn create_and_run_audio_player(
             PlayerCommand::Play => {
                 info!("Player Command Handler: Received request to set sink to play.");
                 player.play();
-                emit_player_play(player.get_playback_position(), handle);
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_player_play(player.get_playback_position(), handle, &mut controls);
+                }
             }
             PlayerCommand::Pause => {
                 info!("Player Command Handler: Received request to set sink to pause.");
                 player.pause();
-                emit_player_pause(player.get_playback_position(), handle);
+                {
+                    let mut controls = controls.lock().unwrap();
+                    emit_player_pause(player.get_playback_position(), handle, &mut controls);
+                }
             }
             PlayerCommand::SetVolume(vol) => {
                 let clamped_vol = if vol > 100 { 100 } else { vol };
@@ -173,7 +197,10 @@ fn create_and_run_audio_player(
                             &mut controls,
                         );
                     }
-                    emit_player_play(player.get_playback_position(), handle);
+                    {
+                        let mut controls = controls.lock().unwrap();
+                        emit_player_play(player.get_playback_position(), handle, &mut controls);
+                    }
                 }
             }
             PlayerCommand::TrySeek(duration) => {
@@ -309,6 +336,7 @@ fn main() {
     };
 
     let (player_cmd_tx, player_cmd_rx) = channel::<PlayerCommand>();
+    let internal_cmd_tx = player_cmd_tx.clone();
 
     let init_settings = settings.clone();
     tauri::Builder::default()
@@ -322,7 +350,12 @@ fn main() {
             info!("Starting async tokio thread to hold the audio player");
             let player_handle = handle.clone();
             tauri::async_runtime::spawn(async move {
-                create_and_run_audio_player(player_cmd_rx, &player_handle, &window);
+                create_and_run_audio_player(
+                    player_cmd_rx,
+                    internal_cmd_tx,
+                    &player_handle,
+                    &window,
+                );
             });
 
             init_settings.apply(&handle);

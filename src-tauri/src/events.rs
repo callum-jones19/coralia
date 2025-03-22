@@ -2,7 +2,7 @@ use std::{collections::VecDeque, time::Duration};
 
 use log::info;
 use serde::Serialize;
-use souvlaki::{MediaControls, MediaMetadata};
+use souvlaki::{MediaControls, MediaMetadata, MediaPosition};
 use tauri::{AppHandle, Emitter};
 
 use crate::data::song::Song;
@@ -68,8 +68,21 @@ pub fn emit_song_end(new_queue: VecDeque<Song>, new_previous: Vec<Song>, handle:
         .unwrap();
 }
 
-pub fn emit_player_play(current_playback_pos: Duration, handle: &AppHandle) {
+pub fn emit_player_play(
+    current_playback_pos: Duration,
+    handle: &AppHandle,
+    media_controls: &mut MediaControls,
+) {
     info!("Player Events: sink playback started.");
+
+    media_controls
+        .set_playback(souvlaki::MediaPlayback::Playing {
+            progress: Some(MediaPosition {
+                0: current_playback_pos,
+            }),
+        })
+        .unwrap();
+
     let payload = PlayEventPayload {
         paused: false,
         position: current_playback_pos,
@@ -79,8 +92,21 @@ pub fn emit_player_play(current_playback_pos: Duration, handle: &AppHandle) {
         .unwrap();
 }
 
-pub fn emit_player_pause(current_playback_pos: Duration, handle: &AppHandle) {
+pub fn emit_player_pause(
+    current_playback_pos: Duration,
+    handle: &AppHandle,
+    media_controls: &mut MediaControls,
+) {
     info!("Player Events: sink playback started.");
+
+    media_controls
+        .set_playback(souvlaki::MediaPlayback::Paused {
+            progress: Some(MediaPosition {
+                0: current_playback_pos,
+            }),
+        })
+        .unwrap();
+
     let payload = PlayEventPayload {
         paused: true,
         position: current_playback_pos,
