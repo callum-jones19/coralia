@@ -9,7 +9,6 @@ import { Album, Song } from "../../types/types";
 import SongListHeader from "../SongListHeader";
 import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";
-import SongListItemDense from "../SongListItemDense";
 import { QueueUpdatePayload } from "../../types/apiTypes";
 
 export type AlbumViewParams = string;
@@ -114,7 +113,7 @@ export default function AlbumView() {
             </div>
             <ul
               id="song-list"
-              className="basis-full w-full"
+              className="basis-full w-full flex flex-col"
             >
               <div className="h-10 sticky top-0 hidden sm:block z-20">
                 <SongListHeader />
@@ -122,21 +121,10 @@ export default function AlbumView() {
               <div className="h-10 sticky top-0 block sm:hidden z-20">
                 <SongListHeaderDense />
               </div>
-              <div className="hidden sm:block">
+              <div className="rounded-b-md flex-grow">
                 {songs.map(song => (
                   <div key={song.id} className="h-14">
                     <SongListItem
-                      song={song}
-                      colored={false}
-                      currentlyPlayingId={currentSong?.id}
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="block sm:hidden">
-                {songs.map(song => (
-                  <div key={song.id} className="h-14">
-                    <SongListItemDense
                       song={song}
                       colored={false}
                       currentlyPlayingId={currentSong?.id}
