@@ -2,10 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
+    panic::UnwindSafe,
     path::PathBuf,
     sync::{
         mpsc::{channel, Receiver, Sender},
-        Mutex,
+        Arc, Mutex,
     },
     time::Duration,
 };
@@ -20,7 +21,8 @@ use events::{emit_player_pause, emit_player_play, emit_queue_update};
 use log::info;
 use player::audio::{CachedPlayerState, Player};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Emitter, Manager, State};
+use souvlaki::{MediaControls, PlatformConfig};
+use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
 
 mod data;
 mod events;
@@ -64,8 +66,36 @@ struct LibraryState {
     current_status: LibraryStatus,
 }
 
-fn create_and_run_audio_player(player_cmd_rx: Receiver<PlayerCommand>, handle: &AppHandle) {
-    let mut player = Player::new(handle.clone());
+fn create_and_run_audio_player(
+    player_cmd_rx: Receiver<PlayerCommand>,
+    handle: &AppHandle,
+    window: &WebviewWindow,
+) {
+    #[cfg(not(target_os = "windows"))]
+    let hwnd = None;
+
+    #[cfg(target_os = "windows")]
+    let hwnd = {
+        // FIXME should this use tauri functions?
+        let handle = window.hwnd().unwrap().0;
+        Some(handle)
+    };
+
+    let config = PlatformConfig {
+        dbus_name: "kleo",
+        display_name: "Kleo",
+        hwnd,
+    };
+
+    let mut controls = MediaControls::new(config).unwrap();
+    controls
+        .attach(|event| println!("Event received: {:?}", event))
+        .unwrap();
+
+    let mut controls = Arc::new(Mutex::new(controls));
+
+    let mut player_media_controls = Arc::clone(&controls);
+    let mut player = Player::new(handle.clone(), player_media_controls);
 
     loop {
         let command = player_cmd_rx.recv().unwrap();
@@ -258,10 +288,12 @@ fn main() {
         .setup(move |app| {
             let handle = app.app_handle().to_owned();
 
+            let window = app.get_webview_window("main").unwrap();
+
             info!("Starting async tokio thread to hold the audio player");
             let player_handle = handle.clone();
             tauri::async_runtime::spawn(async move {
-                create_and_run_audio_player(player_cmd_rx, &player_handle);
+                create_and_run_audio_player(player_cmd_rx, &player_handle, &window);
             });
 
             init_settings.apply(&handle);

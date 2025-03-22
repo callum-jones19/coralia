@@ -19,6 +19,7 @@ use rodio::{
     Decoder, OutputStream, OutputStreamHandle, Sink, Source,
 };
 use serde::{Deserialize, Serialize};
+use souvlaki::MediaControls;
 use tauri::AppHandle;
 
 use crate::{
@@ -100,6 +101,7 @@ fn handle_sink_song_end(
     song_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
     prev_song_queue: Arc<Mutex<Vec<PlayerSong>>>,
     app_handle: AppHandle,
+    media_controls: Arc<Mutex<MediaControls>>,
 ) {
     loop {
         // Sleep this thread until a song ends
@@ -280,7 +282,7 @@ impl Player {
     /// This takes a mcsp channel sender to communicate updates outside of
     /// the player once initialised. This allows it to work in its own thread
     /// but still communicate outside of this.
-    pub fn new(app_handle: AppHandle) -> Self {
+    pub fn new(app_handle: AppHandle, media_controls: Arc<Mutex<MediaControls>>) -> Self {
         // Setup rodio backend
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
@@ -314,6 +316,7 @@ impl Player {
                 songs_queue_2,
                 prev_songs_2,
                 app_handle,
+                media_controls,
             );
         });
 
