@@ -43,7 +43,12 @@ export default function AppearanceSettings() {
           {initTheme && <Select
             defaultValue={initTheme}
             options={themeOptions}
-            className="w-80"
+            styles={{
+              option: (baseStyles) => ({
+                ...baseStyles,
+                color: 'black'
+              }),
+            }}
             onChange={newTheme => {
               if (newTheme?.value === 'system') {
                 invoke('set_app_theme', { newTheme: null })
