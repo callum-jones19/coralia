@@ -1,7 +1,7 @@
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
-import { Play, Shuffle } from "react-feather";
+import { Play } from "react-feather";
 import { useParams } from "react-router";
 import { enqueueSongsBackend, playPlayer } from "../../api/commands";
 import { getAlbum, getAlbumSongs, getPlayerState } from "../../api/importer";
