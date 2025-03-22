@@ -104,12 +104,27 @@ pub fn emit_queue_update(
 
     match new_queue.front() {
         Some(current_song) => {
-            media_controls.set_metadata(MediaMetadata {
-                album: current_song.tags.album.as_deref(),
-                title: Some(&current_song.tags.title),
-                artist: current_song.tags.artist.as_deref(),
-                ..Default::default()
-            });
+            let cover_url = current_song
+                .artwork
+                .as_ref()
+                .unwrap()
+                .art_400
+                .clone()
+                .into_os_string()
+                .into_string()
+                .unwrap();
+            println!("Cover url: {:?}", cover_url);
+
+            media_controls
+                .set_metadata(MediaMetadata {
+                    album: current_song.tags.album.as_deref(),
+                    title: Some(&current_song.tags.title),
+                    artist: current_song.tags.artist.as_deref(),
+                    duration: Some(current_song.properties.get_duration().clone()),
+                    cover_url: Some((String::from("file://") + &cover_url).as_str()),
+                    ..Default::default()
+                })
+                .unwrap();
         }
         None => {}
     }

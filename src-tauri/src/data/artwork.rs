@@ -86,9 +86,9 @@ fn get_album_art_folder() -> Result<PathBuf, String> {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Artwork {
-    full_res_art: PathBuf,
-    thumb_art: PathBuf,
-    art_400: PathBuf,
+    pub full_res_art: PathBuf,
+    pub thumb_art: PathBuf,
+    pub art_400: PathBuf,
 }
 
 impl Artwork {

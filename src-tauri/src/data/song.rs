@@ -30,6 +30,10 @@ impl SongProperties {
 
         Ok(SongProperties { duration })
     }
+
+    pub fn get_duration(&self) -> &Duration {
+        &self.duration
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
