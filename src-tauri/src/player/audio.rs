@@ -526,6 +526,7 @@ impl Player {
         sink_locked.clear();
         songs_queue_locked.clear();
         prev_songs_locked.clear();
+        self.cached_unshuffled_queue = None;
     }
 
     /// Signal the sink to pause
