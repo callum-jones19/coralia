@@ -102,6 +102,7 @@ fn handle_sink_song_end(
     prev_song_queue: Arc<Mutex<Vec<PlayerSong>>>,
     app_handle: AppHandle,
     media_controls: Arc<Mutex<MediaControls>>,
+    next_song_loaded_tx: Sender<()>,
 ) {
     loop {
         // Sleep this thread until a song ends
@@ -147,6 +148,7 @@ fn handle_sink_song_end(
                         }
                     }
                 }
+                next_song_loaded_tx.send(()).unwrap();
 
                 if song_queue_locked.len() == 0 {
                     sink_locked.pause();
@@ -214,6 +216,8 @@ fn handle_sink_song_end(
                         }
                     }
                 }
+
+                next_song_loaded_tx.send(()).unwrap();
 
                 if song_queue_locked.len() == 0 {
                     sink_locked.pause();
@@ -290,6 +294,7 @@ pub struct Player {
     cached_unshuffled_queue: Option<VecDeque<PlayerSong>>,
     previous_songs: Arc<Mutex<Vec<PlayerSong>>>,
     player_event_tx: Sender<EndCause>,
+    next_song_loaded_rx: Receiver<()>,
 }
 
 impl Player {
@@ -323,6 +328,7 @@ impl Player {
         let sink2 = Arc::clone(&sink_wrapped);
         let sink_song_end_tx2 = sink_song_end_tx.clone();
         let prev_songs_2 = Arc::clone(&prev_songs);
+        let (next_song_loaded_tx, next_song_loaded_rx) = channel::<()>();
         thread::spawn(move || {
             handle_sink_song_end(
                 sink_song_end_rx,
@@ -332,6 +338,7 @@ impl Player {
                 prev_songs_2,
                 app_handle,
                 media_controls,
+                next_song_loaded_tx,
             );
         });
 
@@ -344,6 +351,7 @@ impl Player {
             previous_songs: prev_songs,
             cached_unshuffled_queue: None,
             player_event_tx: sink_song_end_tx,
+            next_song_loaded_rx,
         }
     }
 
@@ -530,7 +538,10 @@ impl Player {
     /// Skip the currently playing source in the sink
     pub fn skip_current_song(&mut self) {
         info!("Sink internals: Skipping current song in buffer");
+        // We want to wait until the current song has been skipped and
+        // actually removed from the buffer due to the callback
         self.audio_sink.lock().unwrap().skip_one();
+        self.next_song_loaded_rx.recv().unwrap();
     }
 
     /// If the song is more than 5 seconds deep, go back to the start of the song.
