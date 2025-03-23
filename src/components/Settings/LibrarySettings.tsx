@@ -31,7 +31,7 @@ export default function LibrarySettings() {
               </i>
             </p>
           </div>
-          <button className="bg-neutral-800 text-white p-2 rounded-md h-10 w-36">
+          <button className="bg-neutral-800 text-white p-2 rounded-md h-fit w-36 text-wrap">
             Rescan library
           </button>
         </div>
@@ -46,7 +46,7 @@ export default function LibrarySettings() {
             </p>
           </div>
           <button
-            className="bg-red-600 text-white rounded-md p-2 h-10 w-36"
+            className="bg-red-600 text-white rounded-md p-2 h-fit w-36"
             onClick={() => resetLibrary()}
           >
             Reset Library
