@@ -292,6 +292,7 @@ fn create_and_run_audio_player(
                 }
             }
             PlayerCommand::AddSongsToQueueEnd(songs, tx) => {
+                info!("Received request to queue up list of songs");
                 for song in songs {
                     player.add_to_queue_end(&song).unwrap();
                 }
