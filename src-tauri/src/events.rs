@@ -130,15 +130,17 @@ pub fn emit_queue_update(
 
     match new_queue.front() {
         Some(current_song) => {
-            let cover_url = current_song
-                .artwork
-                .as_ref()
-                .unwrap()
-                .art_400
-                .clone()
-                .into_os_string()
-                .into_string()
-                .unwrap();
+            let cover_url_opt = current_song.artwork.as_ref();
+
+            let cover_url = match cover_url_opt {
+                Some(art) => {
+                    let t = (String::from("file://")
+                        + &art.art_400.clone().into_os_string().into_string().unwrap());
+                    Some(t)
+                }
+                None => None,
+            };
+
             println!("Cover url: {:?}", cover_url);
 
             media_controls
@@ -147,7 +149,7 @@ pub fn emit_queue_update(
                     title: Some(&current_song.tags.title),
                     artist: current_song.tags.artist.as_deref(),
                     duration: Some(current_song.properties.get_duration().clone()),
-                    cover_url: Some((String::from("file://") + &cover_url).as_str()),
+                    cover_url: cover_url.as_deref(),
                     ..Default::default()
                 })
                 .unwrap();
