@@ -12,6 +12,7 @@ import VolumeController from "../components/SongControls/VolumeController";
 import { Song } from "../types/types";
 import { QueueUpdatePayload } from "../types/apiTypes";
 const appWindow = getCurrentWebviewWindow();
+import midsizeDefaultImg from "./../assets/no_art_icon_md.png";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -49,7 +50,7 @@ export default function FullscreenScreen() {
 
   const imgSrc = queue[0]?.artwork
     ? convertFileSrc(queue[0].artwork.fullResArt)
-    : undefined;
+    : midsizeDefaultImg;
 
   return (
     <>

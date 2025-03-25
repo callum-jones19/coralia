@@ -11,6 +11,8 @@ import SongListHeaderDense from "../SongListHeaderDense";
 import SongListItem from "../SongListItem";
 import { QueueUpdatePayload } from "../../types/apiTypes";
 
+import midsizeDefaultImg from "./../../assets/no_art_icon_md.png";
+
 export type AlbumViewParams = string;
 
 export default function AlbumView() {
@@ -56,7 +58,7 @@ export default function AlbumView() {
 
   const albumArtUri = album?.artwork?.art400
     ? convertFileSrc(album.artwork.art400)
-    : "";
+    : midsizeDefaultImg;
 
   return (
     <div className="flex flex-col h-full gap-5 overflow-auto">

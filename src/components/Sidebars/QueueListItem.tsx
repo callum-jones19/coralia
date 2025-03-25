@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Volume1, X } from "react-feather";
 import { removeFromQueue } from "../../api/commands";
 import { Song } from "../../types/types";
+import midsizeDefaultImg from "./../../assets/no_art_icon_md.png";
 
 export interface QueueListItemProps {
   song: Song;
@@ -16,7 +17,7 @@ export default function QueueListItem(
 ) {
   const queueImgSrc = song.artwork?.thumbArt
     ? convertFileSrc(song.artwork?.thumbArt)
-    : undefined;
+    : midsizeDefaultImg;
   const [isHovering, setisHovering] = useState<boolean>(false);
   return (
     <div

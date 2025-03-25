@@ -141,8 +141,6 @@ pub fn emit_queue_update(
                 None => None,
             };
 
-            println!("Cover url: {:?}", cover_url);
-
             media_controls
                 .set_metadata(MediaMetadata {
                     album: current_song.tags.album.as_deref(),

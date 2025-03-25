@@ -1,12 +1,13 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { getPlayerState } from "../../api/importer";
 import { Song } from "../../types/types";
 import BackgroundCard from "../UI/BackgroundCard";
 import QueueList from "./QueueList";
 import { QueueUpdatePayload } from "../../types/apiTypes";
+import midsizeDefaultImg from "./../../assets/no_art_icon_md.png";
 
 export default function QueueBar() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -33,9 +34,19 @@ export default function QueueBar() {
     };
   }, []);
 
-  const imgSrc = queue[0]?.artwork?.art400
-    ? convertFileSrc(queue[0]?.artwork?.art400)
-    : undefined;
+  const imgSrc = useMemo(() => {
+    const currentSong = queue.at(0);
+
+    if (currentSong === undefined) {
+      return undefined;
+    } else {
+      if (currentSong.artwork) {
+        return convertFileSrc(currentSong.artwork.art400);
+      }  else {
+        return midsizeDefaultImg;
+      }
+    }
+  }, [queue]);
 
   return (
     <BackgroundCard className="hidden lg:block basis-60 h-full flex-grow-0 flex-shrink-0 overflow-hidden p-2">

@@ -1,6 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { Link } from "react-router";
 import { Album } from "../types/types";
+import midsizeDefaultImg from "./../assets/no_art_icon_md.png";
 
 export interface MusicGridAlbumProps {
   album: Album;
@@ -11,7 +12,7 @@ export default function MusicGridAlbum(
 ) {
   const imgSrc = album.artwork?.art400
     ? convertFileSrc(album.artwork?.art400)
-    : undefined;
+    : midsizeDefaultImg;
 
   return (
     <div className="flex-grow basis-full h-full flex flex-col overflow-auto">

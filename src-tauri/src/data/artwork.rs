@@ -10,6 +10,7 @@ use image::{
     codecs::{jpeg::JpegEncoder, png::PngEncoder},
     ImageEncoder, ImageFormat, ImageReader,
 };
+use log::info;
 use serde::{Deserialize, Serialize};
 
 use super::song::Song;
@@ -93,8 +94,7 @@ pub struct Artwork {
 
 impl Artwork {
     pub fn new(song: &Song) -> Option<Self> {
-        println!("============================================");
-        println!(
+        info!(
             "Generating album art for {}",
             song.tags.album.as_ref().unwrap()
         );
@@ -125,19 +125,19 @@ impl Artwork {
                 midsize_cached_path.push(&cached_art_name);
 
                 if !full_cached_path.exists() {
-                    println!("Generating full-size cached image");
+                    info!("Generating full-size cached image");
                     fs::copy(&folder_art, &full_cached_path).unwrap();
                 }
 
                 if !thumnail_cached_path.exists() || !midsize_cached_path.exists() {
-                    println!("Decoding image...");
+                    info!("Decoding image...");
                     img.no_limits();
                     let decoded_img = img.decode().unwrap();
-                    println!("Decoded image");
+                    info!("Decoded image");
                     let mut resizer = Resizer::new();
 
                     if !thumnail_cached_path.exists() {
-                        println!("Generating thumbnail cached image");
+                        info!("Generating thumbnail cached image");
                         let dest_width = 50;
                         let dest_height = 50;
                         let mut dst_img =
@@ -180,7 +180,7 @@ impl Artwork {
                     }
 
                     if !midsize_cached_path.exists() {
-                        println!("Generating midsize cached image");
+                        info!("Generating midsize cached image");
                         let dest_width = 400;
                         let dest_height = 400;
                         let mut dst_img =
