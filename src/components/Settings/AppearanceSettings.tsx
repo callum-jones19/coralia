@@ -1,6 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import Select from "react-select";
 import { Settings } from "../../types/types";
 
 export type AppearanceOption = "dark" | "light" | "system";
@@ -8,11 +7,6 @@ export type AppearanceOption = "dark" | "light" | "system";
 interface ThemeOption { value: string; label: string }
 
 export default function AppearanceSettings() {
-  const themeOptions = [
-    { value: 'system', label: 'System' },
-    { value: 'dark', label: 'Dark' },
-    { value: 'light', label: 'Light' },
-  ];
 
   const [initTheme, setInitTheme] = useState<null | ThemeOption>(null);
 
@@ -40,28 +34,48 @@ export default function AppearanceSettings() {
           <div className="flex flex-col">
             <p className="text-lg">Theme</p>
           </div>
-          {initTheme && <Select
-            defaultValue={initTheme}
-            options={themeOptions}
-            styles={{
-              option: (baseStyles) => ({
-                ...baseStyles,
-                color: 'black'
-              }),
-            }}
-            onChange={newTheme => {
-              if (newTheme?.value === 'system') {
+          {initTheme &&
+            <select onChange={e => {
+              const val = e.currentTarget.value as AppearanceOption;
+
+              if (val === 'system') {
                 invoke('set_app_theme', { newTheme: null })
                   .catch(e => console.error(e));
-              } else if (newTheme?.value === 'dark') {
+              } else if (val === 'dark') {
                 invoke('set_app_theme', { newTheme: 'dark' })
-                .catch(e => console.error(e));
-              } else if (newTheme?.value === 'light') {
+                  .catch(e => console.error(e));
+              } else if (val === 'light') {
                 invoke('set_app_theme', { newTheme: 'light' })
-                .catch(e => console.error(e));
+                  .catch(e => console.error(e));
               }
-            }}
-          />}
+            }} className="text-black w-40 p-2 rounded-md dark:bg-neutral-900 dark:text-white">
+              <option value="system">System</option>
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+            // <Select
+            //   defaultValue={initTheme}
+            //   options={themeOptions}
+            //   styles={{
+            //     option: (baseStyles) => ({
+            //       ...baseStyles,
+            //       color: 'black'
+            //     }),
+            //   }}
+            //   onChange={newTheme => {
+            //     if (newTheme?.value === 'system') {
+            //       invoke('set_app_theme', { newTheme: null })
+            //         .catch(e => console.error(e));
+            //     } else if (newTheme?.value === 'dark') {
+            //       invoke('set_app_theme', { newTheme: 'dark' })
+            //         .catch(e => console.error(e));
+            //     } else if (newTheme?.value === 'light') {
+            //       invoke('set_app_theme', { newTheme: 'light' })
+            //         .catch(e => console.error(e));
+            //     }
+            //   }}
+            // />
+          }
         </div>
       </div>
     </>

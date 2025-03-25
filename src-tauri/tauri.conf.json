@@ -39,9 +39,9 @@
       }
     }
   },
-  "productName": "music_player",
-  "mainBinaryName": "music_player",
-  "version": "0.1.0",
+  "productName": "Kleo",
+  "mainBinaryName": "Kleo",
+  "version": "1.0.0",
   "identifier": "dev.callumjones.kleo",
   "plugins": {},
   "app": {

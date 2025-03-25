@@ -7,7 +7,6 @@ use std::{
         mpsc::{channel, Receiver, Sender},
         Arc, Mutex,
     },
-    thread::sleep,
     time::Duration,
 };
 
@@ -21,7 +20,7 @@ use events::{emit_player_pause, emit_player_play, emit_queue_update};
 use log::info;
 use player::audio::{CachedPlayerState, Player};
 use serde::{Deserialize, Serialize};
-use souvlaki::{MediaControls, MediaPlayback, PlatformConfig};
+use souvlaki::{MediaControls, PlatformConfig};
 use tauri::{AppHandle, Emitter, Manager, State, WebviewWindow};
 
 mod data;
