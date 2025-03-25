@@ -1,7 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Minimize2 } from "react-feather";
 import { Link, useNavigate } from "react-router";
 import { getPlayerState } from "../api/importer";
@@ -12,7 +12,7 @@ import VolumeController from "../components/SongControls/VolumeController";
 import { Song } from "../types/types";
 import { QueueUpdatePayload } from "../types/apiTypes";
 const appWindow = getCurrentWebviewWindow();
-import midsizeDefaultImg from "./../assets/no_art_icon_md.png";
+import fullsizeDefaultImg from "./../assets/no_art_icon_lg.png";
 
 export default function FullscreenScreen() {
   const [queue, setQueue] = useState<Song[]>([]);
@@ -48,10 +48,19 @@ export default function FullscreenScreen() {
     };
   }, [navigate]);
 
-  const imgSrc = queue[0]?.artwork
-    ? convertFileSrc(queue[0].artwork.fullResArt)
-    : midsizeDefaultImg;
+  const imgSrc = useMemo(() => {
+    const currentSong = queue.at(0);
 
+    if (currentSong === undefined) {
+      return undefined;
+    } else {
+      if (currentSong.artwork) {
+        return convertFileSrc(currentSong.artwork.fullResArt);
+      }  else {
+        return fullsizeDefaultImg;
+      }
+    }
+  }, [queue]);
   return (
     <>
       <div className="w-full h-full flex flex-col bg-gradient-to-b from-neutral-100 to-white dark:from-neutral-800 dark:to-neutral-900 dark:text-white p-5">

@@ -4,7 +4,7 @@ import { MoreVertical, Play, Volume2 } from "react-feather";
 import { clearAndPlayBackend } from "../api/commands";
 import { Song } from "../types/types";
 import SongPopup from "./Popups/SongPopup";
-import midsizeDefaultImg from "./../assets/no_art_icon_md.png";
+import smallDefaultImg from "./../assets/no_art_icon_sm.png";
 
 export interface SongListItemProps {
   song: Song;
@@ -21,7 +21,7 @@ export default function SongListItem(
 
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const imgUrl = song.artwork ? convertFileSrc(song.artwork.thumbArt) : midsizeDefaultImg;
+  const imgUrl = song.artwork ? convertFileSrc(song.artwork.thumbArt) : smallDefaultImg;
 
   const isPlaying = currentlyPlayingId === song.id;
 
