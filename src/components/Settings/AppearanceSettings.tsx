@@ -4,21 +4,19 @@ import { Settings } from "../../types/types";
 
 export type AppearanceOption = "dark" | "light" | "system";
 
-interface ThemeOption { value: string; label: string }
-
 export default function AppearanceSettings() {
 
-  const [initTheme, setInitTheme] = useState<null | ThemeOption>(null);
+  const [initTheme, setInitTheme] = useState<null | AppearanceOption>(null);
 
   useEffect(() => {
     invoke<Settings>('get_app_settings', {})
       .then(settings => {
         if (settings.theme === null) {
-          setInitTheme({ value: 'system', label: 'System' });
+          setInitTheme('system');
         } else if (settings.theme === 'dark') {
-          setInitTheme({ value: 'dark', label: 'Dark' });
+          setInitTheme('dark');
         } else {
-          setInitTheme({ value: 'light', label: 'Light' });
+          setInitTheme('light');
         }
       })
       .catch(e => console.error(e));
@@ -35,20 +33,24 @@ export default function AppearanceSettings() {
             <p className="text-lg">Theme</p>
           </div>
           {initTheme &&
-            <select onChange={e => {
-              const val = e.currentTarget.value as AppearanceOption;
+            <select
+              onChange={e => {
+                const val = e.currentTarget.value as AppearanceOption;
 
-              if (val === 'system') {
-                invoke('set_app_theme', { newTheme: null })
-                  .catch(e => console.error(e));
-              } else if (val === 'dark') {
-                invoke('set_app_theme', { newTheme: 'dark' })
-                  .catch(e => console.error(e));
-              } else if (val === 'light') {
-                invoke('set_app_theme', { newTheme: 'light' })
-                  .catch(e => console.error(e));
-              }
-            }} className="text-black w-40 p-2 rounded-md dark:bg-neutral-900 dark:text-white">
+                if (val === 'system') {
+                  invoke('set_app_theme', { newTheme: null })
+                    .catch(e => console.error(e));
+                } else if (val === 'dark') {
+                  invoke('set_app_theme', { newTheme: 'dark' })
+                    .catch(e => console.error(e));
+                } else if (val === 'light') {
+                  invoke('set_app_theme', { newTheme: 'light' })
+                    .catch(e => console.error(e));
+                }
+              }}
+              className="text-black w-40 p-2 rounded-md dark:bg-neutral-900 dark:text-white"
+              value={initTheme}
+            >
               <option value="system">System</option>
               <option value="dark">Dark</option>
               <option value="light">Light</option>
