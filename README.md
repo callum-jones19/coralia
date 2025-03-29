@@ -1,13 +1,12 @@
 # VITE MUSIC
 
-
 ## Overview
 
 This is a local-only music player 🎶. It creates an internal library from a specified
 set of local folders and allows you to browse songs and albums, search through them and
 queue thousands of songs at a time.
 
-This is written in Rust 🦀 and Typescript . The aim is to have a clean, adaptable UI
+This is written in Rust 🦀 and Typescript 🎉. The aim is to have a clean, adaptable UI
 while supporting efficient playback with full cross-platform support. Minimal bloat,
 maximum performance.
 
@@ -39,15 +38,48 @@ Currently, this is not in any package managers (and probably will not be for a w
 have very limited free time, so will do it when I can). The current options are either to
 build from source, or download a pre-compiled binary from the [GitHub Releases page]().
 
-To build from source, please see the instructions [here](#building-from-source).
+To build from source, please make sure you have installed Tauri 2.0. From the
+root of the repository, `npm instasll` and then run `tauri build` as outlined
+in the Tauri 2.0 docs [here](https://tauri.app/distribute/). Prerequisites will
+depend on the OS/distribution you are building on.
 
 ## Screenshots
 
-![prev1](assets/songs_page_overview.png)
+Song overview page:
 
-## Building From Source
+![Song Overview page](assets/songs_page_overview.png)
 
+Albums overview page:
 
+![Albums Overview page](assets/albums_page_overview.png)
+
+Album page:
+
+![Album page](assets/album_page_overview.png)
+
+Fullscreen view:
+
+![Fullscreen view](assets/fullscreen_overview.png)
+
+Responsive view:
+
+![Responsive view](assets/responsive_page_preview.png)
+
+Create library page:
+
+![Albums Overview page](assets/create_library_overview.png)
+
+Playing song:
+
+![Playing song preview](assets/playing_song_preview.png)
+
+Search view:
+
+![Search view](assets/search_page_overview.png)
+
+Settings page:
+
+![Settings page](assets/settings_page_overview.png)
 
 ## Issues
 
