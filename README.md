@@ -37,10 +37,11 @@ App features:
 Currently, this is not in any package managers (and probably will not be for a while - I
 have very limited free time, so will do it when/if I can). The current options are either to
 build from source, or download a pre-compiled binary from the
-[GitHub Releases page](https://github.com/callum-jones19/coralia/releases).
+[GitHub Releases page](https://github.com/callum-jones19/coralia/releases). There will be some delay
+with the pre-released binaries, just due to limited personal time.
 
 To build from source, please make sure you have installed Tauri 2.0. From the
-root of the repository, `npm instasll` and then run `tauri build` as outlined
+root of the repository, `npm install` and then run `tauri build` as outlined
 in the Tauri 2.0 docs [here](https://tauri.app/distribute/). Prerequisites will
 depend on the OS/distribution you are building on.
 
