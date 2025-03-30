@@ -1,12 +1,12 @@
-# VITE MUSIC
+# Coralia
 
 ## Overview
 
-This is a local-only music player 🎶. It creates an internal library from a specified
+Coralia is a local-only music player 🎶. It creates an internal library from a specified
 set of local folders and allows you to browse songs and albums, search through them and
 queue thousands of songs at a time.
 
-This is written in Rust 🦀 and Typescript 🎉. The aim is to have a clean, adaptable UI
+Coralia is written in Rust 🦀 and Typescript 🎉. The aim is to have a clean, adaptable UI
 while supporting efficient playback with full cross-platform support. Minimal bloat,
 maximum performance.
 
@@ -22,10 +22,10 @@ Music playback features:
 
 App features:
 
-- [X] Full cross-platform support
-- [X] Multiple-folder library support
+- [X] Fully cross-platform
+- [X] Multiple-folder library
 - [X] Fully responsive design for small screens
-- [X] Scanning and full handling of folder-based album art
+- [X] Scanning and handling of folder-based album art
 - [ ] Scanning and handling of embedded album art
 - [X] Native OS media controls integration (media control shortcuts, currently playing media preview)
 - [X] Support for searching albums and songs by artist name, song name and album name
@@ -35,8 +35,9 @@ App features:
 ## Installation
 
 Currently, this is not in any package managers (and probably will not be for a while - I
-have very limited free time, so will do it when I can). The current options are either to
-build from source, or download a pre-compiled binary from the [GitHub Releases page]().
+have very limited free time, so will do it when/if I can). The current options are either to
+build from source, or download a pre-compiled binary from the
+[GitHub Releases page](https://github.com/callum-jones19/coralia/releases).
 
 To build from source, please make sure you have installed Tauri 2.0. From the
 root of the repository, `npm instasll` and then run `tauri build` as outlined
