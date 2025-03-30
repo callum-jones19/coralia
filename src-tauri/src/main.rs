@@ -82,8 +82,8 @@ fn create_and_run_audio_player(
     };
 
     let config = PlatformConfig {
-        dbus_name: "kleo",
-        display_name: "Kleo",
+        dbus_name: "coralia",
+        display_name: "coralia",
         hwnd,
     };
 

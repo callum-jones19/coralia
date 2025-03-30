@@ -39,10 +39,10 @@
       }
     }
   },
-  "productName": "Kleo",
-  "mainBinaryName": "Kleo",
+  "productName": "Coralia",
+  "mainBinaryName": "Coralia",
   "version": "1.0.0",
-  "identifier": "dev.callumjones.kleo",
+  "identifier": "dev.callumjones.coralia",
   "plugins": {},
   "app": {
     "windows": [
@@ -50,7 +50,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Kleo",
+        "title": "Coralia",
         "width": 800,
         "useHttpsScheme": true
       }

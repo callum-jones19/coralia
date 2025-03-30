@@ -55,7 +55,7 @@ fn find_folder_art(song_path: &Path) -> Option<PathBuf> {
 fn create_art_folder_if_missing() {
     match dirs::cache_dir() {
         Some(mut cache) => {
-            cache.push("kleo");
+            cache.push("coralia");
             cache.push("AlbumArtwork");
             if !cache.exists() {
                 create_dir_all(cache).unwrap();
@@ -70,7 +70,7 @@ fn get_album_art_folder() -> Result<PathBuf, String> {
 
     match dirs::cache_dir() {
         Some(mut cache) => {
-            cache.push("kleo");
+            cache.push("coralia");
             cache.push("AlbumArtwork");
             Ok(cache)
         }

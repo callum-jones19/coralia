@@ -134,8 +134,8 @@ pub fn emit_queue_update(
 
             let cover_url = match cover_url_opt {
                 Some(art) => {
-                    let t = (String::from("file://")
-                        + &art.art_400.clone().into_os_string().into_string().unwrap());
+                    let t = String::from("file://")
+                        + &art.art_400.clone().into_os_string().into_string().unwrap();
                     Some(t)
                 }
                 None => None,
