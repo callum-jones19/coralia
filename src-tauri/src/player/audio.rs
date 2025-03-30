@@ -680,9 +680,8 @@ impl Player {
                     *songs_queue = original_queue;
 
                     self.cached_unshuffled_queue = None;
-                    match curr_playing {
-                        Some(curr_playing) => songs_queue.push_front(curr_playing),
-                        None => {}
+                    if let Some(curr_playing) = curr_playing {
+                        songs_queue.push_front(curr_playing);
                     }
                 }
                 None => {
@@ -699,9 +698,8 @@ impl Player {
                     queue_to_change.shuffle(&mut rng);
 
                     *songs_queue = queue_to_change.into();
-                    match curr_playing {
-                        Some(curr_playing) => songs_queue.push_front(curr_playing),
-                        None => {}
+                    if let Some(curr_playing) = curr_playing {
+                        songs_queue.push_front(curr_playing);
                     }
                 }
             }
