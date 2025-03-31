@@ -64,7 +64,7 @@ export default function OnboardingScreen() {
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted onboarding form");
-    addLibraryFolders(paths);
+    addLibraryFolders(paths).catch(e => console.error(e));
     const t = navigate("/home");
     if (t) {
       t.catch(e => console.error(e));

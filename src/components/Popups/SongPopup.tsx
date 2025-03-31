@@ -32,7 +32,7 @@ export default function SongPopup({ song }: SongPopupProps) {
           <button
             className="flex gap-3 items-center hover:bg-neutral-200 hover:dark:bg-neutral-800 p-2"
             onClick={e => {
-              addToQueueNext(song);
+              addToQueueNext(song).catch(e => console.error(e));
               e.currentTarget.blur();
             }}
           >
@@ -42,7 +42,7 @@ export default function SongPopup({ song }: SongPopupProps) {
           <button
             className="flex gap-3 items-center hover:bg-neutral-200 hover:dark:bg-neutral-800 p-2 rounded-b-md"
             onClick={e => {
-              enqueueSongBackend(song);
+              enqueueSongBackend(song).catch(e => console.error(e));
               e.currentTarget.blur();
             }}
           >

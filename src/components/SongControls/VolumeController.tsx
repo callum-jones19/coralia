@@ -66,7 +66,7 @@ export default function VolumeController() {
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const newVol = parseFloat(e.target.value);
                 setVolume(newVol);
-                setVolumeBackend(newVol);
+                setVolumeBackend(newVol).catch(e => console.error(e));
               }}
               className="p-1"
             />
@@ -82,7 +82,7 @@ export default function VolumeController() {
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           const newVol = parseFloat(e.target.value);
           setVolume(newVol);
-          setVolumeBackend(newVol);
+          setVolumeBackend(newVol).catch(e => console.error(e));
         }}
         className="hidden lg:block"
       />

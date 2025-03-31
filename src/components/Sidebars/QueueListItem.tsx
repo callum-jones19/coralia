@@ -56,7 +56,9 @@ export default function QueueListItem(
         && index !== undefined && removable && (
         <button
           className=""
-          onClick={() => removeFromQueue(index)}
+          onClick={() => {
+            removeFromQueue(index).catch(e => console.error(e));
+          }}
         >
           <X />
         </button>

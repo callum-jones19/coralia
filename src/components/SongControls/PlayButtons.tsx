@@ -56,7 +56,7 @@ export default function PlayButtons() {
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"
           disabled={prevSongButtonDisabled}
           onClick={() => {
-            goBackOneSong();
+            goBackOneSong().catch(e => console.error(e));
           }}
         >
           <SkipBack
@@ -73,9 +73,9 @@ export default function PlayButtons() {
           disabled={queueLen === 0}
           onClick={() => {
             if (isPaused) {
-              playPlayer();
+              playPlayer().catch(e => console.error(e));
             } else {
-              pausePlayer();
+              pausePlayer().catch(e => console.error(e));
             }
           }}
         >
@@ -105,7 +105,9 @@ export default function PlayButtons() {
         <button
           className="flex rounded-full flex-row justify-center items-center w-8 h-8"
           disabled={queueLen <= 0}
-          onClick={() => skipOneSong()}
+          onClick={() => {
+            skipOneSong().catch(e => console.error(e));
+          }}
         >
           <SkipForward
             size="1em"
