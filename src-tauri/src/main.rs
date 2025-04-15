@@ -35,6 +35,7 @@ enum PlayerCommand {
     AddToQueueNext(Box<Song>),
     Play,
     Pause,
+    Toggle,
     SetVolume(u8),
     SkipOne,
     GoBackOne,
@@ -91,6 +92,7 @@ fn create_and_run_audio_player(
     controls
         .attach(move |event| {
             // Deal with a media control event being fired
+            println!("{:?}", &event);
             match event {
                 souvlaki::MediaControlEvent::Play => {
                     player_cmd_tx.send(PlayerCommand::Play).unwrap()
@@ -98,6 +100,9 @@ fn create_and_run_audio_player(
                 souvlaki::MediaControlEvent::Pause => {
                     player_cmd_tx.send(PlayerCommand::Pause).unwrap()
                 }
+                souvlaki::MediaControlEvent::Toggle => {
+                    player_cmd_tx.send(PlayerCommand::Toggle).unwrap()
+                },
                 souvlaki::MediaControlEvent::Next => {
                     player_cmd_tx.send(PlayerCommand::SkipOne).unwrap()
                 }
@@ -148,6 +153,21 @@ fn create_and_run_audio_player(
                 {
                     let mut controls = controls.lock().unwrap();
                     emit_player_pause(player.get_playback_position(), handle, &mut controls);
+                }
+            }
+            PlayerCommand::Toggle => {
+                info!("Received request to toggle playing song state");
+                let new_playing_state = player.toggle_playing();
+                {
+                    let mut controls = controls.lock().unwrap();
+                    match new_playing_state {
+                        player::audio::PlayingState::Playing => {
+                            emit_player_play(player.get_playback_position(), handle, &mut controls);
+                        },
+                        player::audio::PlayingState::Paused => {
+                            emit_player_pause(player.get_playback_position(), handle, &mut controls);
+                        },
+                    };
                 }
             }
             PlayerCommand::SetVolume(vol) => {

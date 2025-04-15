@@ -32,6 +32,11 @@ enum EndCause {
     Stopped,
 }
 
+pub enum PlayingState {
+    Playing,
+    Paused,
+}
+
 /// Take a Song, and open its file path into a decoded Rodio Source.
 /// Place this source into the end of the sink.
 /// At the same time, also place a control for this source in an index-aligned
@@ -534,6 +539,19 @@ impl Player {
         info!("Sink internals: Sink state set to pause");
         let sink = self.audio_sink.lock().unwrap();
         sink.pause();
+    }
+
+    /// Toggle sink playback and return the current playback state
+    pub fn toggle_playing(&mut self) -> PlayingState {
+        info!("Sink internals: Sink playing state toggled.");
+        let sink = self.audio_sink.lock().unwrap();
+        if sink.is_paused() {
+            sink.play();
+            PlayingState::Playing
+        } else {
+            sink.pause();
+            PlayingState::Paused
+        }
     }
 
     /// Skip the currently playing source in the sink
