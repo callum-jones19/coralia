@@ -52,7 +52,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
             console.log('Adding next songs to queue');
             console.log(nextSongs);
 
-            enqueueSongsBackend(nextSongs);
+            enqueueSongsBackend(nextSongs).catch(e => console.error(e));
           }}
         />
       </div>

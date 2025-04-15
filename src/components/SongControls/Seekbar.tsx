@@ -191,7 +191,7 @@ export default function Seekbar() {
               secs: seekSecs,
             };
 
-            seekCurrentSong(seekDuration);
+            seekCurrentSong(seekDuration).catch(e => console.error(e));
             setSongPos(seekPos);
           }
           setSeekPos(null);
