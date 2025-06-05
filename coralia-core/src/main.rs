@@ -1,3 +1,5 @@
+use coralia_player::start_player;
+
 fn main() {
-    println!("Hello, world!");
+    start_player();
 }

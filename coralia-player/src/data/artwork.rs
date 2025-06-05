@@ -1,14 +1,14 @@
 use core::panic;
 use std::{
-    fs::{self, create_dir_all, File},
+    fs::{self, File, create_dir_all},
     io::BufWriter,
     path::{Path, PathBuf},
 };
 
-use fast_image_resize::{images::Image, IntoImageView, ResizeAlg, ResizeOptions, Resizer};
+use fast_image_resize::{IntoImageView, ResizeAlg, ResizeOptions, Resizer, images::Image};
 use image::{
-    codecs::{jpeg::JpegEncoder, png::PngEncoder},
     ImageEncoder, ImageFormat, ImageReader,
+    codecs::{jpeg::JpegEncoder, png::PngEncoder},
 };
 use log::info;
 use serde::{Deserialize, Serialize};

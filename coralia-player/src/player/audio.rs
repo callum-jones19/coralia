@@ -19,12 +19,9 @@ use rodio::{
     source::{EmptyCallback, SeekError},
 };
 use serde::{Deserialize, Serialize};
-use souvlaki::MediaControls;
+use souvlaki::{MediaControls, PlatformConfig};
 
-use crate::{
-    data::song::Song,
-    events::{emit_player_pause, emit_queue_update, emit_song_end},
-};
+use crate::data::song::Song;
 
 enum EndCause {
     EndOfSong,
@@ -104,7 +101,7 @@ fn handle_sink_song_end(
     sink: Arc<Mutex<Sink>>,
     song_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
     prev_song_queue: Arc<Mutex<Vec<PlayerSong>>>,
-    media_controls: Arc<Mutex<MediaControls>>,
+    // media_controls: Arc<Mutex<MediaControls>>,
     next_song_loaded_tx: Sender<()>,
 ) {
     loop {
@@ -159,8 +156,9 @@ fn handle_sink_song_end(
                     let pos = sink_locked.get_pos();
 
                     {
-                        let mut media_controls = media_controls.lock().unwrap();
-                        emit_player_pause(pos, &mut media_controls);
+                        // let mut media_controls = media_controls.lock().unwrap();
+                        // FIXME
+                        // emit_player_pause(pos, &mut media_controls);
                     }
                 }
 
@@ -177,15 +175,17 @@ fn handle_sink_song_end(
                     .map(|song| song.song)
                     .collect();
 
-                emit_song_end(new_queue.clone(), new_previous.clone());
+                // FIXME
+                // emit_song_end(new_queue.clone(), new_previous.clone());
                 {
-                    let mut controls = media_controls.lock().unwrap();
-                    emit_queue_update(
-                        new_queue,
-                        new_previous,
-                        sink_locked.get_pos(),
-                        &mut controls,
-                    );
+                    // let mut controls = media_controls.lock().unwrap();
+                    // FIXME
+                    // emit_queue_update(
+                    //     new_queue,
+                    //     new_previous,
+                    //     sink_locked.get_pos(),
+                    //     &mut controls,
+                    // );
                 }
             }
             EndCause::Stopped => {
@@ -227,8 +227,9 @@ fn handle_sink_song_end(
                     let pos = sink_locked.get_pos();
 
                     {
-                        let mut media_controls = media_controls.lock().unwrap();
-                        emit_player_pause(pos, &mut media_controls);
+                        // let mut media_controls = media_controls.lock().unwrap();
+                        // FIXME
+                        // emit_player_pause(pos, &mut media_controls);
                     }
                 }
             }
@@ -295,7 +296,7 @@ pub struct Player {
     songs_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
     cached_unshuffled_queue: Option<VecDeque<PlayerSong>>,
     previous_songs: Arc<Mutex<Vec<PlayerSong>>>,
-    player_event_tx: Sender<EndCause>,
+    sink_song_end_tx: Sender<EndCause>,
     next_song_loaded_rx: Receiver<()>,
 }
 
@@ -304,10 +305,20 @@ impl Player {
     /// This takes a mcsp channel sender to communicate updates outside of
     /// the player once initialised. This allows it to work in its own thread
     /// but still communicate outside of this.
-    pub fn new(media_controls: Arc<Mutex<MediaControls>>) -> Self {
+    pub fn new() -> Self {
         // Setup rodio backend
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
+
+        // FIXME
+        // let media_controls: Arc<Mutex<MediaControls>> = Arc::new(Mutex::new(
+        //     MediaControls::new(PlatformConfig {
+        //         display_name: "Str",
+        //         dbus_name: "Str",
+        //         hwnd: None,
+        //     })
+        //     .unwrap(),
+        // ));
 
         // Initialise default sink state
         const INIT_VOLUME: f32 = 0.5;
@@ -338,7 +349,7 @@ impl Player {
                 sink2,
                 songs_queue_2,
                 prev_songs_2,
-                media_controls,
+                // media_controls,
                 next_song_loaded_tx,
             );
         });
@@ -351,7 +362,7 @@ impl Player {
             songs_queue,
             previous_songs: prev_songs,
             cached_unshuffled_queue: None,
-            player_event_tx: sink_song_end_tx,
+            sink_song_end_tx,
             next_song_loaded_rx,
         }
     }
@@ -410,7 +421,7 @@ impl Player {
                 let res = open_song_into_sink(
                     &mut audio_sink,
                     &mut player_song,
-                    &self.player_event_tx.clone(),
+                    &self.sink_song_end_tx.clone(),
                 );
                 match res {
                     Ok(_) => {}
@@ -480,7 +491,7 @@ impl Player {
             let open_status = open_song_into_sink(
                 &mut audio_sink,
                 next_nonbuffered_song,
-                &self.player_event_tx,
+                &self.sink_song_end_tx,
             );
 
             match open_status {

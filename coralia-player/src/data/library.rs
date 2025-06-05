@@ -1,7 +1,7 @@
 use core::panic;
 use std::{
     collections::HashMap,
-    fs::{self, read_dir, File},
+    fs::{self, File, read_dir},
     io::{BufReader, BufWriter},
     path::PathBuf,
 };

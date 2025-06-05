@@ -31,7 +31,7 @@ impl Album {
             None => {
                 return Err(String::from(
                     "Attempted to create an album from a song with no album artist",
-                ))
+                ));
             }
         };
 
@@ -40,7 +40,7 @@ impl Album {
             None => {
                 return Err(String::from(
                     "Attempted to create an album from a song with no album",
-                ))
+                ));
             }
         };
 

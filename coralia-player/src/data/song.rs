@@ -40,7 +40,7 @@ impl SongProperties {
 #[serde(rename_all = "camelCase")]
 pub struct Song {
     pub id: usize,
-    pub file_path: Box<Path>,
+    pub file_path: PathBuf,
     pub tags: MusicTags,
     pub properties: SongProperties,
     pub artwork: Option<Artwork>,
