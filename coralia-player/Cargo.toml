@@ -1,0 +1,29 @@
+[package]
+name = "coralia-player"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+crossbeam = "0.8.2"
+dirs = "5.0.1"
+env_logger = "0.10.2"
+fast_image_resize = { version = "5.1.0", features = ["image"] }
+glob = "0.3.1"
+image = "0.25.5"
+lofty = "0.20.0"
+log = "0.4.22"
+rand = "0.8.5"
+rodio = { version = "0.19.0", features = ["symphonia-all"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+souvlaki = "0.7.0"
+symphonia = "0.5.4"
+symphonia-bundle-mp3 = "0.5.4"
+symphonia-core = "0.5.4"
+symphonia-metadata = "0.5.4"
+tokio = "1.29.1"
