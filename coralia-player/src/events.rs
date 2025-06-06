@@ -1,6 +1,6 @@
 use std::{
     collections::VecDeque,
-    sync::mpsc::{Receiver, Sender},
+    sync::mpsc::{Receiver, Sender, channel},
     time::Duration,
 };
 
@@ -10,77 +10,56 @@ use souvlaki::{MediaControls, MediaMetadata, MediaPosition};
 
 use crate::data::song::Song;
 
-struct EventHandler {
-    event_tx: Sender<()>,
-    event_rx: Receiver<()>,
+pub enum CoraliaEvent {
+    PlayerPlay,
+    PlayerPause,
+    SongEnd,
+    QueueUpdate,
+}
+
+pub struct EventHandler {
+    event_tx: Sender<CoraliaEvent>,
+    event_rx: Receiver<CoraliaEvent>,
 }
 
 impl EventHandler {
-    pub fn emit_song_end(&self, new_queue: VecDeque<Song>, new_previous: Vec<Song>) {
-        info!("Player Events: song ended.");
-    }
-
-    pub fn emit_player_play(
-        &self,
-        current_playback_pos: Duration,
-        media_controls: &mut MediaControls,
-    ) {
-        info!("Player Events: sink playback started.");
-
-        media_controls
-            .set_playback(souvlaki::MediaPlayback::Playing {
-                progress: Some(MediaPosition(current_playback_pos)),
-            })
-            .unwrap();
-    }
-
-    pub fn emit_player_pause(
-        &self,
-        current_playback_pos: Duration,
-        media_controls: &mut MediaControls,
-    ) {
-        info!("Player Events: sink playback started.");
-
-        media_controls
-            .set_playback(souvlaki::MediaPlayback::Paused {
-                progress: Some(MediaPosition(current_playback_pos)),
-            })
-            .unwrap();
-    }
-
-    pub fn emit_queue_update(
-        &self,
-        new_queue: VecDeque<Song>,
-        new_previous: Vec<Song>,
-        current_playback_pos: Duration,
-        media_controls: &mut MediaControls,
-    ) {
-        info!(
-            "Player Events: song queue updated. {:?}",
-            current_playback_pos
-        );
-
-        if let Some(current_song) = new_queue.front() {
-            let cover_url_opt = current_song.artwork.as_ref();
-
-            let cover_url = match cover_url_opt {
-                Some(art) => {
-                    let t = String::from("file://")
-                        + &art.art_400.clone().into_os_string().into_string().unwrap();
-                    Some(t)
-                }
-                None => None,
-            };
-
-            media_controls
-                .set_metadata(MediaMetadata {
-                    album: current_song.tags.album.as_deref(),
-                    title: Some(&current_song.tags.title),
-                    artist: current_song.tags.artist.as_deref(),
-                    duration: Some(*current_song.properties.get_duration()),
-                    cover_url: cover_url.as_deref(),
-                })
-                .unwrap();
+    pub fn new() -> Self {
+        let (tx, rx) = channel::<CoraliaEvent>();
+        EventHandler {
+            event_rx: rx,
+            event_tx: tx,
         }
+    }
+
+    pub fn new_sender(&self) -> Sender<CoraliaEvent> {
+        self.event_tx.clone()
+    }
+
+    pub fn await_event(&self) -> CoraliaEvent {
+        let event = self.event_rx.recv().unwrap();
+        match event {
+            CoraliaEvent::PlayerPlay => self.handle_player_play(),
+            CoraliaEvent::PlayerPause => self.handle_player_pause(),
+            CoraliaEvent::SongEnd => self.handle_song_end(),
+            CoraliaEvent::QueueUpdate => self.handle_queue_update(),
+        };
+
+        event
+    }
+
+    fn handle_player_play(&self) {
+        println!("Player play");
+    }
+
+    fn handle_player_pause(&self) {
+        println!("Player pause");
+    }
+
+    fn handle_song_end(&self) {
+        println!("Song end");
+    }
+
+    fn handle_queue_update(&self) {
+        println!("Queue update");
     }
 }

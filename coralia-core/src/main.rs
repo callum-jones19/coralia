@@ -1,5 +1,5 @@
-use coralia_player::start_player;
+use coralia_player::PlayerState;
 
 fn main() {
-    start_player();
+    let player_state = PlayerState::new();
 }

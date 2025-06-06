@@ -21,7 +21,7 @@ use rodio::{
 use serde::{Deserialize, Serialize};
 use souvlaki::{MediaControls, PlatformConfig};
 
-use crate::data::song::Song;
+use crate::{data::song::Song, events::CoraliaEvent};
 
 enum EndCause {
     EndOfSong,
@@ -291,6 +291,7 @@ pub struct Player {
     _stream_handle: OutputStreamHandle,
     // Actual values
     audio_sink: Arc<Mutex<Sink>>,
+    event_sender: Sender<CoraliaEvent>,
     // We need a list of sources to track what is currently in the sink,
     // as the sink gives us no info about the sources inside it.
     songs_queue: Arc<Mutex<VecDeque<PlayerSong>>>,
@@ -305,7 +306,7 @@ impl Player {
     /// This takes a mcsp channel sender to communicate updates outside of
     /// the player once initialised. This allows it to work in its own thread
     /// but still communicate outside of this.
-    pub fn new() -> Self {
+    pub fn new(coralia_event_rx: Sender<CoraliaEvent>) -> Self {
         // Setup rodio backend
         let (_stream, stream_handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&stream_handle).unwrap();
@@ -359,6 +360,7 @@ impl Player {
             _stream,
             _stream_handle: stream_handle,
             audio_sink: sink_wrapped,
+            event_sender: coralia_event_rx,
             songs_queue,
             previous_songs: prev_songs,
             cached_unshuffled_queue: None,
@@ -439,6 +441,7 @@ impl Player {
             songs_queue.push_back(player_song.clone());
         }
 
+        self.event_sender.send(CoraliaEvent::QueueUpdate);
         Ok(())
     }
 
@@ -520,6 +523,7 @@ impl Player {
             if sink.len() != 0 {
                 info!("Sink internals: Sink state set to play");
                 sink.play();
+                self.event_sender.send(CoraliaEvent::PlayerPlay);
                 Some(sink.get_pos())
             } else {
                 info!("Sink internals: Sink buffer empty, so not starting playback");
@@ -539,6 +543,7 @@ impl Player {
         songs_queue_locked.clear();
         prev_songs_locked.clear();
         self.cached_unshuffled_queue = None;
+        self.event_sender.send(CoraliaEvent::QueueUpdate);
     }
 
     /// Signal the sink to pause
@@ -546,6 +551,7 @@ impl Player {
         info!("Sink internals: Sink state set to pause");
         let sink = self.audio_sink.lock().unwrap();
         sink.pause();
+        self.event_sender.send(CoraliaEvent::PlayerPause);
     }
 
     /// Toggle sink playback and return the current playback state
@@ -554,9 +560,11 @@ impl Player {
         let sink = self.audio_sink.lock().unwrap();
         if sink.is_paused() {
             sink.play();
+            self.event_sender.send(CoraliaEvent::PlayerPlay);
             PlayingState::Playing
         } else {
             sink.pause();
+            self.event_sender.send(CoraliaEvent::PlayerPause);
             PlayingState::Paused
         }
     }
@@ -568,6 +576,7 @@ impl Player {
         // actually removed from the buffer due to the callback
         self.audio_sink.lock().unwrap().skip_one();
         self.next_song_loaded_rx.recv().unwrap();
+        self.event_sender.send(CoraliaEvent::QueueUpdate);
     }
 
     /// If the song is more than 5 seconds deep, go back to the start of the song.
@@ -608,7 +617,8 @@ impl Player {
             // We don't want to just skip - if we do, it will go back into the prev
             // queue.s
             self.remove_song_from_queue(0);
-            self.add_to_queue_next(&s.song)
+            self.add_to_queue_next(&s.song);
+            self.event_sender.send(CoraliaEvent::QueueUpdate);
         }
     }
 
@@ -631,8 +641,10 @@ impl Player {
         // Send the event to the frontend
         let songs_data: VecDeque<Song> = songs_queue.clone().into_iter().map(|s| s.song).collect();
         if songs_data.is_empty() {
+            self.event_sender.send(CoraliaEvent::PlayerPause);
             sink.pause();
         }
+        self.event_sender.send(CoraliaEvent::QueueUpdate);
 
         Some(song.song)
     }
@@ -683,6 +695,7 @@ impl Player {
             songs_in_sink.drain(1..);
 
             // Either shuffle or 'unshuffle' the queue
+            self.event_sender.send(CoraliaEvent::QueueUpdate);
             match &self.cached_unshuffled_queue {
                 Some(cached_orig_queue) => {
                     let mut original_queue = cached_orig_queue.clone();
