@@ -941,9 +941,24 @@ checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 name = "coralia-core"
 version = "0.1.0"
 dependencies = [
+ "coralia-data",
  "coralia-gui",
  "coralia-player",
+ "env_logger",
+ "log",
  "tokio",
+]
+
+[[package]]
+name = "coralia-data"
+version = "0.1.0"
+dependencies = [
+ "dirs 5.0.1",
+ "env_logger",
+ "lofty",
+ "log",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -957,6 +972,7 @@ dependencies = [
 name = "coralia-player"
 version = "0.1.0"
 dependencies = [
+ "coralia-data",
  "crossbeam",
  "dirs 5.0.1",
  "env_logger",

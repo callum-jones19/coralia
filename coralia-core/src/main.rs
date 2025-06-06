@@ -1,14 +1,17 @@
-use std::io;
-
+use coralia_data::AppData;
 use coralia_gui::start_gui;
-use coralia_player::PlayerState;
+use coralia_player::PlayerManager;
 
 #[tokio::main]
 async fn main() {
-    // Initialise the GUI
-    tokio::task::spawn(async {
+    env_logger::init();
+
+    // Initialise the AppData
+    let app_data = AppData::init();
+
+    tokio::task::spawn(async move {
         // Initialise the backend state
-        let player_state = PlayerState::new();
+        let player_state = PlayerManager::new();
     });
 
     start_gui();

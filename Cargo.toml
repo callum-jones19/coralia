@@ -3,5 +3,6 @@ resolver = "3"
 members = [
   "coralia-core",
   "coralia-gui",
+  "coralia-data",
   "coralia-player"
 ]

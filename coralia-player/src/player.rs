@@ -11,6 +11,7 @@ use std::{
     time::Duration,
 };
 
+use coralia_data::song::Song;
 use log::{error, info};
 use rand::{seq::SliceRandom, thread_rng};
 use rodio::{
@@ -21,7 +22,7 @@ use rodio::{
 use serde::{Deserialize, Serialize};
 use souvlaki::{MediaControls, PlatformConfig};
 
-use crate::{data::song::Song, events::CoraliaEvent};
+use crate::events::CoraliaEvent;
 
 enum EndCause {
     EndOfSong,

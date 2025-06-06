@@ -8,8 +8,6 @@ use log::info;
 use serde::Serialize;
 use souvlaki::{MediaControls, MediaMetadata, MediaPosition};
 
-use crate::data::song::Song;
-
 pub enum CoraliaEvent {
     PlayerPlay,
     PlayerPause,

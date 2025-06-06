@@ -9,6 +9,7 @@ edition = "2024"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+coralia-data = { path = "../coralia-data" }
 crossbeam = "0.8.2"
 dirs = "5.0.1"
 env_logger = "0.10.2"
