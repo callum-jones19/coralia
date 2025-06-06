@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 coralia-player = { path = "../coralia-player" }
+coralia-gui = { path = "../coralia-gui" }
+tokio = { version = "1", features = ["full"] }
