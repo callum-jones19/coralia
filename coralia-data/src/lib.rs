@@ -10,6 +10,7 @@ pub mod settings;
 pub mod song;
 mod utils;
 
+#[derive(Debug)]
 pub struct AppData {
     library: Library,
     settings: Settings,

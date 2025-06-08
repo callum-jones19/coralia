@@ -1,31 +1,33 @@
-use eframe::egui;
+use iced::widget::{button, column, container, text};
+use iced::{Element, Length};
 
-pub fn start_gui() {
-    let native_options = eframe::NativeOptions::default();
-    eframe::run_native(
-        "Coralia",
-        native_options,
-        Box::new(|cc| Ok(Box::new(MyEguiApp::new(cc)))),
-    ).unwrap();
+pub fn start_gui() -> iced::Result {
+    iced::run("Coralia", update, view)
 }
 
-#[derive(Default)]
-struct MyEguiApp {}
+#[derive(Debug, Clone)]
+enum Message {
+    Increment,
+    Decrement,
+}
 
-impl MyEguiApp {
-    fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // Customize egui here with cc.egui_ctx.set_fonts and cc.egui_ctx.set_visuals.
-        // Restore app state using cc.storage (requires the "persistence" feature).
-        // Use the cc.gl (a glow::Context) to create graphics shaders and buffers that you can use
-        // for e.g. egui::PaintCallback.
-        Self::default()
+#[derive(Default, Debug)]
+struct RootState {
+    counter: u64,
+    // username: String,
+    // email: String,
+}
+
+fn update(root_state: &mut RootState, message: Message) {
+    match message {
+        Message::Increment => root_state.counter += 1,
+        Message::Decrement => {
+            if root_state.counter > 0 {
+                root_state.counter -= 1
+            }
+        }
     }
 }
 
-impl eframe::App for MyEguiApp {
-    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Hello World!");
-        });
-    }
-}
+///
+fn view(root_state: &RootState) -> Element<Message> {}

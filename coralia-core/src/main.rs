@@ -9,14 +9,10 @@ async fn main() {
     // Initialise the AppData
     let app_data = AppData::init();
 
-    tokio::task::spawn(async move {
-        // Initialise the backend state
-        let player_state = PlayerManager::new();
-    });
+    // Initialise the backend player
+    let player_state = PlayerManager::new();
+
+    println!("{:?}", app_data);
 
     start_gui();
-    loop {
-        // Handle clicked events
-        todo!()
-    }
 }
