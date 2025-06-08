@@ -1,5 +1,9 @@
-use iced::widget::{button, column, container, text};
-use iced::{Element, Length};
+use iced::alignment::Vertical;
+use iced::font::Weight;
+use iced::widget::image::Handle;
+use iced::widget::text::Style;
+use iced::widget::{Slider, Text, button, column, container, image, row, text};
+use iced::{Element, Font, Length, Padding};
 
 pub fn start_gui() -> iced::Result {
     iced::run("Coralia", update, view)
@@ -9,6 +13,7 @@ pub fn start_gui() -> iced::Result {
 enum Message {
     Increment,
     Decrement,
+    ValueChanged(f32),
 }
 
 #[derive(Default, Debug)]
@@ -26,8 +31,57 @@ fn update(root_state: &mut RootState, message: Message) {
                 root_state.counter -= 1
             }
         }
+        Message::ValueChanged(e) => {}
     }
 }
 
 ///
-fn view(root_state: &RootState) -> Element<Message> {}
+fn view(root_state: &RootState) -> Element<Message> {
+    column![render_body(root_state), render_bottom_panel(root_state)].into()
+}
+
+fn render_bottom_panel(root_state: &RootState) -> Element<Message> {
+    let handle =
+        Handle::from_path("C:/Users/Callum/Music/music/Joy Division/Unknown Pleasures/cover.jpg");
+
+    let mut font = Font::default();
+    font.weight = Weight::Bold;
+    let song_title_text = Text::new("Song Title").font(font);
+    let mut font = Font::default();
+    font.style = iced::font::Style::Italic;
+    let song_artist_text = Text::new("Song Artist").font(font);
+
+    let cover_img = image(handle)
+        .width(Length::Fixed(50.0))
+        .content_fit(iced::ContentFit::ScaleDown);
+    let info_block =
+        container(row![cover_img, column![song_title_text, song_artist_text]].spacing(10))
+            .center_y(Length::Fill)
+            .height(Length::Fixed(80.0));
+
+    let seekbar = Slider::new(0.0..=100.0, 0.0, Message::ValueChanged);
+    let curr_pos = Text::new("00:00");
+    let duration = Text::new("01:36");
+    let seekbar_block = row![curr_pos, seekbar, duration]
+        .spacing(5)
+        .align_y(Vertical::Center);
+
+    let controls_block = row![button("Vol")];
+
+    let total_container = row!(info_block, seekbar_block, controls_block)
+        .align_y(Vertical::Center)
+        .spacing(40)
+        .height(Length::Fixed(60.0))
+        .padding(10);
+
+    total_container.into()
+}
+
+fn render_body(root_state: &RootState) -> Element<Message> {
+    container("Test")
+        .padding(10)
+        .style(container::rounded_box)
+        .center_x(Length::Fill)
+        .center_y(Length::Fill)
+        .into()
+}
